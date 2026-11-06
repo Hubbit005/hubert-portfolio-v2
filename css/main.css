@@ -48,7 +48,7 @@ body::before{
    browser paints it once. Two child layers: the strong hero light top right, and two softer lights
    lower left and lower right for the rest of the page. While the hero scrolls away, GSAP scrub
    (js/motion.js) dims the first and brings in the second. Opacity only, no transforms. */
-.glow{ position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+.glow{ position: fixed; inset: 0; z-index: -3; pointer-events: none; }
 .glow__hero, .glow__low{ position: absolute; inset: 0; display: block; will-change: opacity; }
 .glow__hero{
   background: radial-gradient(min(750px, 75vw) min(600px, 60vw) at calc(100% + min(520px, 40vw) - min(750px, 75vw)) calc(min(600px, 60vw) - 34vh),
@@ -1003,3 +1003,20 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
    in practice). If the script fails, the page shows anyway after 1.2 s. */
 .lang-pending .nav, .lang-pending main{ visibility: hidden; animation: langFailsafe 0s linear 1.2s forwards; }
 @keyframes langFailsafe{ to{ visibility: visible; } }
+
+/* ==========================================================================
+   Living background (js/background.js)
+   A WebGL layer between the CSS glow (-3) and the page's vertical lines (body::before, -1).
+   It is drawn to look like .glow at the top of the page, fades in over it once ready, and only then
+   is the CSS glow hidden. Without WebGL / with reduced motion the canvas never exists.
+   ========================================================================== */
+.bg-gl{
+  position: fixed; inset: 0; z-index: -2;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+.has-bg .bg-gl{ opacity: 1; }
+.has-bg .glow{ visibility: hidden; transition: visibility 0s linear 1s; }
+@media print { .bg-gl{ display: none; } }

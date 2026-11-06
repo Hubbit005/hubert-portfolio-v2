@@ -3,6 +3,7 @@ import { initHero } from './hero.js';
 import { initArc } from './carousel.js';
 import { initMotion } from './motion.js';
 import { initRoulette } from './roulette.js';
+import { initBackground } from './background.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -234,6 +235,7 @@ async function boot() {
   initHero({ reduced, lenis, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
+  initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor();
   initMagnetic();
 
