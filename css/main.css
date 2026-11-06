@@ -1562,3 +1562,22 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .pd{ max-width: none; }
   .pd__screen{ height: 620px; }
 }
+
+/* ==========================================================================
+   Logo stamp (js/stamp.js): ink stamps on empty space, in document coordinates
+   ========================================================================== */
+.stamps{ position: absolute; left: 0; top: 0; width: 0; height: 0; z-index: calc(var(--z-nav) - 2); pointer-events: none; }
+.stamp{
+  position: absolute; width: 64px; height: 64px; margin: -32px 0 0 -32px; color: var(--accent);
+  pointer-events: none; transform: rotate(var(--r, 0deg));
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.25));
+  animation: stamp-in 0.32s var(--ease-out) both, stamp-out 1.2s ease-in 9s forwards;
+}
+.stamp svg{ display: block; width: 100%; height: 100%; opacity: 0.9; }
+@keyframes stamp-in{
+  0%{ opacity: 0; transform: rotate(var(--r, 0deg)) scale(1.4); }
+  55%{ opacity: 1; transform: rotate(var(--r, 0deg)) scale(0.96); }
+  100%{ opacity: 1; transform: rotate(var(--r, 0deg)) scale(1); }
+}
+@keyframes stamp-out{ to{ opacity: 0; } }
+@media print { .stamps{ display: none; } }

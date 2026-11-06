@@ -13,6 +13,7 @@ import { initPause } from './pause.js';
 import { initJar } from './jar.js';
 import { initLetters } from './letters.js';
 import { initPlanDemo } from './plan-demo.js';
+import { initStamp } from './stamp.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -227,6 +228,7 @@ async function boot() {
   initJar({ reduced, gsap });
   initLetters({ reduced, gsap });
   initPlanDemo({ reduced, gsap });
+  initStamp({ reduced });
   initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });
