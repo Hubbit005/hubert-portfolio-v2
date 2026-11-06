@@ -1,8 +1,8 @@
 # Zadanie 08 – Cztery interaktywne „zabawki”
 
-Hubert chce, żeby odwiedzający mógł się czymś pobawić. Cztery elementy, każdy osobnym commitem. Zasady z `CLAUDE.md` obowiązują: hero, karuzela i treść bez zmian, żadnych nowych faktów o Hubercie, bez kredytów Higgsfielda.
+Hubert chce, żeby odwiedzający mógł się czymś pobawić. Cztery elementy, każdy osobnym commitem. Zasady z `CLAUDE.md` obowiązują: hero, karuzela i treść bez zmian, żadnych nowych faktów o Hubercie, Higgsfield tylko według punktu H i po zgodzie Huberta.
 
-Kolejność: A (silnik fizyki), B (słoik), C (litery w stopce), D (demo planu), E (pieczątka), F (wersjonowanie plików), G (kontrola).
+Kolejność: H (wycena assetów z Higgsfielda i pytanie do Huberta, a w czasie czekania na odpowiedź dalsze kroki), A (silnik fizyki), B (słoik), C (litery w stopce), D (demo planu), E (pieczątka), F (wersjonowanie plików), G (kontrola).
 
 ## A. Wspólny silnik fizyki – `js/physics.js`
 
@@ -83,6 +83,21 @@ Hubert widział nową stronę ze starym JavaScriptem z pamięci przeglądarki. D
 - Bibliotek z `vendor/` nie wersjonuj. `three.module.min.js` musi mieć wszędzie ten sam adres.
 
 Zapisz w `CLAUDE.md` jedną linię: przy każdej zmianie JS lub CSS podbij wersję.
+
+## H. Assety z Higgsfielda (opcjonalnie, za zgodą)
+
+Hubert pozwala użyć Higgsfielda, żeby zabawki wyglądały „prawdziwie”, a nie płasko. Propozycje (maks. 4 generacje plus 1 poprawka na każdą):
+
+1. **Szklany słoik**: realistyczny render pustego szklanego słoika z boku, przezroczyste tło (PNG z kanałem alfa), delikatne odbicia, ciepłe pomarańczowe światło z boku. Warstwa przednia (szkło) i tylna osobno, jeśli model to umożliwia, żeby kulki były „w środku”.
+2. **Faktura pieczątki**: odcisk tuszu (pomarańczowo-czerwony, `#ff5a1f`) z nierównymi krawędziami i ziarnem papieru, przezroczyste tło. Użyj go jako maski na logo H, żeby pieczątka wyglądała jak prawdziwy odcisk.
+3. **Faktura liter w stopce**: szczotkowany metal albo matowa, ciepła ceramika, płaska próbka do nałożenia na litery HUBERT (jako `background-image` z `background-clip: text` albo tekstura w canvasie).
+4. **Kulki narzędzi**: jedna realistyczna, matowa kula (szkło albo żywica) na przezroczystym tle jako baza, na którą nakładasz logo. Jedna generacja dla wszystkich kulek.
+
+Zasady:
+- Najpierw wycena wszystkich czterech (narzędzie wyceny / `max_credits`), jedna wiadomość do Huberta z tabelą i sumą oraz informacja, ile kredytów z limitu 1000 zużyło już zadanie 06. Generuj dopiero po jego „tak”.
+- Model obrazu jak w zadaniu 06 (`gpt_image_2_6`) z `background: transparent`, jeśli wspiera. W razie problemu z przezroczystością usuń tło narzędziem `remove_background`, które też najpierw wyceń.
+- Pliki na stronę: WebP lub PNG po kompresji, każdy ≤ 150 kB. Surowe pliki w `assets/higgsfield/raw/` (nie commitować).
+- Jeśli Hubert powie „nie”, zrób wszystko w kodzie (SVG, gradienty, filtry). Zabawki mają działać tak samo.
 
 ## G. Kontrola
 
