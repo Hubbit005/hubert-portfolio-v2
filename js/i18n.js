@@ -72,6 +72,24 @@
     "cases.6": "Mniejsze projekty",
     // EN: <span class="mono">06</span> This portfolio
     "cases.7": "To portfolio",
+    // EN: What I did in each project
+    "chart.1": "Co robiłem w każdym projekcie",
+    // EN: Design
+    "chart.2": "Projekt",
+    // EN: Code
+    "chart.3": "Kod",
+    // EN: Video
+    "chart.4": "Wideo",
+    // EN: Marketing
+    "chart.5": "Marketing",
+    // EN: 3D
+    "chart.6": "3D",
+    // EN: AI agent
+    "chart.7": "Agent AI",
+    // EN: Yes
+    "chart.8": "Tak",
+    // EN: No
+    "chart.9": "Nie",
     // EN: Website, visual system and a motion ad for an industrial cleaning company from Szczecin.
     "basko-clean.2": "Strona, system wizualny i reklama motion dla firmy ze Szczecina, która zajmuje się czyszczeniem przemysłowym.",
     // EN: Client
@@ -390,6 +408,8 @@
       'theme.toLight': 'Switch to light theme',
       'copy.ok': 'Copied to clipboard',
       'copy.fail': 'Copy failed. Select the address above.',
+      'motion.pause': 'Pause motion',
+      'motion.play': 'Play motion',
       'model.title': 'Interactive 3D model of an AK-47 for KSK Pretor. Drag to rotate. Keys: S trigger, Z charging handle, P selector.',
       'roulette.hintWheel': 'Drag the wheel or press Spin',
       'roulette.hintRandom': 'A random pick from my projects',
@@ -412,6 +432,8 @@
       'theme.toLight': 'Włącz jasny motyw',
       'copy.ok': 'Skopiowano do schowka',
       'copy.fail': 'Nie udało się skopiować. Zaznacz adres powyżej.',
+      'motion.pause': 'Zatrzymaj ruch',
+      'motion.play': 'Wznów ruch',
       'model.title': 'Interaktywny model 3D karabinka AK-47 dla KSK Pretor. Przeciągnij, żeby obrócić. Klawisze: S spust, Z rączka zamka, P przełącznik trybów.',
       'roulette.hintWheel': 'Zakręć kołem albo naciśnij „Losuj”',
       'roulette.hintRandom': 'Losowy projekt z mojego portfolio',

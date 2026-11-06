@@ -3,6 +3,13 @@ import { initHero } from './hero.js';
 import { initArc } from './carousel.js';
 import { initMotion } from './motion.js';
 import { initRoulette } from './roulette.js';
+import { initBackground } from './background.js';
+import { initCursor } from './cursor.js';
+import { initCasesMotion } from './cases-motion.js';
+import { initChart } from './chart.js';
+import { initFooter } from './footer.js';
+import { initAmbient } from './ambient.js';
+import { initPause } from './pause.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -49,7 +56,10 @@ function navOffset() { return (document.getElementById('nav')?.offsetHeight || 6
 function scrollToTarget(el, immediate = false) {
   if (!el) return;
   // Absolute target; Lenis would otherwise add CSS scroll-padding and scroll-margin on top of the offset.
-  const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navOffset());
+  let y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navOffset());
+  // The contact section is sticky under the CV (curtain, js/footer.js): its box is not where it ends
+  // up, and it is the end of the page, so its place is the bottom of the page.
+  if (getComputedStyle(el).position === 'sticky') y = document.documentElement.scrollHeight - window.innerHeight;
   if (lenis) lenis.scrollTo(y, { immediate, duration: 1.2 });
   else window.scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' });
 }
@@ -173,33 +183,6 @@ document.getElementById('model-load')?.addEventListener('click', () => {
   iframe.addEventListener('load', () => iframe.focus());
 });
 
-/* ---------- Custom cursor on covers (fine pointers only) ---------- */
-function initCursor() {
-  if (reduced || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const cursor = document.getElementById('cursor');
-  if (!cursor) return;
-  const label = cursor.querySelector('.cursor__label');
-  let x = -200, y = -200, tx = -200, ty = -200, s = 0.3, ts = 0.3, raf = 0, on = false;
-  const loop = () => {
-    x += (tx - x) * 0.2; y += (ty - y) * 0.2; s += (ts - s) * 0.18;
-    cursor.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
-    if (Math.abs(tx - x) > 0.1 || Math.abs(ts - s) > 0.001) raf = requestAnimationFrame(loop); else raf = 0;
-  };
-  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
-  document.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    tx = e.clientX; ty = e.clientY;
-    const t = e.target.closest('[data-cursor]');
-    const dragging = document.getElementById('arc-viewport')?.classList.contains('is-dragging');
-    if (t && !dragging) {
-      if (!on) { on = true; cursor.classList.add('is-on'); }
-      label.textContent = t.dataset.cursor;
-      ts = 1;
-    } else if (on) { on = false; cursor.classList.remove('is-on'); ts = 0.3; }
-    kick();
-  }, { passive: true });
-}
-
 /* ---------- Magnetic buttons ---------- */
 function initMagnetic() {
   if (reduced || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -233,8 +216,14 @@ async function boot() {
   const roulette = initRoulette();
   initHero({ reduced, lenis, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
+  initPause({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
-  initCursor();
+  initCasesMotion({ reduced, gsap, ScrollTrigger });
+  initChart({ reduced, gsap, ScrollTrigger });
+  initFooter({ reduced, gsap });
+  initAmbient({ reduced, gsap, ScrollTrigger });
+  initBackground({ reduced, gsap, ScrollTrigger, lenis });
+  initCursor({ reduced, gsap });
   initMagnetic();
 
   measurePage();

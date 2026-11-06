@@ -8,7 +8,8 @@ export function initMotion({ reduced, gsap, ScrollTrigger }) {
   const ease = 'expo.out';
 
   // Masked headlines: the inner span slides up from below its mask.
-  gsap.utils.toArray('.mask > span').forEach((el) => {
+  // (Case study titles are split into letters by js/cases-motion.js and animated there.)
+  gsap.utils.toArray('.mask > span').filter((el) => !el.closest('.case__title')).forEach((el) => {
     gsap.from(el, {
       yPercent: 108, duration: 1.1, ease,
       scrollTrigger: { trigger: el.parentElement, start: 'top 92%', once: true },
@@ -16,7 +17,8 @@ export function initMotion({ reduced, gsap, ScrollTrigger }) {
   });
 
   // Fade-up groups. Elements are visible until their trigger is set up.
-  const groups = ['.case__intro .block', '.gallery > *', '.ai-table__grid', '.sub__grid > *'];
+  // (Galleries are uncovered by js/cases-motion.js.)
+  const groups = ['.case__intro .block', '.ai-table__grid', '.sub__grid > *'];
   groups.forEach((sel) => {
     const els = gsap.utils.toArray(sel);
     if (!els.length) return;

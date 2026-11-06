@@ -48,7 +48,7 @@ body::before{
    browser paints it once. Two child layers: the strong hero light top right, and two softer lights
    lower left and lower right for the rest of the page. While the hero scrolls away, GSAP scrub
    (js/motion.js) dims the first and brings in the second. Opacity only, no transforms. */
-.glow{ position: fixed; inset: 0; z-index: -2; pointer-events: none; }
+.glow{ position: fixed; inset: 0; z-index: -3; pointer-events: none; }
 .glow__hero, .glow__low{ position: absolute; inset: 0; display: block; will-change: opacity; }
 .glow__hero{
   background: radial-gradient(min(750px, 75vw) min(600px, 60vw) at calc(100% + min(520px, 40vw) - min(750px, 75vw)) calc(min(600px, 60vw) - 34vh),
@@ -76,7 +76,7 @@ html:not(.motion-ok) .glow__low{ opacity: 0.5; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .skip-link{
-  position: fixed; left: 16px; top: 12px; z-index: 200;
+  position: fixed; left: 16px; top: 12px; z-index: calc(var(--z-nav) + 10);
   padding: 10px 16px; border-radius: var(--r-pill);
   background: var(--ink); color: var(--bg); text-decoration: none; font-weight: 600;
   transform: translateY(-160%);
@@ -364,7 +364,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .arc__status{ min-width: 220px; text-align: center; color: var(--ink-2); }
 
 /* ---------- Case studies ---------- */
-.case-index ol{ display: flex; flex-wrap: wrap; gap: 8px; }
+.case-index ol{ display: flex; flex-wrap: wrap; gap: 8px; } /* replaced below: Case studies motion */
 .case-index a{
   display: inline-flex; gap: 8px; align-items: baseline;
   padding: 10px 16px; border-radius: var(--r-pill); border: 1.5px solid var(--line-strong);
@@ -611,20 +611,6 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .footer__inner{ display: flex; flex-wrap: wrap; gap: 12px 32px; justify-content: space-between; color: var(--ink-2); }
 .footer__top{ text-decoration: none; color: var(--ink); }
 .footer p{ max-width: none; }
-
-/* ---------- Cursor (desktop, fine pointer) ---------- */
-.cursor{
-  position: fixed; left: 0; top: 0; z-index: var(--z-cursor);
-  width: 92px; height: 92px; margin: -46px 0 0 -46px;
-  display: grid; place-items: center;
-  border-radius: 50%; background: var(--accent); color: var(--on-accent);
-  pointer-events: none; opacity: 0;
-  transform: translate3d(-200px, -200px, 0) scale(0.3);
-  transition: opacity var(--t-2) var(--ease-out);
-}
-.cursor__label{ font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
-.cursor.is-on{ opacity: 1; }
-@media (hover: none), (pointer: coarse) { .cursor{ display: none; } }
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -1003,3 +989,409 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
    in practice). If the script fails, the page shows anyway after 1.2 s. */
 .lang-pending .nav, .lang-pending main{ visibility: hidden; animation: langFailsafe 0s linear 1.2s forwards; }
 @keyframes langFailsafe{ to{ visibility: visible; } }
+
+/* ==========================================================================
+   Living background (js/background.js)
+   A WebGL layer between the CSS glow (-3) and the page's vertical lines (body::before, -1).
+   It is drawn to look like .glow at the top of the page, fades in over it once ready, and only then
+   is the CSS glow hidden. Without WebGL / with reduced motion the canvas never exists.
+   ========================================================================== */
+.bg-gl{
+  position: fixed; inset: 0; z-index: -2;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s var(--ease-out);
+}
+.has-bg .bg-gl{ opacity: 1; }
+.has-bg .glow{ visibility: hidden; transition: visibility 0s linear 1s; }
+@media print { .bg-gl{ display: none; } }
+
+/* ==========================================================================
+   Cursor (js/cursor.js): dot + ring, fine pointer with hover only.
+   The system cursor is hidden only once the module has started (html.has-cursor).
+   Ring sizes come from one 56px circle scaled down (36px at rest), so every change is a transform.
+   ========================================================================== */
+.cursor, .cursor-dot{ display: none; }
+.has-cursor .cursor, .has-cursor .cursor-dot{
+  display: block; position: fixed; left: 0; top: 0; pointer-events: none;
+  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
+  transform: translate3d(-100px, -100px, 0);
+}
+.has-cursor .cursor{ z-index: var(--z-cursor); width: 0; height: 0; mix-blend-mode: difference; }
+.has-cursor .cursor-dot{
+  z-index: calc(var(--z-cursor) + 1);
+  width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
+  background: var(--ink); mix-blend-mode: difference;
+}
+.cursor.is-visible, .cursor-dot.is-visible{ opacity: 1; }
+.cursor-dot.is-link, .cursor-dot.is-big, .cursor-dot.is-drag, .cursor-dot.is-text, .cursor-dot.is-off{ opacity: 0; }
+.cursor.is-off{ opacity: 0; }
+/* Fill states read as colour, so they are not inverted */
+.cursor.is-link, .cursor.is-big{ mix-blend-mode: normal; }
+
+.cursor > *{ position: absolute; left: 0; top: 0; }
+.cursor__ring{
+  --rs: 0.643;
+  width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
+  border: 1.5px solid var(--ink); background: rgb(var(--glow-rgb) / 0);
+  transform: scale(calc(var(--rs) * var(--press, 1)));
+  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out),
+    background-color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.cursor.is-down{ --press: 0.78; }
+.cursor.is-link .cursor__ring{ --rs: 1; border-color: var(--accent); background: rgb(var(--glow-rgb) / 0.06); }
+.cursor.is-drag .cursor__ring{ --rs: 0.86; }
+.cursor.is-text .cursor__ring, .cursor.is-big .cursor__ring{ --rs: 0.3; opacity: 0; }
+
+.cursor__bar{
+  width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 1px; background: var(--ink);
+  opacity: 0; transform: scaleY(0.3);
+  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
+}
+.cursor.is-text .cursor__bar{ opacity: 1; transform: scaleY(var(--press, 1)); }
+
+.cursor__arrows{
+  width: 40px; height: 16px; max-width: none; margin: -8px 0 0 -20px;
+  fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
+  opacity: 0; transform: scale(0.6);
+  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
+}
+.cursor.is-drag .cursor__arrows{ opacity: 1; transform: scale(var(--press, 1)); }
+
+.cursor__big{
+  width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--on-accent);
+  opacity: 0; transform: scale(0.3);
+  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out);
+}
+.cursor.is-big .cursor__big{ opacity: 1; transform: scale(var(--press, 1)); }
+.cursor__label{ position: static; font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
+
+/* Hide the system cursor (it comes back over videos with controls and the loaded 3D model) */
+.has-cursor, .has-cursor *{ cursor: none !important; }
+.has-cursor video[controls], .has-cursor #model-embed.is-loaded, .has-cursor #model-embed.is-loaded *{ cursor: auto !important; }
+@media (hover: none), (pointer: coarse) { .cursor, .cursor-dot{ display: none !important; } }
+
+/* ==========================================================================
+   Case studies motion (js/cases-motion.js)
+   ========================================================================== */
+/* 1. Case index: a large list. Numbers come from a CSS counter (decoration, not read out). */
+.case-index ol{ display: block; counter-reset: ci; border-top: 1px solid var(--line); }
+.case-index li{ position: relative; counter-increment: ci; border-bottom: 1px solid var(--line); }
+.case-index li::after{
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--accent); transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--t-3) var(--ease-out);
+}
+.case-index a{
+  display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: baseline; gap: var(--s-4);
+  padding: clamp(0.7rem, 0.5rem + 0.8vw, 1.25rem) 0; border: 0; border-radius: 0;
+  font-family: var(--font-display); font-stretch: 125%; font-weight: 850;
+  font-size: clamp(1.35rem, 0.9rem + 2.4vw, 3.4rem); line-height: 1; letter-spacing: -0.02em; text-transform: uppercase;
+  text-decoration: none; color: var(--ink);
+  transition: color var(--t-2) var(--ease-out);
+}
+.case-index a::before{
+  content: counter(ci, decimal-leading-zero) / "";
+  font-family: var(--font-mono); font-stretch: 100%; font-weight: 400; font-size: var(--fs-mono);
+  letter-spacing: 0.06em; color: var(--accent-ink); transform: translateY(-0.2em);
+}
+.case-index a::after{
+  content: "" / ""; width: 0.55em; height: 0.55em; align-self: center;
+  border-top: 2px solid currentColor; border-right: 2px solid currentColor;
+  transform: rotate(45deg) scale(0.6); opacity: 0;
+  transition: transform var(--t-3) var(--ease-out), opacity var(--t-2) var(--ease-out);
+}
+.case-index a:hover, .case-index a:focus-visible{ background: none; color: var(--ink); border-color: transparent; }
+.case-index li:hover::after, .case-index li:focus-within::after{ transform: scaleX(1); }
+.case-index a:focus-visible::after{ opacity: 1; transform: rotate(45deg) scale(1); }
+/* The name moves right on hover; the number is moved back so it stays in place (transforms only). */
+@media (hover: hover) and (pointer: fine) {
+  .case-index a{ transition: color var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out); }
+  .case-index a::before{ transition: transform var(--t-3) var(--ease-out); }
+  .case-index a:hover{ transform: translateX(14px); }
+  .case-index a:hover::before{ transform: translate(-14px, -0.2em); }
+  .case-index a:hover::after{ opacity: 1; transform: translateX(-20px) rotate(45deg) scale(1); }
+}
+@media (max-width: 600px) {
+  .case-index a{ grid-template-columns: 2.2rem 1fr; }
+  .case-index a::after{ display: none; }
+}
+
+/* Floating cover next to the pointer (fine pointer only, built by JS) */
+.case-cover{
+  position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
+  width: clamp(180px, 15vw, 250px); aspect-ratio: 3 / 4; margin: calc(clamp(180px, 15vw, 250px) * -0.66) 0 0 28px;
+  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
+}
+.case-cover.is-on{ opacity: 1; }
+.case-cover__img{
+  position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-sm); box-shadow: var(--shadow-3);
+  opacity: 0; transform: scale(0.92);
+  transition: opacity var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out);
+}
+.case-cover__img.is-on{ opacity: 1; transform: none; }
+.case-cover__img img{ width: 100%; height: 100%; object-fit: cover; }
+.case-cover .type-cover__word{ font-size: 1.7rem; }
+
+/* 2. Titles split into letters (visual copy is aria-hidden, the sr-only copy is read) */
+.split__w{ display: inline-block; white-space: nowrap; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.split__c{ display: inline-block; }
+.case__title .mask{ overflow: visible; }
+
+/* 4. Gallery hover: the card lifts, the image zooms a little, the shadow grows */
+.gallery .shot__frame, .gallery .phone{ transition: transform var(--t-3) var(--ease-out), box-shadow var(--t-3) var(--ease-out); }
+.gallery .shot__frame img{ transition: transform var(--t-3) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .gallery .shot:hover .shot__frame, .gallery .shot:hover .phone{ transform: translateY(-6px); box-shadow: var(--shadow-3); }
+  .gallery .shot:hover .shot__frame img{ transform: scale(1.04); }
+}
+
+/* 5. KSK: the page around the dark case dims (opacity driven by scroll) */
+.case-dim{
+  /* reaches the page edges (the dark case sits inside a small side margin), never past them */
+  position: absolute; top: -60vh; bottom: -60vh; left: calc(clamp(6px, 1vw, 16px) * -1); right: calc(clamp(6px, 1vw, 16px) * -1);
+  z-index: -1; pointer-events: none;
+  background: rgb(0 0 0 / 0.38); opacity: 0;
+}
+/* Film strip as an endless tape (JS adds the track and the hidden copies) */
+.film-strip.is-marquee{ display: block; overflow: hidden; margin-inline: calc(var(--gutter) * -1); padding-block: 4px; }
+.film-strip__track{
+  display: flex; gap: 12px; width: max-content;
+  animation: filmTape 48s linear infinite; animation-play-state: paused;
+}
+.film-strip.is-running .film-strip__track{ animation-play-state: running; }
+.film-strip.is-marquee:hover .film-strip__track, .film-strip.is-marquee:focus-within .film-strip__track{ animation-play-state: paused; }
+.film-strip__track picture{ flex: none; width: clamp(220px, 22vw, 340px); }
+.film-strip__track img{ width: 100%; height: auto; border-radius: 10px; }
+@keyframes filmTape{ to{ transform: translateX(calc(-50% - 6px)); } }
+@media (prefers-reduced-motion: reduce) { .film-strip__track{ animation: none; } }
+
+/* 6. Purchase path: rail drawn with the scroll, steps light up */
+.flow.is-drawn .flow__steps{ position: relative; }
+.flow.is-drawn .flow__step::before, .flow.is-drawn .flow__step::after{ display: none; }
+.flow__rail{ position: absolute; z-index: 1; background: var(--line-strong); pointer-events: none; }
+.flow__fill{ position: absolute; inset: 0; background: var(--accent); transform-origin: 0 0; }
+.flow__rail:not(.is-vertical) .flow__fill{ transform: scaleX(0); }
+.flow__rail.is-vertical .flow__fill{ transform: scaleY(0); }
+.flow.is-drawn .flow__n{ position: relative; z-index: 2; transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), box-shadow var(--t-2) var(--ease-out); }
+.flow.is-drawn .flow__step{ transition: border-color var(--t-2) var(--ease-out); }
+.flow__step.is-lit .flow__n{ background: var(--accent); color: var(--on-accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.22); }
+.flow__step.is-lit{ border-color: var(--accent-ink); }
+@media (max-width: 700px) { .case-dim{ left: 0; right: 0; } }
+
+/* ==========================================================================
+   Work-area map (js/chart.js): a real table with dots, no numbers.
+   ========================================================================== */
+.matrix{ margin-top: clamp(2.5rem, 2rem + 2.5vw, 4.5rem); }
+.matrix__table{ width: 100%; table-layout: fixed; }
+.matrix__title{
+  caption-side: top; text-align: left; padding-bottom: var(--s-4);
+  font-family: var(--font-display); font-stretch: 104%; font-weight: 780; font-size: 1.15rem; letter-spacing: -0.005em;
+}
+.matrix__corner{ width: 34%; }
+.matrix th, .matrix td{ padding: 14px 6px; border-bottom: 1px solid var(--line); transition: opacity var(--t-2) var(--ease-out); }
+.matrix thead th{
+  font-family: var(--font-mono); font-size: var(--fs-mono); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--ink-2); text-align: center; vertical-align: bottom; border-bottom: 1.5px solid var(--ink);
+}
+.matrix thead td{ border-bottom: 1.5px solid var(--ink); }
+.matrix tbody th{ text-align: left; font-weight: 600; font-size: 1rem; line-height: 1.3; padding-left: 0; }
+.matrix tbody th a{ text-decoration: none; background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0% 1.5px no-repeat; transition: background-size var(--t-3) var(--ease-out); }
+.matrix tbody th a:hover, .matrix tbody th a:focus-visible{ background-size: 100% 1.5px; }
+.matrix td{ text-align: center; }
+.matrix__dot{
+  display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle;
+  border: 1.5px solid var(--line-strong);
+}
+.matrix td.is-yes .matrix__dot{ border: 0; background: var(--accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.16); }
+/* Hover a row or a column: it stays, everything else dims */
+.matrix__table[data-row] tbody tr > *{ opacity: 0.5; }
+.matrix__table[data-row="1"] tbody tr[data-r="1"] > *, .matrix__table[data-row="2"] tbody tr[data-r="2"] > *,
+.matrix__table[data-row="3"] tbody tr[data-r="3"] > *, .matrix__table[data-row="4"] tbody tr[data-r="4"] > *,
+.matrix__table[data-row="5"] tbody tr[data-r="5"] > *{ opacity: 1; }
+.matrix__table[data-col] [data-col]{ opacity: 0.5; }
+.matrix__table[data-col="1"] [data-col="1"], .matrix__table[data-col="2"] [data-col="2"], .matrix__table[data-col="3"] [data-col="3"],
+.matrix__table[data-col="4"] [data-col="4"], .matrix__table[data-col="5"] [data-col="5"], .matrix__table[data-col="6"] [data-col="6"]{ opacity: 1; }
+.matrix__table[data-col] tbody th{ opacity: 0.6; }
+/* Phones: the whole table fits, column labels turn upright */
+@media (max-width: 640px) {
+  .matrix__corner{ width: 40%; }
+  .matrix th, .matrix td{ padding: 12px 2px; }
+  .matrix thead th{ height: 104px; padding-bottom: 10px; }
+  .matrix thead th span{ display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; white-space: nowrap; }
+  .matrix tbody th{ font-size: 0.92rem; padding-right: 8px; }
+  .matrix__dot{ width: 12px; height: 12px; }
+}
+
+/* ==========================================================================
+   Footer (js/footer.js): curtain, wordmark, back-to-top ring
+   ========================================================================== */
+/* Curtain: only with html.has-curtain (JS, no reduced motion, contact fits the screen). The CV gets
+   its own background (with the page's vertical lines, which run on unbroken) and covers the
+   contact section, which sticks to the bottom underneath it. */
+.has-curtain .cv{
+  position: relative; z-index: 2;
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    radial-gradient(70% 60% at 100% 0%, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
+    var(--bg);
+  border-radius: 0 0 clamp(24px, 4vw, 56px) clamp(24px, 4vw, 56px);
+  box-shadow: 0 1px 0 var(--line), 0 40px 80px rgb(0 0 0 / 0.55);
+}
+.has-curtain .contact{ position: sticky; bottom: 0; z-index: 1; }
+
+.contact{ display: flex; flex-direction: column; padding-top: clamp(3rem, 2rem + 3vw, 5rem); }
+.contact .sec-head{ margin-bottom: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
+.footer{ margin-top: var(--s-6); padding-block: 0 16px; border-top: 0; }
+
+/* Wordmark: as wide as the screen; JS sets the exact font size, CSS gives a close fallback. */
+.wordmark{
+  position: relative; display: block; width: 100%; overflow: hidden;
+  padding-inline: clamp(8px, 1.4vw, 20px);
+  font-family: var(--font-display); font-stretch: 125%; font-weight: 900;
+  font-size: 18.6vw; line-height: 0.8; letter-spacing: -0.02em; text-transform: uppercase;
+  white-space: nowrap; user-select: none;
+}
+.wordmark__line{ display: inline-block; padding-top: 0.06em; }
+.wordmark__line > span{ display: inline-block; }
+.wordmark__line--stroke{ color: transparent; -webkit-text-stroke: 1.5px rgb(var(--ink-rgb) / 0.55); }
+.wordmark__line--fill{ position: absolute; left: clamp(8px, 1.4vw, 20px); top: 0; color: var(--accent); }
+/* Without JS / reduced motion the fill is simply there; JS clips it until the end of the page. */
+.footer__inner{ position: relative; z-index: 1; margin-top: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); align-items: center; }
+
+/* Back to top: a round button, the ring shows the scroll progress */
+.footer__top-wrap{ position: relative; display: inline-grid; place-items: center; width: 96px; height: 96px; flex: none; }
+.footer__top{
+  display: grid; place-items: center; width: 100%; height: 100%; padding: 18px;
+  border-radius: 50%; text-align: center; line-height: 1.35;
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), transform var(--t-2) var(--ease-out);
+}
+.footer__top:hover, .footer__top:focus-visible{ background: var(--ink); color: var(--bg); }
+.footer__top:active{ transform: scale(0.95); }
+.footer__top:focus-visible{ outline-offset: 4px; border-radius: 50%; }
+.top-ring{ position: absolute; inset: 0; pointer-events: none; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.top-ring i{ position: absolute; inset: 0; display: block; border-radius: 50%; }
+.top-ring__half--r{ clip-path: inset(0 0 0 50%); }
+.top-ring__half--l{ clip-path: inset(0 50% 0 0); }
+.top-ring__arc{ border: 2px solid var(--accent); }
+.top-ring__half--r .top-ring__arc{ clip-path: inset(0 50% 0 0); }
+.top-ring__half--l .top-ring__arc{ clip-path: inset(0 0 0 50%); }
+/* No JS: a full ring */
+.no-js .top-ring__arc{ clip-path: none; }
+
+/* E-mail and phone lean towards the pointer: `translate`, smoothed back on leave */
+.contact__mail{ transition: background-size var(--t-3) var(--ease-out), translate 0.5s var(--ease-out); }
+@media (max-width: 600px) {
+  .footer__top-wrap{ width: 88px; height: 88px; }
+  .footer__top{ padding: 12px; font-size: 0.66rem; }
+}
+
+/* ==========================================================================
+   Ambient film shots (js/ambient.js): behind case headers and the footer wordmark
+   The video is decoration under a --bg gradient (strong at the edges, weaker in the middle), so the
+   text keeps its contrast. Content sits above it (positioned later in the DOM).
+   ========================================================================== */
+.case > .container{ position: relative; }
+.ambient{
+  position: absolute; left: 0; right: 0; top: 0; height: clamp(460px, 82vh, 800px);
+  overflow: hidden; pointer-events: none; border-radius: inherit;
+  /* soft edges top and bottom, so no band shows against the living background */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 58%, transparent 100%);
+}
+.ambient__video{
+  position: absolute; inset: -8% 0; width: 100%; height: 116%; max-width: none;
+  object-fit: cover; opacity: 0.8;
+}
+/* --bg gradient: strong on the left where the text runs, weaker in the middle */
+.ambient::after{
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to right, rgb(var(--bg-rgb) / 0.82) 0%, rgb(var(--bg-rgb) / 0.66) 40%, rgb(var(--bg-rgb) / 0.12) 64%, rgb(var(--bg-rgb) / 0) 100%);
+}
+.case--dark .ambient{ border-radius: clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) 0 0; }
+.ambient--footer{ top: auto; bottom: 0; height: 100%; border-radius: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 100%); }
+.footer{ position: relative; }
+.ambient--footer .ambient__video{ opacity: 0.62; }
+.ambient--footer::after{
+  background:
+    linear-gradient(to bottom, rgb(var(--bg-rgb)) 0%, rgb(var(--bg-rgb) / 0.2) 35%, rgb(var(--bg-rgb) / 0.35) 75%, rgb(var(--bg-rgb) / 0.9) 100%);
+}
+.footer .wordmark, .footer .footer__inner{ position: relative; }
+/* Phones: the film is a band above the case title (the title starts at its dark lower edge),
+   so it can be seen clearly without sitting under the text. The footer film keeps its own rules. */
+@media (max-width: 700px) {
+  .ambient:not(.ambient--footer){
+    height: 50svh;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  }
+  .ambient:not(.ambient--footer) .ambient__video{ opacity: 0.9; }
+  .ambient:not(.ambient--footer)::after{ background: linear-gradient(to bottom, rgb(var(--bg-rgb) / 0.1) 0%, rgb(var(--bg-rgb) / 0.2) 45%, rgb(var(--bg-rgb) / 0.9) 82%, rgb(var(--bg-rgb)) 100%); }
+  .case:has(> .ambient) > .container{ padding-top: 30svh; }
+  .ambient--footer .ambient__video{ opacity: 0.55; }
+}
+@media print { .ambient{ display: none; } }
+/* The two tilted phones (training plans) must never widen the page */
+#smaller-projects{ overflow-x: clip; }
+
+/* ---------- Review round 1 ---------- */
+/* CV over the curtain: a soft top edge instead of a hard line, and the dot grid of the living
+   background drawn into its own surface so the background never just stops. */
+.has-curtain .cv{
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    radial-gradient(circle, rgb(var(--ink-rgb) / 0.06) 1.1px, transparent 1.7px) 50% 0 / 30px 30px,
+    radial-gradient(70% 60% at 100% 220px, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
+    var(--bg);
+}
+.has-curtain .cv::before{
+  content: ""; position: absolute; left: 0; right: 0; top: -140px; height: 140px; pointer-events: none;
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    var(--bg);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000);
+  mask-image: linear-gradient(to bottom, transparent, #000);
+}
+/* KSK card: less empty space under the film frames */
+.case--dark > .container > .sub:last-child{ margin-bottom: 0; }
+.case--dark{ padding-bottom: clamp(3rem, 2rem + 3vw, 5rem); }
+/* Pause / play motion (js/pause.js) */
+.motion-toggle{
+  margin-left: auto; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill);
+  border: 1.5px solid var(--line-strong); background: transparent; color: var(--ink);
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.motion-toggle:hover, .motion-toggle:focus-visible{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.motion-toggle[hidden]{ display: none; }
+.motion-paused .film-strip__track{ animation-play-state: paused !important; }
+/* Phones: the film band is narrow, so each shot is framed on its subject */
+@media (max-width: 700px) {
+  #basko-clean .ambient__video{ object-position: 96% 30%; }
+  #ksk-pretor .ambient__video{ object-position: 32% 72%; }
+  #livingroom .ambient__video{ object-position: 18% 50%; }
+  #psychologist-site .ambient__video{ object-position: 6% 50%; }
+  #smaller-projects .ambient__video{ object-position: 62% 50%; }
+}
+
+/* ---------- Review round 2 ---------- */
+/* The CV's soft top edge must never lie over the last lines of About */
+.has-curtain .about{ padding-bottom: max(var(--section-pad), 150px); }
+/* Pause motion, reachable at once from the keyboard: appears on focus, like the skip link */
+.motion-skip{
+  position: fixed; left: 16px; top: 64px; z-index: calc(var(--z-nav) + 10);
+  padding: 10px 16px; border-radius: var(--r-pill); border: 0;
+  background: var(--ink); color: var(--bg); font-weight: 600;
+  transform: translateY(-260%);
+  transition: transform var(--t-2) var(--ease-out);
+}
+.motion-skip:focus{ transform: translateY(0); }
+.motion-skip[hidden]{ display: none; }
+/* Phones: the KSK shot is mostly mist, so its band is lower */
+@media (max-width: 700px) {
+  #ksk-pretor > .ambient{ height: 34svh; }
+  #ksk-pretor > .container{ padding-top: 16svh; }
+}
