@@ -729,6 +729,9 @@
       </div>
     </section>
 
+    <!-- CV and contact share one wrapper: the contact (with the footer) lies under the CV and is
+         uncovered like a curtain at the end of the page (js/footer.js, only when it fits the screen). -->
+    <div class="curtain" id="curtain">
     <!-- ============ 05 CV ============ -->
     <section class="section cv" id="cv" aria-labelledby="cv-title">
       <div class="container">
@@ -792,12 +795,20 @@
         </div>
       </div>
       <footer class="footer">
+        <div class="wordmark" aria-hidden="true">
+          <span class="wordmark__line wordmark__line--stroke"><span>H</span><span>U</span><span>B</span><span>E</span><span>R</span><span>T</span></span>
+          <span class="wordmark__line wordmark__line--fill"><span>H</span><span>U</span><span>B</span><span>E</span><span>R</span><span>T</span></span>
+        </div>
         <div class="container footer__inner">
           <p class="mono footer__brand"><svg class="footer__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#0d0d0d"/><path d="M23 12h6v40h-6z" fill="#ff4f12"/><path d="M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z" fill="#ecece9"/></svg><span>Hubert · Portfolio 2026</span></p>
-                    <a class="mono footer__top" href="#home" data-i18n="contact.13">Back to top ↑</a>
+          <span class="footer__top-wrap">
+            <a class="mono footer__top" href="#home" data-i18n="contact.13">Back to top ↑</a>
+            <span class="top-ring" aria-hidden="true"><i class="top-ring__half top-ring__half--r"><i class="top-ring__arc"></i></i><i class="top-ring__half top-ring__half--l"><i class="top-ring__arc"></i></i></span>
+          </span>
         </div>
       </footer>
     </section>
+    </div>
   </main>
 
   <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label">Open</span></div>

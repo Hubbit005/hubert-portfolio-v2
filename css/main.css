@@ -1225,3 +1225,66 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .matrix tbody th{ font-size: 0.92rem; padding-right: 8px; }
   .matrix__dot{ width: 12px; height: 12px; }
 }
+
+/* ==========================================================================
+   Footer (js/footer.js): curtain, wordmark, back-to-top ring
+   ========================================================================== */
+/* Curtain: only with html.has-curtain (JS, no reduced motion, contact fits the screen). The CV gets
+   its own background (with the page's vertical lines, which run on unbroken) and covers the
+   contact section, which sticks to the bottom underneath it. */
+.has-curtain .cv{
+  position: relative; z-index: 2;
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    radial-gradient(70% 60% at 100% 0%, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
+    var(--bg);
+  border-radius: 0 0 clamp(24px, 4vw, 56px) clamp(24px, 4vw, 56px);
+  box-shadow: 0 1px 0 var(--line), 0 40px 80px rgb(0 0 0 / 0.55);
+}
+.has-curtain .contact{ position: sticky; bottom: 0; z-index: 1; }
+
+.contact{ display: flex; flex-direction: column; padding-top: clamp(3rem, 2rem + 3vw, 5rem); }
+.contact .sec-head{ margin-bottom: clamp(1.5rem, 1rem + 1.5vw, 2.5rem); }
+.footer{ margin-top: var(--s-6); padding-block: 0 16px; border-top: 0; }
+
+/* Wordmark: as wide as the screen; JS sets the exact font size, CSS gives a close fallback. */
+.wordmark{
+  position: relative; display: block; width: 100%; overflow: hidden;
+  padding-inline: clamp(8px, 1.4vw, 20px);
+  font-family: var(--font-display); font-stretch: 125%; font-weight: 900;
+  font-size: 18.6vw; line-height: 0.8; letter-spacing: -0.02em; text-transform: uppercase;
+  white-space: nowrap; user-select: none;
+}
+.wordmark__line{ display: inline-block; padding-top: 0.06em; }
+.wordmark__line > span{ display: inline-block; }
+.wordmark__line--stroke{ color: transparent; -webkit-text-stroke: 1.5px rgb(var(--ink-rgb) / 0.55); }
+.wordmark__line--fill{ position: absolute; left: clamp(8px, 1.4vw, 20px); top: 0; color: var(--accent); }
+/* Without JS / reduced motion the fill is simply there; JS clips it until the end of the page. */
+.footer__inner{ position: relative; z-index: 1; margin-top: var(--s-3); padding-top: var(--s-3); border-top: 1px solid var(--line); align-items: center; }
+
+/* Back to top: a round button, the ring shows the scroll progress */
+.footer__top-wrap{ position: relative; display: inline-grid; place-items: center; width: 96px; height: 96px; flex: none; }
+.footer__top{
+  display: grid; place-items: center; width: 100%; height: 100%; padding: 18px;
+  border-radius: 50%; text-align: center; line-height: 1.35;
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), transform var(--t-2) var(--ease-out);
+}
+.footer__top:hover, .footer__top:focus-visible{ background: var(--ink); color: var(--bg); }
+.footer__top:active{ transform: scale(0.95); }
+.footer__top:focus-visible{ outline-offset: 4px; border-radius: 50%; }
+.top-ring{ position: absolute; inset: 0; pointer-events: none; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.top-ring i{ position: absolute; inset: 0; display: block; border-radius: 50%; }
+.top-ring__half--r{ clip-path: inset(0 0 0 50%); }
+.top-ring__half--l{ clip-path: inset(0 50% 0 0); }
+.top-ring__arc{ border: 2px solid var(--accent); }
+.top-ring__half--r .top-ring__arc{ clip-path: inset(0 50% 0 0); }
+.top-ring__half--l .top-ring__arc{ clip-path: inset(0 0 0 50%); }
+/* No JS: a full ring */
+.no-js .top-ring__arc{ clip-path: none; }
+
+/* E-mail and phone lean towards the pointer: `translate`, smoothed back on leave */
+.contact__mail{ transition: background-size var(--t-3) var(--ease-out), translate 0.5s var(--ease-out); }
+@media (max-width: 600px) {
+  .footer__top-wrap{ width: 88px; height: 88px; }
+  .footer__top{ padding: 12px; font-size: 0.66rem; }
+}

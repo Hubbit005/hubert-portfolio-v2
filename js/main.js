@@ -7,6 +7,7 @@ import { initBackground } from './background.js';
 import { initCursor } from './cursor.js';
 import { initCasesMotion } from './cases-motion.js';
 import { initChart } from './chart.js';
+import { initFooter } from './footer.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -53,7 +54,10 @@ function navOffset() { return (document.getElementById('nav')?.offsetHeight || 6
 function scrollToTarget(el, immediate = false) {
   if (!el) return;
   // Absolute target; Lenis would otherwise add CSS scroll-padding and scroll-margin on top of the offset.
-  const y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navOffset());
+  let y = Math.max(0, el.getBoundingClientRect().top + window.scrollY - navOffset());
+  // The contact section is sticky under the CV (curtain, js/footer.js): its box is not where it ends
+  // up, and it is the end of the page, so its place is the bottom of the page.
+  if (getComputedStyle(el).position === 'sticky') y = document.documentElement.scrollHeight - window.innerHeight;
   if (lenis) lenis.scrollTo(y, { immediate, duration: 1.2 });
   else window.scrollTo({ top: y, behavior: immediate || reduced ? 'auto' : 'smooth' });
 }
@@ -213,6 +217,7 @@ async function boot() {
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
   initCasesMotion({ reduced, gsap, ScrollTrigger });
   initChart({ reduced, gsap, ScrollTrigger });
+  initFooter({ reduced, gsap });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });
   initMagnetic();
