@@ -1465,3 +1465,100 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .letters-reset[hidden]{ display: none; }
 .letters-reset:not([hidden]) + .motion-toggle{ margin-left: 0; }
 .letters-reset:not([hidden]){ margin-left: auto; }
+
+/* ==========================================================================
+   Training plan demo (js/plan-demo.js): a working mini phone in the client template's look
+   (colours: --demo-* in tokens.css). Sample data, labelled as such.
+   ========================================================================== */
+.pd{ max-width: 360px; }
+.case__split-text > .pd{ margin-top: var(--s-7); }
+.pd__label{ display: inline-block; margin: 0 0 var(--s-3); padding: 4px 10px; border-radius: var(--r-pill); border: 1px solid var(--line-strong); color: var(--ink-2); }
+.pd__phone{
+  position: relative; padding: 10px; border-radius: 40px; background: #0d0d0d;
+  box-shadow: var(--shadow-3), inset 0 0 0 1.5px rgb(255 255 255 / 0.12);
+}
+.pd__phone::before{ content: ""; position: absolute; top: 18px; left: 50%; width: 76px; height: 20px; margin-left: -38px; border-radius: 12px; background: #000; z-index: 2; pointer-events: none; }
+.pd__screen{
+  position: relative; height: 640px; overflow: hidden; border-radius: 31px;
+  background: var(--demo-bg); color: var(--demo-ink); font-family: var(--font-body); font-size: 0.875rem; line-height: 1.4;
+}
+.pd__view{ position: absolute; inset: 0; padding: 46px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.pd button{ font: inherit; color: inherit; }
+.pd :focus-visible{ outline: 3px solid var(--demo-green); outline-offset: 2px; }
+.pd__kicker{ margin: 0; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--demo-green); }
+.pd__title{ margin: 2px 0 0; font-size: 1.7rem; font-weight: 750; line-height: 1.1; letter-spacing: -0.01em; }
+.pd__title:focus, .pd__h:focus{ outline: none; }
+.pd__muted{ margin: 0; color: var(--demo-ink-2); font-size: 0.8rem; }
+.pd__strong{ margin: 0 0 2px; font-weight: 700; }
+.pd__stats{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pd__stat, .pd__card{ background: var(--demo-card); border: 1px solid var(--demo-line); border-radius: 16px; }
+.pd__stat{ display: grid; gap: 2px; padding: 10px 12px; }
+.pd__stat-k{ font-size: 0.64rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--demo-ink-2); }
+.pd__card{ padding: 12px; }
+.pd__progress{ display: grid; grid-template-columns: 84px 1fr; gap: 12px; align-items: center; }
+.pd__bars{ display: grid; gap: 4px; }
+.pd__bar-row{ display: flex; justify-content: space-between; gap: 8px; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--demo-ink-2); }
+.pd__bar-row b{ color: var(--demo-ink); letter-spacing: 0; }
+.pd__bar{ height: 6px; border-radius: 3px; background: var(--demo-green-soft); overflow: hidden; margin-bottom: 4px; }
+.pd__bar i{ display: block; height: 100%; background: var(--demo-green); transform-origin: 0 50%; transition: transform var(--t-3) var(--ease-out); }
+/* Ring: two rotating half arcs (transforms only), like the footer's back-to-top ring */
+.pd-ring{ position: relative; width: 84px; height: 84px; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 7px var(--demo-green-soft); }
+.pd-ring i{ position: absolute; inset: 0; display: block; border-radius: 50%; }
+.pd-ring__half--r{ clip-path: inset(0 0 0 50%); }
+.pd-ring__half--l{ clip-path: inset(0 50% 0 0); }
+.pd-ring__arc{ border: 7px solid var(--demo-green); transition: transform var(--t-3) var(--ease-out); }
+.pd-ring__half--r .pd-ring__arc{ clip-path: inset(0 50% 0 0); }
+.pd-ring__half--l .pd-ring__arc{ clip-path: inset(0 0 0 50%); }
+.pd-ring__val{ position: absolute; inset: 0; display: grid; place-content: center; text-align: center; line-height: 1.1; }
+.pd-ring__val b{ font-size: 1.15rem; }
+.pd-ring__val small{ font-size: 0.56rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--demo-ink-2); }
+.pd__days{ display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pd__day{
+  position: relative; display: grid; justify-items: start; gap: 3px; width: 100%; min-height: 44px; padding: 10px 12px;
+  border: 1px solid var(--demo-line); border-radius: 16px; background: var(--demo-card); text-align: left; cursor: pointer;
+  transition: border-color var(--t-2) var(--ease-out), transform var(--t-2) var(--ease-out);
+}
+.pd__day:hover{ border-color: var(--demo-green); }
+.pd__day:active{ transform: scale(0.98); }
+.pd__day.is-done{ border-color: var(--demo-green); }
+.pd__day-title{ font-weight: 700; font-size: 0.95rem; }
+.pd__tag{ display: inline-block; padding: 2px 8px; border-radius: 6px; background: var(--demo-green-soft); color: var(--demo-green); font-size: 0.64rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; vertical-align: middle; }
+.pd__check{ position: absolute; right: 12px; top: 50%; width: 26px; height: 26px; margin-top: -13px; border-radius: 50%; background: var(--demo-green); }
+.pd__check::after{ content: ""; position: absolute; left: 9px; top: 5px; width: 6px; height: 11px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.pd__head{ display: flex; align-items: center; gap: 10px; }
+.pd__h{ margin: 0; font-size: 1rem; font-weight: 750; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.pd__back{
+  flex: none; min-height: 44px; min-width: 44px; padding: 0 12px; border-radius: var(--r-pill);
+  border: 1px solid var(--demo-line); background: var(--demo-card); font-weight: 600; cursor: pointer;
+}
+.pd__back::before{ content: "‹ "; }
+.pd__back:hover{ border-color: var(--demo-green); }
+.pd__month{ display: flex; align-items: center; justify-content: space-between; margin: 10px 0 4px; font-size: 1rem; }
+.pd__month b::first-letter{ text-transform: uppercase; }
+.pd__arrow{ width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; font-size: 1.4rem; line-height: 1; cursor: pointer; }
+.pd__arrow:hover{ background: var(--demo-green-soft); }
+.pd__grid{ display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.pd__wd{ font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--demo-ink-2); padding: 4px 0; }
+.pd__cell{ height: 40px; border: 1.5px solid transparent; border-radius: 10px; background: none; font-weight: 600; cursor: pointer; }
+.pd__cell.is-off{ cursor: default; }
+.pd__cell:not(.is-off):hover{ border-color: var(--demo-line); }
+.pd__cell.is-sel{ background: var(--demo-green); color: #fff; }
+.pd__date{ margin-top: -4px; }
+.pd__date::first-letter{ text-transform: uppercase; }
+.pd__ex{ margin: 8px 0 0; padding: 0; list-style: none; display: grid; }
+.pd__exrow{ position: relative; display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: center; min-height: 52px; padding: 4px 0; border-top: 1px solid var(--demo-line); cursor: pointer; }
+.pd__exrow input{ position: absolute; opacity: 0; width: 26px; height: 26px; margin: 0; cursor: pointer; }
+.pd__box{ width: 26px; height: 26px; border-radius: 8px; border: 2px solid var(--demo-line); background: var(--demo-card); position: relative; transition: background-color var(--t-1) var(--ease-out), border-color var(--t-1) var(--ease-out); }
+.pd__exrow input:checked + .pd__box{ background: var(--demo-green); border-color: var(--demo-green); }
+.pd__exrow input:checked + .pd__box::after{ content: ""; position: absolute; left: 7px; top: 2px; width: 6px; height: 12px; border: solid #fff; border-width: 0 2.5px 2.5px 0; transform: rotate(45deg); }
+.pd__exrow input:focus-visible + .pd__box{ outline: 3px solid var(--demo-green); outline-offset: 2px; }
+.pd__exname{ font-weight: 600; }
+.pd__exrow input:checked ~ .pd__exname{ color: var(--demo-ink-2); text-decoration: line-through; }
+.pd__sets{ font-size: 0.78rem; color: var(--demo-ink-2); font-variant-numeric: tabular-nums; }
+.pd__finish{ margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--demo-green-soft); color: var(--demo-green); font-weight: 700; }
+.pd__finish[hidden]{ display: none; }
+.pd__primary{ margin-top: auto; min-height: 48px; border: 0; border-radius: var(--r-pill); background: var(--demo-green); color: #fff !important; font-weight: 700; cursor: pointer; }
+@media (max-width: 600px) {
+  .pd{ max-width: none; }
+  .pd__screen{ height: 620px; }
+}
