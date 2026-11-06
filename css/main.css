@@ -1370,7 +1370,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .motion-paused .film-strip__track{ animation-play-state: paused !important; }
 /* Phones: the film band is narrow, so each shot is framed on its subject */
 @media (max-width: 700px) {
-  #basko-clean .ambient__video{ object-position: 88% 35%; }
+  #basko-clean .ambient__video{ object-position: 96% 30%; }
   #ksk-pretor .ambient__video{ object-position: 32% 72%; }
   #livingroom .ambient__video{ object-position: 18% 50%; }
   #psychologist-site .ambient__video{ object-position: 6% 50%; }
@@ -1379,7 +1379,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 
 /* ---------- Review round 2 ---------- */
 /* The CV's soft top edge must never lie over the last lines of About */
-.has-curtain .about{ padding-bottom: calc(var(--section-pad) + 90px); }
+.has-curtain .about{ padding-bottom: max(var(--section-pad), 150px); }
 /* Pause motion, reachable at once from the keyboard: appears on focus, like the skip link */
 .motion-skip{
   position: fixed; left: 16px; top: 64px; z-index: calc(var(--z-nav) + 10);
@@ -1390,3 +1390,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .motion-skip:focus{ transform: translateY(0); }
 .motion-skip[hidden]{ display: none; }
+/* Phones: the KSK shot is mostly mist, so its band is lower */
+@media (max-width: 700px) {
+  #ksk-pretor > .ambient{ height: 34svh; }
+  #ksk-pretor > .container{ padding-top: 16svh; }
+}
