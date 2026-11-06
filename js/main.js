@@ -4,6 +4,7 @@ import { initArc } from './carousel.js';
 import { initMotion } from './motion.js';
 import { initRoulette } from './roulette.js';
 import { initBackground } from './background.js';
+import { initCursor } from './cursor.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -174,33 +175,6 @@ document.getElementById('model-load')?.addEventListener('click', () => {
   iframe.addEventListener('load', () => iframe.focus());
 });
 
-/* ---------- Custom cursor on covers (fine pointers only) ---------- */
-function initCursor() {
-  if (reduced || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
-  const cursor = document.getElementById('cursor');
-  if (!cursor) return;
-  const label = cursor.querySelector('.cursor__label');
-  let x = -200, y = -200, tx = -200, ty = -200, s = 0.3, ts = 0.3, raf = 0, on = false;
-  const loop = () => {
-    x += (tx - x) * 0.2; y += (ty - y) * 0.2; s += (ts - s) * 0.18;
-    cursor.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) scale(${s.toFixed(3)})`;
-    if (Math.abs(tx - x) > 0.1 || Math.abs(ts - s) > 0.001) raf = requestAnimationFrame(loop); else raf = 0;
-  };
-  const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
-  document.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    tx = e.clientX; ty = e.clientY;
-    const t = e.target.closest('[data-cursor]');
-    const dragging = document.getElementById('arc-viewport')?.classList.contains('is-dragging');
-    if (t && !dragging) {
-      if (!on) { on = true; cursor.classList.add('is-on'); }
-      label.textContent = t.dataset.cursor;
-      ts = 1;
-    } else if (on) { on = false; cursor.classList.remove('is-on'); ts = 0.3; }
-    kick();
-  }, { passive: true });
-}
-
 /* ---------- Magnetic buttons ---------- */
 function initMagnetic() {
   if (reduced || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -236,7 +210,7 @@ async function boot() {
   initArc({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
-  initCursor();
+  initCursor({ reduced, gsap });
   initMagnetic();
 
   measurePage();
