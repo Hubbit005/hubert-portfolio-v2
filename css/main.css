@@ -76,7 +76,7 @@ html:not(.motion-ok) .glow__low{ opacity: 0.5; }
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
 .skip-link{
-  position: fixed; left: 16px; top: 12px; z-index: 200;
+  position: fixed; left: 16px; top: 12px; z-index: calc(var(--z-nav) + 10);
   padding: 10px 16px; border-radius: var(--r-pill);
   background: var(--ink); color: var(--bg); text-decoration: none; font-weight: 600;
   transform: translateY(-160%);
@@ -1040,7 +1040,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
     background-color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
 }
 .cursor.is-down{ --press: 0.78; }
-.cursor.is-link .cursor__ring{ --rs: 1; border-color: var(--accent); background: rgb(var(--glow-rgb) / 0.28); }
+.cursor.is-link .cursor__ring{ --rs: 1; border-color: var(--accent); background: rgb(var(--glow-rgb) / 0.06); }
 .cursor.is-drag .cursor__ring{ --rs: 0.86; }
 .cursor.is-text .cursor__ring, .cursor.is-big .cursor__ring{ --rs: 0.3; opacity: 0; }
 
@@ -1113,7 +1113,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .case-index a::before{ transition: transform var(--t-3) var(--ease-out); }
   .case-index a:hover{ transform: translateX(14px); }
   .case-index a:hover::before{ transform: translate(-14px, -0.2em); }
-  .case-index a:hover::after{ opacity: 1; transform: rotate(45deg) scale(1); }
+  .case-index a:hover::after{ opacity: 1; transform: translateX(-14px) rotate(45deg) scale(1); }
 }
 @media (max-width: 600px) {
   .case-index a{ grid-template-columns: 2.2rem 1fr; }
@@ -1208,11 +1208,11 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .matrix td.is-yes .matrix__dot{ border: 0; background: var(--accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.16); }
 /* Hover a row or a column: it stays, everything else dims */
-.matrix__table[data-row] tbody tr > *{ opacity: 0.32; }
+.matrix__table[data-row] tbody tr > *{ opacity: 0.5; }
 .matrix__table[data-row="1"] tbody tr[data-r="1"] > *, .matrix__table[data-row="2"] tbody tr[data-r="2"] > *,
 .matrix__table[data-row="3"] tbody tr[data-r="3"] > *, .matrix__table[data-row="4"] tbody tr[data-r="4"] > *,
 .matrix__table[data-row="5"] tbody tr[data-r="5"] > *{ opacity: 1; }
-.matrix__table[data-col] [data-col]{ opacity: 0.32; }
+.matrix__table[data-col] [data-col]{ opacity: 0.5; }
 .matrix__table[data-col="1"] [data-col="1"], .matrix__table[data-col="2"] [data-col="2"], .matrix__table[data-col="3"] [data-col="3"],
 .matrix__table[data-col="4"] [data-col="4"], .matrix__table[data-col="5"] [data-col="5"], .matrix__table[data-col="6"] [data-col="6"]{ opacity: 1; }
 .matrix__table[data-col] tbody th{ opacity: 0.6; }
@@ -1304,12 +1304,12 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .ambient__video{
   position: absolute; inset: -8% 0; width: 100%; height: 116%; max-width: none;
-  object-fit: cover; opacity: 0.6;
+  object-fit: cover; opacity: 0.8;
 }
 /* --bg gradient: strong on the left where the text runs, weaker in the middle */
 .ambient::after{
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(to right, rgb(var(--bg-rgb) / 0.78) 0%, rgb(var(--bg-rgb) / 0.55) 38%, rgb(var(--bg-rgb) / 0.12) 70%, rgb(var(--bg-rgb) / 0.35) 100%);
+  background: linear-gradient(to right, rgb(var(--bg-rgb) / 0.82) 0%, rgb(var(--bg-rgb) / 0.66) 40%, rgb(var(--bg-rgb) / 0.12) 64%, rgb(var(--bg-rgb) / 0) 100%);
 }
 .case--dark .ambient{ border-radius: clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) 0 0; }
 .ambient--footer{ top: auto; bottom: 0; height: 100%; border-radius: 0;
@@ -1321,11 +1321,58 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
     linear-gradient(to bottom, rgb(var(--bg-rgb)) 0%, rgb(var(--bg-rgb) / 0.2) 35%, rgb(var(--bg-rgb) / 0.35) 75%, rgb(var(--bg-rgb) / 0.9) 100%);
 }
 .footer .wordmark, .footer .footer__inner{ position: relative; }
+/* Phones: the film is a band above the case title (the title starts at its dark lower edge),
+   so it can be seen clearly without sitting under the text. The footer film keeps its own rules. */
 @media (max-width: 700px) {
-  .ambient{ height: clamp(380px, 70vh, 560px); }
-  .ambient__video{ opacity: 0.5; }
-  .ambient::after{ background: linear-gradient(to bottom, rgb(var(--bg-rgb) / 0.45), rgb(var(--bg-rgb) / 0.62)); }
+  .ambient:not(.ambient--footer){
+    height: 50svh;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  }
+  .ambient:not(.ambient--footer) .ambient__video{ opacity: 0.9; }
+  .ambient:not(.ambient--footer)::after{ background: linear-gradient(to bottom, rgb(var(--bg-rgb) / 0.1) 0%, rgb(var(--bg-rgb) / 0.2) 45%, rgb(var(--bg-rgb) / 0.9) 82%, rgb(var(--bg-rgb)) 100%); }
+  .case:has(> .ambient) > .container{ padding-top: 30svh; }
+  .ambient--footer .ambient__video{ opacity: 0.55; }
 }
 @media print { .ambient{ display: none; } }
 /* The two tilted phones (training plans) must never widen the page */
 #smaller-projects{ overflow-x: clip; }
+
+/* ---------- Review round 1 ---------- */
+/* CV over the curtain: a soft top edge instead of a hard line, and the dot grid of the living
+   background drawn into its own surface so the background never just stops. */
+.has-curtain .cv{
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    radial-gradient(circle, rgb(var(--ink-rgb) / 0.06) 1.1px, transparent 1.7px) 50% 0 / 30px 30px,
+    radial-gradient(70% 60% at 100% 0%, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
+    var(--bg);
+}
+.has-curtain .cv::before{
+  content: ""; position: absolute; left: 0; right: 0; top: -140px; height: 140px; pointer-events: none;
+  background:
+    linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
+    var(--bg);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000);
+  mask-image: linear-gradient(to bottom, transparent, #000);
+}
+/* KSK card: less empty space under the film frames */
+.case--dark > .container > .sub:last-child{ margin-bottom: 0; }
+.case--dark{ padding-bottom: clamp(3rem, 2rem + 3vw, 5rem); }
+/* Pause / play motion (js/pause.js) */
+.motion-toggle{
+  margin-left: auto; min-height: 44px; padding: 0 16px; border-radius: var(--r-pill);
+  border: 1.5px solid var(--line-strong); background: transparent; color: var(--ink);
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.motion-toggle:hover, .motion-toggle:focus-visible{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.motion-toggle[hidden]{ display: none; }
+.motion-paused .film-strip__track{ animation-play-state: paused !important; }
+/* Phones: the film band is narrow, so each shot is framed on its subject */
+@media (max-width: 700px) {
+  #basko-clean .ambient__video{ object-position: 80% 50%; }
+  #ksk-pretor .ambient__video{ object-position: 72% 50%; }
+  #livingroom .ambient__video{ object-position: 18% 50%; }
+  #psychologist-site .ambient__video{ object-position: 6% 50%; }
+  #smaller-projects .ambient__video{ object-position: 62% 50%; }
+}

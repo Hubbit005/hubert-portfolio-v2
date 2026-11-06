@@ -227,11 +227,15 @@ function initIndexCover(root, gsap) {
 
   function follow(_, deltaMs) {
     if (!floater) return;
+    // The cover keeps to the right part of the list (never over the names), only following the
+    // pointer up and down.
+    const ir = index.getBoundingClientRect();
+    tx = ir.left + ir.width * 0.7;
     const k = 1 - Math.pow(1 - 0.14, Math.min(deltaMs || 16, 50) / 16.67);
-    const px = x;
+    const py = y;
     x += (tx - x) * k;
     y += (ty - y) * k;
-    rot += (Math.max(-8, Math.min(8, (x - px) * 0.6)) - rot) * k;
+    rot += (Math.max(-6, Math.min(6, (y - py) * 0.35)) - rot) * k;
     floater.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
   }
 
@@ -250,7 +254,7 @@ function initIndexCover(root, gsap) {
     const a = e.target.closest('a');
     if (!a) { setActive(null); return; }
     if (!floater) build();
-    if (!on) { on = true; x = tx; y = ty; }
+    if (!on) { on = true; const ir = index.getBoundingClientRect(); x = ir.left + ir.width * 0.7; y = ty; }
     setActive(a);
   }, { passive: true });
   index.addEventListener('pointerleave', () => { on = false; if (floater) setActive(null); });

@@ -21,7 +21,7 @@ export function initAmbient({ reduced, gsap, ScrollTrigger }) {
     v.muted = true;
     v.load();
   }
-  const play = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => { /* autoplay refused: the poster stays */ }); };
+  const play = (v) => { if (window.__motionPaused) return; const p = v.play(); if (p && p.catch) p.catch(() => { /* autoplay refused: the poster stays */ }); };
 
   // Near the screen (one screen ahead): attach the file.
   const near = new IntersectionObserver((entries) => {
@@ -31,10 +31,15 @@ export function initAmbient({ reduced, gsap, ScrollTrigger }) {
   const onScreen = new IntersectionObserver((entries) => {
     entries.forEach((en) => {
       const v = en.target;
-      if (en.isIntersecting) { attach(v); play(v); } else if (!v.paused) v.pause();
+      if (en.isIntersecting) { visible.add(v); attach(v); play(v); } else { visible.delete(v); if (!v.paused) v.pause(); }
     });
   }, { threshold: 0.01 });
   vids.forEach((v) => { near.observe(v); onScreen.observe(v); });
+  // Pause button (js/pause.js): stop every film; on play, start the ones on screen again.
+  const visible = new Set();
+  document.addEventListener('motionpause', ({ detail }) => {
+    vids.forEach((v) => { if (detail.paused) v.pause(); else if (visible.has(v)) play(v); });
+  });
   document.addEventListener('visibilitychange', () => {
     vids.forEach((v) => { if (document.hidden) v.pause(); });
   });

@@ -9,6 +9,7 @@ import { initCasesMotion } from './cases-motion.js';
 import { initChart } from './chart.js';
 import { initFooter } from './footer.js';
 import { initAmbient } from './ambient.js';
+import { initPause } from './pause.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -215,6 +216,7 @@ async function boot() {
   const roulette = initRoulette();
   initHero({ reduced, lenis, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
+  initPause({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
   initCasesMotion({ reduced, gsap, ScrollTrigger });
   initChart({ reduced, gsap, ScrollTrigger });

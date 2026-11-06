@@ -336,7 +336,7 @@ async function start({ api, gsap, ScrollTrigger, lenis, touch }) {
     velT *= Math.exp(-dt * 9);
 
     const dim = (u.uDim.value += (dimT - u.uDim.value) * k(3));
-    time += dt * (1 - dim * 0.7);
+    if (!window.__motionPaused) time += dt * (1 - dim * 0.7);
 
     for (const key in cur) cur[key] += (target[key] - cur[key]) * k(1.6);
     const hp = Math.min(1, Math.max(0, sy / Math.max(1, heroH)));
