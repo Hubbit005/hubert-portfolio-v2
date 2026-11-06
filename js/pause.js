@@ -4,7 +4,7 @@
    (JS on, no reduced motion). Others read window.__motionPaused and listen for 'motionpause'. */
 
 export function initPause({ reduced }) {
-  const btn = document.getElementById('motion-toggle');
+  const btns = ['motion-toggle', 'motion-skip'].map((id) => document.getElementById(id)).filter(Boolean);
   const doc = document.documentElement;
   const t = (k) => (window.i18n ? window.i18n.t(k) : k);
   let paused = false;
@@ -13,16 +13,18 @@ export function initPause({ reduced }) {
   function apply(fire) {
     window.__motionPaused = paused;
     doc.classList.toggle('motion-paused', paused);
-    if (btn) btn.textContent = t(paused ? 'motion.play' : 'motion.pause');
+    btns.forEach((b) => { b.textContent = t(paused ? 'motion.play' : 'motion.pause'); });
     if (fire) document.dispatchEvent(new CustomEvent('motionpause', { detail: { paused } }));
   }
   apply(false);
-  if (!btn || reduced) return;
-  btn.hidden = false;
-  btn.addEventListener('click', () => {
-    paused = !paused;
-    try { localStorage.setItem('motion', paused ? 'paused' : 'on'); } catch (e) { /* storage blocked */ }
-    apply(true);
+  if (!btns.length || reduced) return;
+  btns.forEach((b) => {
+    b.hidden = false;
+    b.addEventListener('click', () => {
+      paused = !paused;
+      try { localStorage.setItem('motion', paused ? 'paused' : 'on'); } catch (e) { /* storage blocked */ }
+      apply(true);
+    });
   });
   document.addEventListener('langchange', () => apply(false));
 }

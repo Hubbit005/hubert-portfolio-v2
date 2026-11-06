@@ -329,6 +329,8 @@ async function start({ api, gsap, ScrollTrigger, lenis, touch }) {
     const dt = Math.min((deltaMs || 16) / 1000, 0.05);
     const k = (rate) => 1 - Math.exp(-dt * rate);
     const sy = window.scrollY;
+    // Paused (js/pause.js): no new frames while nothing the user does changes the picture.
+    if (window.__motionPaused && shown && Math.abs(sy - lastY) < 0.5 && Math.abs(mouse.tx - mouse.x) < 0.5 && Math.abs(mouse.ty - mouse.y) < 0.5 && vel < 0.002 && Math.abs(dimT - u.uDim.value) < 0.01) { lastY = sy; return; }
     // velocity from Lenis, or from the scroll position when Lenis is off
     if (!lenis) velT = Math.max(velT, Math.min(1, Math.abs(sy - lastY) / dt / 2400));
     lastY = sy;

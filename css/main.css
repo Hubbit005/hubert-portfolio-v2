@@ -1113,7 +1113,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .case-index a::before{ transition: transform var(--t-3) var(--ease-out); }
   .case-index a:hover{ transform: translateX(14px); }
   .case-index a:hover::before{ transform: translate(-14px, -0.2em); }
-  .case-index a:hover::after{ opacity: 1; transform: translateX(-14px) rotate(45deg) scale(1); }
+  .case-index a:hover::after{ opacity: 1; transform: translateX(-20px) rotate(45deg) scale(1); }
 }
 @media (max-width: 600px) {
   .case-index a{ grid-template-columns: 2.2rem 1fr; }
@@ -1345,7 +1345,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   background:
     linear-gradient(to right, var(--line) 1px, transparent 1px) center top / calc(100% / 6) 100%,
     radial-gradient(circle, rgb(var(--ink-rgb) / 0.06) 1.1px, transparent 1.7px) 50% 0 / 30px 30px,
-    radial-gradient(70% 60% at 100% 0%, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
+    radial-gradient(70% 60% at 100% 220px, rgb(var(--glow-rgb) / calc(var(--glow-a) * 0.22)), transparent 70%),
     var(--bg);
 }
 .has-curtain .cv::before{
@@ -1370,9 +1370,23 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .motion-paused .film-strip__track{ animation-play-state: paused !important; }
 /* Phones: the film band is narrow, so each shot is framed on its subject */
 @media (max-width: 700px) {
-  #basko-clean .ambient__video{ object-position: 80% 50%; }
-  #ksk-pretor .ambient__video{ object-position: 72% 50%; }
+  #basko-clean .ambient__video{ object-position: 88% 35%; }
+  #ksk-pretor .ambient__video{ object-position: 32% 72%; }
   #livingroom .ambient__video{ object-position: 18% 50%; }
   #psychologist-site .ambient__video{ object-position: 6% 50%; }
   #smaller-projects .ambient__video{ object-position: 62% 50%; }
 }
+
+/* ---------- Review round 2 ---------- */
+/* The CV's soft top edge must never lie over the last lines of About */
+.has-curtain .about{ padding-bottom: calc(var(--section-pad) + 90px); }
+/* Pause motion, reachable at once from the keyboard: appears on focus, like the skip link */
+.motion-skip{
+  position: fixed; left: 16px; top: 64px; z-index: calc(var(--z-nav) + 10);
+  padding: 10px 16px; border-radius: var(--r-pill); border: 0;
+  background: var(--ink); color: var(--bg); font-weight: 600;
+  transform: translateY(-260%);
+  transition: transform var(--t-2) var(--ease-out);
+}
+.motion-skip:focus{ transform: translateY(0); }
+.motion-skip[hidden]{ display: none; }

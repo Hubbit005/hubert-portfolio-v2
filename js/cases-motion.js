@@ -230,7 +230,7 @@ function initIndexCover(root, gsap) {
     // The cover keeps to the right part of the list (never over the names), only following the
     // pointer up and down.
     const ir = index.getBoundingClientRect();
-    tx = ir.left + ir.width * 0.7;
+    tx = ir.right - floater.offsetWidth - 28; // right edge of the list (28 px is the CSS margin)
     const k = 1 - Math.pow(1 - 0.14, Math.min(deltaMs || 16, 50) / 16.67);
     const py = y;
     x += (tx - x) * k;
@@ -254,7 +254,7 @@ function initIndexCover(root, gsap) {
     const a = e.target.closest('a');
     if (!a) { setActive(null); return; }
     if (!floater) build();
-    if (!on) { on = true; const ir = index.getBoundingClientRect(); x = ir.left + ir.width * 0.7; y = ty; }
+    if (!on) { on = true; const ir = index.getBoundingClientRect(); x = ir.right - floater.offsetWidth - 28; y = ty; }
     setActive(a);
   }, { passive: true });
   index.addEventListener('pointerleave', () => { on = false; if (floater) setActive(null); });
