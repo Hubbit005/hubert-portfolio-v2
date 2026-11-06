@@ -5,19 +5,19 @@ Adres: https://hubbit005.github.io/hubert-portfolio-v2/
 
 Wersja 2 to kopia strony z repo `Hubbit005/hubert-portfolio`. Stare repo zostaje bez zmian, nie ruszaj go.
 
-Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz, nowy kursor, ładniej pokazane projekty, jeden wykres, nowa stopka i kilka realistycznych ujęć wideo z Higgsfielda. Zadania są w folderze `prompts/`, wykonuj je po kolei.
+Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz, nowy kursor, ładniej pokazane projekty, nowa stopka i kilka realistycznych ujęć wideo z Higgsfielda. Zadania są w folderze `prompts/`, wykonuj je po kolei.
 
 ## Stos
 
 - HTML, CSS, czysty JavaScript (moduły ES). Bez npm w działającej stronie, bez CDN.
 - Biblioteki leżą lokalnie: `vendor/js/gsap.min.js`, `vendor/js/ScrollTrigger.min.js`, `vendor/js/lenis.min.js`, `vendor/three/three.module.min.js` (+ `vendor/three/addons`).
 - Jedna pętla animacji: ticker GSAP (Lenis już jest do niego podpięty w `js/main.js`). Nie zakładaj osobnych `requestAnimationFrame`, jeśli da się użyć tickera.
-- Nowe moduły dodawaj w `js/` (np. `background.js`, `cursor.js`, `cases-motion.js`, `chart.js`, `footer.js`) i importuj w `js/main.js`.
+- Nowe moduły dodawaj w `js/` (np. `background.js`, `cursor.js`, `cases-motion.js`, `footer.js`) i importuj w `js/main.js`.
 - Style dopisuj do `css/main.css` w osobnych, opisanych sekcjach. Kolory i odstępy tylko z `css/tokens.css`.
 
 ## Czego nie zmieniać (zamrożone)
 
-1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): napis HUBERT w 3D, który zamienia się w ruletkę, jego kolory i pomarańczowo-różowa poświata. Hubert to lubi. Wolno tylko dopiąć integrację (np. wstrzymać tło, gdy ruletka jest otwarta), bez zmian wyglądu.
+1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): napis HUBERT w 3D, jego kolory i pomarańczowo-różowa poświata zostają bez zmian. Hubert to lubi. Od 7.11.2026 (decyzja Huberta, zadanie 09) hero jest odblokowane dla chromowanych ikon wokół napisu i dla wyglądu oraz fizyki ruletki (chrom, kulka, dźwięk). Logika wyboru projektu i karta wyniku zostają.
 2. **Karuzela projektów** (`#work`, `js/carousel.js`): zostaje jak jest.
 3. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też.
 4. **Kotwice** (`#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
@@ -26,7 +26,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 ## Twarde zasady treści
 
 - **Żadnych nowych liczb:** statystyk, procentów, liczników, „lat doświadczenia”, wyników. Hubert nie ma danych, a strona nie może zawierać nic nieprawdziwego.
-- Nowy tekst tylko tam, gdzie wymaga go zadanie (etykiety wykresu). Zawsze w parze EN w `index.html` i PL w `js/i18n.js`, w stylu istniejących kluczy.
+- Nowy tekst tylko tam, gdzie wymaga go zadanie (np. etykiety i przyciski z promptu). Zawsze w parze EN w `index.html` i PL w `js/i18n.js`, w stylu istniejących kluczy.
 - Elementy czysto dekoracyjne mają `aria-hidden="true"`.
 
 ## Dostępność i ruch

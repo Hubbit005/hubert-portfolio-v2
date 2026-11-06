@@ -72,24 +72,6 @@
     "cases.6": "Mniejsze projekty",
     // EN: <span class="mono">06</span> This portfolio
     "cases.7": "To portfolio",
-    // EN: What I did in each project
-    "chart.1": "Co robiłem w każdym projekcie",
-    // EN: Design
-    "chart.2": "Projekt",
-    // EN: Code
-    "chart.3": "Kod",
-    // EN: Video
-    "chart.4": "Wideo",
-    // EN: Marketing
-    "chart.5": "Marketing",
-    // EN: 3D
-    "chart.6": "3D",
-    // EN: AI agent
-    "chart.7": "Agent AI",
-    // EN: Yes
-    "chart.8": "Tak",
-    // EN: No
-    "chart.9": "Nie",
     // EN: Website, visual system and a motion ad for an industrial cleaning company from Szczecin.
     "basko-clean.2": "Strona, system wizualny i reklama motion dla firmy ze Szczecina, która zajmuje się czyszczeniem przemysłowym.",
     // EN: Client

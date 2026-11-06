@@ -225,17 +225,23 @@ function initIndexCover(root, gsap) {
     gsap.ticker.add(follow);
   }
 
+  // Target: 24 px right of and below the pointer. Near the right edge it flips to the left of the
+  // pointer, near the bottom it moves up, so the whole cover always stays on screen.
+  let px = 0, py = 0;
+  function target() {
+    const w = floater.offsetWidth, h = floater.offsetHeight, m = 12;
+    tx = px + 24 + w > innerWidth - m ? px - 24 - w : px + 24;
+    ty = Math.max(m, Math.min(innerHeight - m - h, py + 24));
+    tx = Math.max(m, tx);
+  }
   function follow(_, deltaMs) {
-    if (!floater) return;
-    // The cover keeps to the right part of the list (never over the names), only following the
-    // pointer up and down.
-    const ir = index.getBoundingClientRect();
-    tx = ir.right - floater.offsetWidth - 28; // right edge of the list (28 px is the CSS margin)
-    const k = 1 - Math.pow(1 - 0.14, Math.min(deltaMs || 16, 50) / 16.67);
-    const py = y;
+    if (!floater || !on) return;
+    target();
+    const k = 1 - Math.pow(1 - 0.18, Math.min(deltaMs || 16, 50) / 16.67);
+    const ox = x;
     x += (tx - x) * k;
     y += (ty - y) * k;
-    rot += (Math.max(-6, Math.min(6, (y - py) * 0.35)) - rot) * k;
+    rot += (Math.max(-6, Math.min(6, (x - ox) * 0.25)) - rot) * k;
     floater.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
   }
 
@@ -250,11 +256,11 @@ function initIndexCover(root, gsap) {
 
   index.addEventListener('pointermove', (e) => {
     if (e.pointerType !== 'mouse') return;
-    tx = e.clientX; ty = e.clientY;
+    px = e.clientX; py = e.clientY;
     const a = e.target.closest('a');
     if (!a) { setActive(null); return; }
     if (!floater) build();
-    if (!on) { on = true; const ir = index.getBoundingClientRect(); x = ir.right - floater.offsetWidth - 28; y = ty; }
+    if (!on) { on = true; target(); x = tx; y = ty; }
     setActive(a);
   }, { passive: true });
   index.addEventListener('pointerleave', () => { on = false; if (floater) setActive(null); });

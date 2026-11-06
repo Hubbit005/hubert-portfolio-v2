@@ -1123,7 +1123,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Floating cover next to the pointer (fine pointer only, built by JS) */
 .case-cover{
   position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
-  width: clamp(180px, 15vw, 250px); aspect-ratio: 3 / 4; margin: calc(clamp(180px, 15vw, 250px) * -0.66) 0 0 28px;
+  width: clamp(280px, 21vw, 320px); aspect-ratio: 3 / 4; margin: 0;
   opacity: 0; transition: opacity var(--t-2) var(--ease-out);
 }
 .case-cover.is-on{ opacity: 1; }
@@ -1181,50 +1181,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .flow__step.is-lit .flow__n{ background: var(--accent); color: var(--on-accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.22); }
 .flow__step.is-lit{ border-color: var(--accent-ink); }
 @media (max-width: 700px) { .case-dim{ left: 0; right: 0; } }
-
-/* ==========================================================================
-   Work-area map (js/chart.js): a real table with dots, no numbers.
-   ========================================================================== */
-.matrix{ margin-top: clamp(2.5rem, 2rem + 2.5vw, 4.5rem); }
-.matrix__table{ width: 100%; table-layout: fixed; }
-.matrix__title{
-  caption-side: top; text-align: left; padding-bottom: var(--s-4);
-  font-family: var(--font-display); font-stretch: 104%; font-weight: 780; font-size: 1.15rem; letter-spacing: -0.005em;
-}
-.matrix__corner{ width: 34%; }
-.matrix th, .matrix td{ padding: 14px 6px; border-bottom: 1px solid var(--line); transition: opacity var(--t-2) var(--ease-out); }
-.matrix thead th{
-  font-family: var(--font-mono); font-size: var(--fs-mono); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--ink-2); text-align: center; vertical-align: bottom; border-bottom: 1.5px solid var(--ink);
-}
-.matrix thead td{ border-bottom: 1.5px solid var(--ink); }
-.matrix tbody th{ text-align: left; font-weight: 600; font-size: 1rem; line-height: 1.3; padding-left: 0; }
-.matrix tbody th a{ text-decoration: none; background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0% 1.5px no-repeat; transition: background-size var(--t-3) var(--ease-out); }
-.matrix tbody th a:hover, .matrix tbody th a:focus-visible{ background-size: 100% 1.5px; }
-.matrix td{ text-align: center; }
-.matrix__dot{
-  display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle;
-  border: 1.5px solid var(--line-strong);
-}
-.matrix td.is-yes .matrix__dot{ border: 0; background: var(--accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.16); }
-/* Hover a row or a column: it stays, everything else dims */
-.matrix__table[data-row] tbody tr > *{ opacity: 0.5; }
-.matrix__table[data-row="1"] tbody tr[data-r="1"] > *, .matrix__table[data-row="2"] tbody tr[data-r="2"] > *,
-.matrix__table[data-row="3"] tbody tr[data-r="3"] > *, .matrix__table[data-row="4"] tbody tr[data-r="4"] > *,
-.matrix__table[data-row="5"] tbody tr[data-r="5"] > *{ opacity: 1; }
-.matrix__table[data-col] [data-col]{ opacity: 0.5; }
-.matrix__table[data-col="1"] [data-col="1"], .matrix__table[data-col="2"] [data-col="2"], .matrix__table[data-col="3"] [data-col="3"],
-.matrix__table[data-col="4"] [data-col="4"], .matrix__table[data-col="5"] [data-col="5"], .matrix__table[data-col="6"] [data-col="6"]{ opacity: 1; }
-.matrix__table[data-col] tbody th{ opacity: 0.6; }
-/* Phones: the whole table fits, column labels turn upright */
-@media (max-width: 640px) {
-  .matrix__corner{ width: 40%; }
-  .matrix th, .matrix td{ padding: 12px 2px; }
-  .matrix thead th{ height: 104px; padding-bottom: 10px; }
-  .matrix thead th span{ display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; white-space: nowrap; }
-  .matrix tbody th{ font-size: 0.92rem; padding-right: 8px; }
-  .matrix__dot{ width: 12px; height: 12px; }
-}
 
 /* ==========================================================================
    Footer (js/footer.js): curtain, wordmark, back-to-top ring

@@ -6,7 +6,6 @@ import { initRoulette } from './roulette.js?v=20261106';
 import { initBackground } from './background.js?v=20261106';
 import { initCursor } from './cursor.js?v=20261106';
 import { initCasesMotion } from './cases-motion.js?v=20261106';
-import { initChart } from './chart.js?v=20261106';
 import { initFooter } from './footer.js?v=20261106';
 import { initAmbient } from './ambient.js?v=20261106';
 import { initPause } from './pause.js?v=20261106';
@@ -223,7 +222,6 @@ async function boot() {
   initPause({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
   initCasesMotion({ reduced, gsap, ScrollTrigger });
-  initChart({ reduced, gsap, ScrollTrigger });
   initFooter({ reduced, gsap });
   initJar({ reduced, gsap });
   initLetters({ reduced, gsap });
