@@ -5,6 +5,7 @@ import { initMotion } from './motion.js';
 import { initRoulette } from './roulette.js';
 import { initBackground } from './background.js';
 import { initCursor } from './cursor.js';
+import { initCasesMotion } from './cases-motion.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -209,6 +210,7 @@ async function boot() {
   initHero({ reduced, lenis, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
+  initCasesMotion({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });
   initMagnetic();

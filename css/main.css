@@ -364,7 +364,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .arc__status{ min-width: 220px; text-align: center; color: var(--ink-2); }
 
 /* ---------- Case studies ---------- */
-.case-index ol{ display: flex; flex-wrap: wrap; gap: 8px; }
+.case-index ol{ display: flex; flex-wrap: wrap; gap: 8px; } /* replaced below: Case studies motion */
 .case-index a{
   display: inline-flex; gap: 8px; align-items: baseline;
   padding: 10px 16px; border-radius: var(--r-pill); border: 1.5px solid var(--line-strong);
@@ -1073,3 +1073,111 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .has-cursor, .has-cursor *{ cursor: none !important; }
 .has-cursor video[controls], .has-cursor #model-embed.is-loaded, .has-cursor #model-embed.is-loaded *{ cursor: auto !important; }
 @media (hover: none), (pointer: coarse) { .cursor, .cursor-dot{ display: none !important; } }
+
+/* ==========================================================================
+   Case studies motion (js/cases-motion.js)
+   ========================================================================== */
+/* 1. Case index: a large list. Numbers come from a CSS counter (decoration, not read out). */
+.case-index ol{ display: block; counter-reset: ci; border-top: 1px solid var(--line); }
+.case-index li{ position: relative; counter-increment: ci; border-bottom: 1px solid var(--line); }
+.case-index li::after{
+  content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
+  background: var(--accent); transform: scaleX(0); transform-origin: 0 50%;
+  transition: transform var(--t-3) var(--ease-out);
+}
+.case-index a{
+  display: grid; grid-template-columns: 3.2rem 1fr auto; align-items: baseline; gap: var(--s-4);
+  padding: clamp(0.7rem, 0.5rem + 0.8vw, 1.25rem) 0; border: 0; border-radius: 0;
+  font-family: var(--font-display); font-stretch: 125%; font-weight: 850;
+  font-size: clamp(1.35rem, 0.9rem + 2.4vw, 3.4rem); line-height: 1; letter-spacing: -0.02em; text-transform: uppercase;
+  text-decoration: none; color: var(--ink);
+  transition: color var(--t-2) var(--ease-out);
+}
+.case-index a::before{
+  content: counter(ci, decimal-leading-zero) / "";
+  font-family: var(--font-mono); font-stretch: 100%; font-weight: 400; font-size: var(--fs-mono);
+  letter-spacing: 0.06em; color: var(--accent-ink); transform: translateY(-0.2em);
+}
+.case-index a::after{
+  content: "" / ""; width: 0.55em; height: 0.55em; align-self: center;
+  border-top: 2px solid currentColor; border-right: 2px solid currentColor;
+  transform: rotate(45deg) scale(0.6); opacity: 0;
+  transition: transform var(--t-3) var(--ease-out), opacity var(--t-2) var(--ease-out);
+}
+.case-index a:hover, .case-index a:focus-visible{ background: none; color: var(--ink); border-color: transparent; }
+.case-index li:hover::after, .case-index li:focus-within::after{ transform: scaleX(1); }
+.case-index a:focus-visible::after{ opacity: 1; transform: rotate(45deg) scale(1); }
+/* The name moves right on hover; the number is moved back so it stays in place (transforms only). */
+@media (hover: hover) and (pointer: fine) {
+  .case-index a{ transition: color var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out); }
+  .case-index a::before{ transition: transform var(--t-3) var(--ease-out); }
+  .case-index a:hover{ transform: translateX(14px); }
+  .case-index a:hover::before{ transform: translate(-14px, -0.2em); }
+  .case-index a:hover::after{ opacity: 1; transform: rotate(45deg) scale(1); }
+}
+@media (max-width: 600px) {
+  .case-index a{ grid-template-columns: 2.2rem 1fr; }
+  .case-index a::after{ display: none; }
+}
+
+/* Floating cover next to the pointer (fine pointer only, built by JS) */
+.case-cover{
+  position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
+  width: clamp(180px, 15vw, 250px); aspect-ratio: 3 / 4; margin: calc(clamp(180px, 15vw, 250px) * -0.66) 0 0 28px;
+  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
+}
+.case-cover.is-on{ opacity: 1; }
+.case-cover__img{
+  position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-sm); box-shadow: var(--shadow-3);
+  opacity: 0; transform: scale(0.92);
+  transition: opacity var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out);
+}
+.case-cover__img.is-on{ opacity: 1; transform: none; }
+.case-cover__img img{ width: 100%; height: 100%; object-fit: cover; }
+.case-cover .type-cover__word{ font-size: 1.7rem; }
+
+/* 2. Titles split into letters (visual copy is aria-hidden, the sr-only copy is read) */
+.split__w{ display: inline-block; white-space: nowrap; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
+.split__c{ display: inline-block; }
+.case__title .mask{ overflow: visible; }
+
+/* 4. Gallery hover: the card lifts, the image zooms a little, the shadow grows */
+.gallery .shot__frame, .gallery .phone{ transition: transform var(--t-3) var(--ease-out), box-shadow var(--t-3) var(--ease-out); }
+.gallery .shot__frame img{ transition: transform var(--t-3) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .gallery .shot:hover .shot__frame, .gallery .shot:hover .phone{ transform: translateY(-6px); box-shadow: var(--shadow-3); }
+  .gallery .shot:hover .shot__frame img{ transform: scale(1.04); }
+}
+
+/* 5. KSK: the page around the dark case dims (opacity driven by scroll) */
+.case-dim{
+  /* reaches the page edges (the dark case sits inside a small side margin), never past them */
+  position: absolute; top: -60vh; bottom: -60vh; left: calc(clamp(6px, 1vw, 16px) * -1); right: calc(clamp(6px, 1vw, 16px) * -1);
+  z-index: -1; pointer-events: none;
+  background: rgb(0 0 0 / 0.38); opacity: 0;
+}
+/* Film strip as an endless tape (JS adds the track and the hidden copies) */
+.film-strip.is-marquee{ display: block; overflow: hidden; margin-inline: calc(var(--gutter) * -1); padding-block: 4px; }
+.film-strip__track{
+  display: flex; gap: 12px; width: max-content;
+  animation: filmTape 48s linear infinite; animation-play-state: paused;
+}
+.film-strip.is-running .film-strip__track{ animation-play-state: running; }
+.film-strip.is-marquee:hover .film-strip__track, .film-strip.is-marquee:focus-within .film-strip__track{ animation-play-state: paused; }
+.film-strip__track picture{ flex: none; width: clamp(220px, 22vw, 340px); }
+.film-strip__track img{ width: 100%; height: auto; border-radius: 10px; }
+@keyframes filmTape{ to{ transform: translateX(calc(-50% - 6px)); } }
+@media (prefers-reduced-motion: reduce) { .film-strip__track{ animation: none; } }
+
+/* 6. Purchase path: rail drawn with the scroll, steps light up */
+.flow.is-drawn .flow__steps{ position: relative; }
+.flow.is-drawn .flow__step::before, .flow.is-drawn .flow__step::after{ display: none; }
+.flow__rail{ position: absolute; z-index: 1; background: var(--line-strong); pointer-events: none; }
+.flow__fill{ position: absolute; inset: 0; background: var(--accent); transform-origin: 0 0; }
+.flow__rail:not(.is-vertical) .flow__fill{ transform: scaleX(0); }
+.flow__rail.is-vertical .flow__fill{ transform: scaleY(0); }
+.flow.is-drawn .flow__n{ position: relative; z-index: 2; transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), box-shadow var(--t-2) var(--ease-out); }
+.flow.is-drawn .flow__step{ transition: border-color var(--t-2) var(--ease-out); }
+.flow__step.is-lit .flow__n{ background: var(--accent); color: var(--on-accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.22); }
+.flow__step.is-lit{ border-color: var(--accent-ink); }
+@media (max-width: 700px) { .case-dim{ left: 0; right: 0; } }
