@@ -42,9 +42,19 @@ export function initJar({ reduced, gsap }) {
   const ballsEl = wrap.querySelector('.jar__balls');
   const bubble = wrap.querySelector('.jar__bubble');
   const shakeBtn = wrap.querySelector('.jar__shake');
-  const setLabels = () => { shakeBtn.textContent = t('jar.shake'); if (open) fillBubble(open); };
-  document.addEventListener('langchange', setLabels);
+  shakeBtn.textContent = t('jar.shake');
+  document.addEventListener('langchange', () => { shakeBtn.textContent = t('jar.shake'); });
 
+  // The jar's space is there from the start (fixed height, no layout shift); the balls, the glass and
+  // the physics are only built when the section comes near the screen (keeps the page start light).
+  const nearIO = new IntersectionObserver(([en]) => {
+    if (!en.isIntersecting) return;
+    nearIO.disconnect();
+    setup();
+  }, { rootMargin: '600px 0px' });
+  nearIO.observe(stage);
+
+  function setup() {
   const tools2 = items.map((li) => {
     const name = li.querySelector('.tool__name')?.textContent.trim() || '';
     const low = name.toLowerCase();
@@ -159,9 +169,10 @@ export function initJar({ reduced, gsap }) {
   }
 
   /* ---------- Balls in and out ---------- */
-  const mouthX = () => G.left + G.t + G.r + Math.random() * (G.jw - 2 * G.t - 2 * G.r) + jx;
+  // drop point: the middle of the mouth, away from the rim (a ball hitting the rim bounces out)
+  const mouthX = () => (G.left + G.right) / 2 + (Math.random() - 0.5) * Math.max(0, G.jw - 2 * G.t - 4.4 * G.r) + jx;
   function addBall(tl, x, y) {
-    tl.b = world.add(circle(x, y, G.r, { restitution: 0.42, friction: 0.35, data: tl, angularDamping: 0.9 }));
+    tl.b = world.add(circle(x, y, G.r, { restitution: 0.32, friction: 0.35, data: tl, angularDamping: 0.9 }));
     tl.b.a = (Math.random() - 0.5) * 1.2;
     tl.out = 0;
     tl.el.classList.add('is-in');
@@ -174,9 +185,9 @@ export function initJar({ reduced, gsap }) {
       loop.settle(6);
       return;
     }
-    order.forEach((tl, i) => {
-      gsap.delayedCall(i * 0.11, () => { addBall(tl, mouthX(), Math.max(-40, G.top - G.r * 2.2)); loop.keep(0.3); });
-    });
+    // one by one, each only when the drop point is free (two balls born overlapping fly apart)
+    queue = order; queueT = 0;
+    loop.keep(0.5);
   }
   function respawn(tl) {
     const b = tl.b;
@@ -218,7 +229,18 @@ export function initJar({ reduced, gsap }) {
   document.addEventListener('pointerdown', (e) => { if (open && !e.target.closest?.('.jar__ball')) hideBubble(); }, { passive: true });
 
   /* ---------- Loop ---------- */
+  let queue = [], queueT = 0;
+  function feed(h) {
+    if (!queue.length || (queueT -= h) > 0) return;
+    const y = Math.max(-40, G.top - G.r * 2.2);
+    for (let k = 0; k < 4; k++) {
+      const x = mouthX();
+      const free = tools2.every((o) => !o.b || (o.b.x - x) ** 2 + (o.b.y - y) ** 2 > (G.r * 2.3) ** 2);
+      if (free) { addBall(queue.shift(), x, y); queueT = 0.1; loop.keep(0.4); return; }
+    }
+  }
   function before(h) {
+    feed(h);
     // jar: follows the hand while dragged, springs back when let go, wobbles on "Shake"
     if (shakeT > 0) {
       shakeT = Math.max(0, shakeT - h); shake += h;
@@ -300,7 +322,8 @@ export function initJar({ reduced, gsap }) {
   });
 
   /* ---------- Start, resize ---------- */
-  geometry(); buildWalls(); drawGlass(); sizeBalls(); setLabels();
+  geometry(); buildWalls(); drawGlass(); sizeBalls();
+  document.addEventListener('langchange', () => { if (open) fillBubble(open); });
   let dropped = false;
   const startIO = new IntersectionObserver(([en]) => {
     if (!en.isIntersecting || dropped) return;
@@ -322,4 +345,5 @@ export function initJar({ reduced, gsap }) {
       dropAll(true);
     }, 160);
   }).observe(stage);
+  }
 }

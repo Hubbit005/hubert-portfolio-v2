@@ -226,7 +226,14 @@ export function initPlanDemo({ reduced, gsap }) {
     label.textContent = t('demo.label');
     show(state.view, { focus: false });
   }
-  document.addEventListener('langchange', setLabels);
+  document.addEventListener('langchange', () => { if (current) setLabels(); else label.textContent = t('demo.label'); });
   label.textContent = t('demo.label');
-  show('plan', { focus: false });
+  // The phone has a fixed height from the start; its first screen is drawn when it comes near the
+  // screen, so the page start stays light.
+  const nearIO = new IntersectionObserver(([en]) => {
+    if (!en.isIntersecting) return;
+    nearIO.disconnect();
+    show('plan', { focus: false });
+  }, { rootMargin: '600px 0px' });
+  nearIO.observe(root);
 }
