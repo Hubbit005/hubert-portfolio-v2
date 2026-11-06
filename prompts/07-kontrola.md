@@ -1,4 +1,4 @@
-# Zadanie 06 – Kontrola i poprawki
+# Zadanie 07 – Kontrola i poprawki
 
 ## 1. Treść bez zmian
 
@@ -20,7 +20,7 @@ Lighthouse mobile i desktop: Performance ≥ 90, Accessibility ≥ 95, CLS < 0,1
 ## 3. Niezależna recenzja
 
 Uruchom osobnego agenta, który nie widział pracy. Daj mu tylko adres strony lokalnie, zrzuty i ten opis celu: „portfolio junior UX/UI designera; ma robić wrażenie »wow« ruchem, ale zostać czytelne i szybkie”. Niech oceni od 1 do 10:
-1. efekt „wow” (tło, kursor, projekty, stopka),
+1. efekt „wow” (tło, kursor, projekty, stopka, ujęcia z Higgsfielda),
 2. czytelność i kontrast,
 3. płynność (brak zacięć, sensowne tempo animacji),
 4. spójność z hero i karuzelą,
@@ -33,6 +33,7 @@ Cel: każda ocena ≥ 8. Popraw to, co jest niżej, i powtórz recenzję. Maksym
 
 Po polsku, krótko:
 - co zrobione (po jednym zdaniu na zadanie),
+- ile kredytów Higgsfielda poszło i saldo po pracy,
 - oceny z ostatniej recenzji i wyniki Lighthouse przed i po,
 - co ma sprawdzić sam na swoim telefonie,
 - przypomnienie: włączyć GitHub Pages w Settings → Pages (gałąź main, folder root), jeśli jeszcze nie jest włączone.

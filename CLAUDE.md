@@ -5,7 +5,7 @@ Adres: https://hubbit005.github.io/hubert-portfolio-v2/
 
 Wersja 2 to kopia strony z repo `Hubbit005/hubert-portfolio`. Stare repo zostaje bez zmian, nie ruszaj go.
 
-Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz, nowy kursor, ładniej pokazane projekty, jeden wykres, nowa stopka. Zadania są w folderze `prompts/`, wykonuj je po kolei.
+Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz, nowy kursor, ładniej pokazane projekty, jeden wykres, nowa stopka i kilka realistycznych ujęć wideo z Higgsfielda. Zadania są w folderze `prompts/`, wykonuj je po kolei.
 
 ## Stos
 
@@ -55,7 +55,8 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 ## Nigdy
 
 - Nie wrzucaj do repo prywatnych materiałów Huberta (CV, przygotowania do rozmów, notatki, dane osobowe). Repo jest publiczne.
-- Nie używaj płatnych generacji (Higgsfield i podobne) bez pytania. Żadne zadanie z `prompts/` ich nie wymaga. Jeśli mimo to coś by ich potrzebowało: najpierw podaj dokładny koszt w kredytach i poczekaj na zgodę. Twardy limit na cały projekt: 1000 kredytów Higgsfield.
+- Płatne generacje (Higgsfield) tylko w zadaniu `prompts/06-higgsfield.md` i tylko według jego listy. Najpierw wycena wszystkich generacji, potem jedna zgoda Huberta, dopiero potem generowanie. Twardy limit na cały projekt: 1000 kredytów Higgsfield. Inne płatne narzędzia: nie używaj.
+- Nie commituj surowych plików z generatorów (`assets/higgsfield/raw/`), tylko skompresowane wersje na stronę.
 - Bez `git push --force` i bez przepisywania historii.
 - Nie zmieniaj repo `Hubbit005/hubert-portfolio`.
 

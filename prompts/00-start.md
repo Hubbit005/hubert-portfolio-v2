@@ -2,7 +2,8 @@
 
 ```
 Przeczytaj CLAUDE.md. Potem wykonaj po kolei zadania z folderu prompts/:
-01-tlo.md, 02-kursor.md, 03-projekty.md, 04-wykres.md, 05-stopka.md, 06-kontrola.md.
+01-tlo.md, 02-kursor.md, 03-projekty.md, 04-wykres.md, 05-stopka.md,
+06-higgsfield.md, 07-kontrola.md.
 
 Zasady:
 - Przed zadaniem 01 zrób zrzuty ekranu obecnej strony (stan wyjściowy).
@@ -10,6 +11,8 @@ Zasady:
   inną gałąź, na końcu otwórz pull request do main i napisz mi, że mam go zatwierdzić.
 - Hero z napisem 3D i ruletką, karuzela projektów i cała treść zostają bez zmian.
 - Żadnych nowych liczb ani faktów.
+- Higgsfield tylko w zadaniu 06: najpierw wycena wszystkich generacji, moja zgoda,
+  limit 1000 kredytów.
 - Nie pytaj mnie o rzeczy opisane w CLAUDE.md i w promptach. Pytaj tylko, gdy coś
   wymagałoby zmiany treści albo wydania pieniędzy.
 - Na koniec napisz mi po polsku, krótko: co zrobiłeś, jakie oceny wyszły w kontroli
