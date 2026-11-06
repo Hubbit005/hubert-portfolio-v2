@@ -11,7 +11,7 @@
    Reduced motion: no delay and no scale animation, only the state changes. Touch and no JS: nothing
    changes and the system cursor stays (html.has-cursor is only added once this module runs). */
 
-const LINK = 'a[href], button, [role="button"], label[for], summary, select, input, textarea, .lang-switch__btn';
+const LINK = 'a[href], button, [role="button"], label[for], summary, select, input, textarea, .lang-switch__btn, .jar__ball';
 const TEXT = 'p, dd, figcaption, .list li, .bg-list li, .timeline h4, .flow__note';
 const DRAG = '.hero__stage.is-3d:not(.is-locked), .hero.is-wheel .hero__gl, #arc-viewport, .jar__stage, .wordmark.is-physical .wordmark__line--fill > span';
 const OFF = 'video[controls], #model-embed.is-loaded, #model-embed.is-loaded *';

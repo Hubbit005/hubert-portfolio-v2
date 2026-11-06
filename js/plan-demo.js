@@ -37,6 +37,15 @@ export function initPlanDemo({ reduced, gsap }) {
     </div>
     <p class="sr-only" aria-live="polite"></p>`;
   host.appendChild(root);
+  const phones = document.querySelector('#training-plans .phones');
+  const wide = matchMedia('(min-width: 1000px)');
+  const place = () => {
+    const into = wide.matches && phones ? phones : host;
+    phones?.classList.toggle('has-demo', into === phones);
+    if (root.parentElement !== into) { if (into === phones) phones.children[0].after(root); else host.appendChild(root); }
+  };
+  place();
+  wide.addEventListener('change', place);
   const label = root.querySelector('.pd__label');
   const screenEl = root.querySelector('.pd__screen');
   const live = root.querySelector('[aria-live]');
@@ -100,15 +109,19 @@ export function initPlanDemo({ reduced, gsap }) {
     const wd = [...Array(7)].map((_, i) => fmt(new Date(2024, 0, 1 + i), { weekday: 'short' }).replace('.', ''));
     let cells = '';
     for (let i = 0; i < first; i++) cells += '<span class="pd__cell is-off" aria-hidden="true"></span>';
+    const now = new Date();
+    const selN = d.date && d.date.getFullYear() === m.getFullYear() && d.date.getMonth() === m.getMonth() ? d.date.getDate() : 0;
+    const todayN = now.getFullYear() === m.getFullYear() && now.getMonth() === m.getMonth() ? now.getDate() : 0;
+    const stop = selN || todayN || 1;
     for (let n = 1; n <= len; n++) {
       const date = new Date(m.getFullYear(), m.getMonth(), n);
-      const sel = d.date && d.date.getTime() === date.getTime();
-      cells += `<button class="pd__cell${sel ? ' is-sel' : ''}" type="button" data-date="${n}" aria-pressed="${sel}" aria-label="${esc(fmt(date, { weekday: 'long', day: 'numeric', month: 'long' }))}">${n}</button>`;
+      const sel = n === selN;
+      cells += `<button class="pd__cell${sel ? ' is-sel' : ''}${n === todayN ? ' is-today' : ''}" type="button" data-date="${n}" tabindex="${n === stop ? 0 : -1}" aria-pressed="${sel}" aria-label="${esc(fmt(date, { weekday: 'long', day: 'numeric', month: 'long' }))}">${n}</button>`;
     }
     return `
       <div class="pd__head">
-        <button class="pd__back" type="button" data-back="plan">${esc(t('demo.back'))}</button>
         <h4 class="pd__h" tabindex="-1">${tag(state.day)} ${esc(t(d.title))}</h4>
+        <button class="pd__back" type="button" data-back="plan">${esc(t('demo.back'))}</button>
       </div>
       <div class="pd__card">
         <p class="pd__strong">${esc(t('demo.pick'))}</p>
@@ -120,7 +133,7 @@ export function initPlanDemo({ reduced, gsap }) {
             <button class="pd__arrow" type="button" data-month="1" aria-label="${esc(t('demo.next'))}">›</button>
           </span>
         </div>
-        <div class="pd__grid">
+        <div class="pd__grid" role="group" aria-label="${esc(fmt(m, { month: 'long', year: 'numeric' }))}">
           ${wd.map((w) => `<span class="pd__wd" aria-hidden="true">${esc(w)}</span>`).join('')}
           ${cells}
         </div>
@@ -132,8 +145,8 @@ export function initPlanDemo({ reduced, gsap }) {
     const n = d.done.filter(Boolean).length;
     return `
       <div class="pd__head">
-        <button class="pd__back" type="button" data-back="cal">${esc(t('demo.back'))}</button>
         <h4 class="pd__h" tabindex="-1">${tag(state.day)} ${esc(t(d.title))}</h4>
+        <button class="pd__back" type="button" data-back="cal">${esc(t('demo.back'))}</button>
       </div>
       <p class="pd__muted pd__date">${esc(fmt(d.date, { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
       <div class="pd__card">
@@ -206,6 +219,19 @@ export function initPlanDemo({ reduced, gsap }) {
       state.days[state.day].date = new Date(state.month.getFullYear(), state.month.getMonth(), +el.dataset.date);
       go('ex');
     } else if (el.dataset.back) go(el.dataset.back);
+  });
+  // Calendar: arrows move between dates (one Tab stop for the whole month)
+  screenEl.addEventListener('keydown', (e) => {
+    const cell = e.target.closest?.('.pd__cell[data-date]');
+    if (!cell) return;
+    const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key];
+    const cells = [...current.querySelectorAll('.pd__cell[data-date]')];
+    let i = cells.indexOf(cell);
+    if (step) i += step; else if (e.key === 'Home') i = 0; else if (e.key === 'End') i = cells.length - 1; else return;
+    e.preventDefault();
+    i = Math.max(0, Math.min(cells.length - 1, i));
+    cells.forEach((c, k) => { c.tabIndex = k === i ? 0 : -1; });
+    cells[i].focus();
   });
   screenEl.addEventListener('change', (e) => {
     const box = e.target.closest('input[data-ex]');

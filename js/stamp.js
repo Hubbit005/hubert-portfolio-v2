@@ -1,5 +1,5 @@
 /* Logo stamp (whole page, fine pointer only): a click on empty space (the background, margins, the
-   room between blocks) leaves the H logo from the nav as an ink stamp. It lands with a short press
+   room between blocks, with room for the whole stamp) leaves the H logo from the nav as an ink stamp. It lands with a short press
    (scale 1.4 → 1, a random turn of up to ±12°, a soft shadow) and fades after about 10 s.
    Not on text, links, buttons, images, video, forms, the hero (3D word and roulette), the
    carousel, the tools jar, the plan demo, the footer letters or the 3D model. At most 12 at once
@@ -55,6 +55,22 @@ export function initStamp({ reduced }) {
   const mark = document.querySelector('.nav__mark');
   const shapes = mark ? [...mark.querySelectorAll('path')].map((p) => p.getAttribute('d')).join(' ') : 'M13 12h10v40H13zM41 12h10v40H41zM23 12h6v40h-6zM23 31l18-9v10l-18 9z';
 
+  // A click after the pointer travelled (a drag, a throw) is not a stamp
+  let down = null;
+  document.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; }, { passive: true, capture: true });
+  // The whole stamp (not only the click point) must land on empty space: the centre and a ring of
+  // points around it are tested, so a stamp never covers a heading or a button next to the click.
+  const RING = [...Array(8)].map((_, i) => [Math.cos((i * Math.PI) / 4) * 30, Math.sin((i * Math.PI) / 4) * 30]);
+  function clear(x, y) {
+    for (const [dx, dy] of [[0, 0], ...RING]) {
+      const px = x + dx, py = y + dy;
+      if (px < 0 || py < 0 || px >= innerWidth || py >= innerHeight) continue;
+      const el = document.elementFromPoint(px, py);
+      if (!el || el.closest(NO) || overText(px, py)) return false;
+    }
+    return true;
+  }
+
   document.addEventListener('click', (e) => {
     if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.defaultPrevented) return;
     if (e.pointerType && e.pointerType !== 'mouse' && e.pointerType !== 'pen') return;
@@ -62,7 +78,8 @@ export function initStamp({ reduced }) {
     const target = e.target;
     if (!(target instanceof Element) || target.closest(NO)) return;
     if (!window.getSelection()?.isCollapsed) return;
-    if (overText(e.clientX, e.clientY)) return;
+    if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return;
+    if (!clear(e.clientX, e.clientY)) return;
     const s = document.createElement('div');
     s.className = 'stamp';
     s.style.left = `${e.pageX}px`;

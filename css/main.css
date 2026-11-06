@@ -1456,15 +1456,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .wordmark.is-physical .wordmark__line--fill > span{ cursor: grab; touch-action: pan-y; will-change: transform; }
 .wordmark.is-physical .wordmark__line--stroke > span{ will-change: transform; }
 #contact.is-holding, #contact.is-holding .wordmark__line--fill > span{ cursor: grabbing; }
-.letters-reset{
-  min-height: 44px; padding: 0 16px; border-radius: var(--r-pill);
-  border: 1.5px solid var(--line-strong); background: transparent; color: var(--ink);
-  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out);
-}
-.letters-reset:hover, .letters-reset:focus-visible{ background: var(--ink); color: var(--bg); }
 .letters-reset[hidden]{ display: none; }
-.letters-reset:not([hidden]) + .motion-toggle{ margin-left: 0; }
-.letters-reset:not([hidden]){ margin-left: auto; }
 
 /* ==========================================================================
    Training plan demo (js/plan-demo.js): a working mini phone in the client template's look
@@ -1581,3 +1573,19 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 @keyframes stamp-out{ to{ opacity: 0; } }
 @media print { .stamps{ display: none; } }
+/* Demo, review round 1: Back sits after the heading in the DOM (Tab order), first on screen; one Tab
+   stop for the calendar; on wide screens the demo stands in the phones column, in place of the second
+   screenshot (still in the HTML for other widths). */
+.pd__head .pd__back{ order: -1; }
+.pd__cell.is-today:not(.is-sel){ border-color: var(--demo-line); }
+.pd__cell:focus-visible{ outline-offset: 0; }
+@media (min-width: 1000px) {
+  .phones.has-demo > .shot:not(:first-child){ display: none; }
+  .phones.has-demo .pd{ max-width: none; margin-top: -2px; }
+  .phones.has-demo .pd__label{ position: absolute; transform: translateY(-140%); }
+  .phones.has-demo > .pd{ position: relative; }
+  .phones.has-demo .pd__screen{ height: 596px; }
+  .phones.has-demo .pd__view{ padding-inline: 12px; }
+}
+/* Letters fly behind the contact buttons on phones: the buttons get a solid background */
+#contact:has(.wordmark.is-physical) .contact__actions .btn{ --btn-bg: var(--bg); }

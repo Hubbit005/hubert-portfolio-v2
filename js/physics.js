@@ -292,14 +292,14 @@ export class World {
 }
 
 /* ---------- Loop: the world steps in the GSAP ticker only while it is useful ---------- */
-export function run({ world, el, gsap, render, before, hz = 240, margin = '120px' }) {
+export function run({ world, el, gsap, render, before, busy, hz = 240, margin = '120px' }) {
   const h = 1 / hz;
   let visible = false, acc = 0, kick = 0;
   const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { rootMargin: margin });
   io.observe(el);
   const tick = (_, deltaMs) => {
     if (!visible || document.hidden || window.__motionPaused) { acc = 0; return; }
-    if (world.asleep && kick <= 0) { acc = 0; return; }
+    if (world.asleep && kick <= 0 && !busy?.()) { acc = 0; return; }
     acc += Math.min(deltaMs || 16.7, 50) / 1000;
     let n = 0;
     while (acc >= h && n < 12) { before?.(h); world.step(h); acc -= h; n++; }
@@ -342,6 +342,12 @@ export function hand({ world, el, toWorld, pick, onTap, onGrab, onDrop, canDrag 
     if (!active || e.pointerId !== active.id) return;
     const a = active; active = null;
     if (a.drag) { world.release(); onDrop?.(a.b, e); }
+    if (a.drag && a.moved) {
+      // the click that follows a drag is not a click (no stamp, no link)
+      const stop = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+      window.addEventListener('click', stop, { capture: true, once: true });
+      setTimeout(() => window.removeEventListener('click', stop, { capture: true }), 60);
+    }
     if (!cancelled && !a.moved && performance.now() - a.t0 < 450) onTap?.(a.b, e);
   };
   el.addEventListener('pointerup', (e) => end(e, false));

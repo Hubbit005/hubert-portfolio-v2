@@ -25,10 +25,11 @@ export function initLetters({ reduced, gsap }) {
   // Reset button: only there while the letters are out of place
   const resetBtn = document.createElement('button');
   resetBtn.type = 'button';
-  resetBtn.className = 'letters-reset mono';
+  resetBtn.className = 'btn btn--ghost letters-reset';
   resetBtn.hidden = true;
-  const toggle = inner.querySelector('#motion-toggle');
-  if (toggle) toggle.before(resetBtn); else inner.appendChild(resetBtn);
+  // next to "Copy e-mail", in the same row: appearing never moves the layout
+  const copy = contact.querySelector('#copy-mail');
+  if (copy) copy.after(resetBtn); else inner.appendChild(resetBtn);
   const label = () => { resetBtn.textContent = t('letters.reset'); };
   label();
   document.addEventListener('langchange', label);
@@ -47,10 +48,14 @@ export function initLetters({ reduced, gsap }) {
     const shelf = rel(inner.getBoundingClientRect(), c).y;
     const st = { isStatic: true, friction: 0.6, restitution: 0.15 };
     walls.push(box(W / 2, shelf + 100, W + 400, 200, st));   // the shelf (footer's top line)
-    walls.push(box(-60, H / 2, 120, H * 3, st), box(W + 60, H / 2, 120, H * 3, st));
+    // side walls a little inside the edges: the glyphs overhang their boxes
+    walls.push(box(-54, H / 2, 120, H * 3, st), box(W + 54, H / 2, 120, H * 3, st));
     walls.push(box(W / 2, -60, W + 400, 120, st));            // top of the contact section
     // The contact block's text and buttons are walls
-    contact.querySelectorAll('.sec-head__title, .contact__lead, .contact__mail, .contact__actions .btn').forEach((el) => {
+    // Narrow screens: the button row sits right above the word, so the letters fly behind it (it lies
+    // above them and gets a solid background); the e-mail and phone stay walls.
+    const sel = W < 700 ? '.sec-head__title, .contact__lead, .contact__mail' : '.sec-head__title, .contact__lead, .contact__mail, .contact__actions .btn:not([hidden])';
+    contact.querySelectorAll(sel).forEach((el) => {
       const r = rel(el.getBoundingClientRect(), c);
       if (r.w && r.h) walls.push(box(r.x + r.w / 2, r.y + r.h / 2, r.w + 8, r.h + 8, st));
     });
@@ -135,9 +140,11 @@ export function initLetters({ reduced, gsap }) {
     onTap: (b, e) => {
       if (e.pointerType !== 'touch') return;
       world.wake(b);
-      b.vy = -1300 - Math.random() * 500;
-      b.vx = (Math.random() - 0.5) * 500;
-      b.w = (Math.random() - 0.5) * 12;
+      // up and towards the middle, away from the walls above the left letters
+      const W = contact.clientWidth;
+      b.vy = -1500 - Math.random() * 400;
+      b.vx = Math.max(-700, Math.min(700, (W / 2 - b.x) * 2.2)) + (Math.random() - 0.5) * 300;
+      b.w = (Math.random() - 0.5) * 14;
       lastTouch = performance.now();
       resetBtn.hidden = false;
       loop?.keep(0.5);

@@ -42,8 +42,9 @@ export function initJar({ reduced, gsap }) {
   const ballsEl = wrap.querySelector('.jar__balls');
   const bubble = wrap.querySelector('.jar__bubble');
   const shakeBtn = wrap.querySelector('.jar__shake');
-  shakeBtn.textContent = t('jar.shake');
-  document.addEventListener('langchange', () => { shakeBtn.textContent = t('jar.shake'); });
+  const shakeLabel = () => { shakeBtn.textContent = t('jar.shake'); shakeBtn.setAttribute('aria-label', t('jar.shakeLabel')); };
+  shakeLabel();
+  document.addEventListener('langchange', shakeLabel);
 
   // The jar's space is there from the start (fixed height, no layout shift); the balls, the glass and
   // the physics are only built when the section comes near the screen (keeps the page start light).
@@ -98,7 +99,7 @@ export function initJar({ reduced, gsap }) {
       box(W / 2, H + 40, W + 400, 80, st),            // stage floor
       box(-40, H / 2 - 100, 80, H + 400, st),         // stage sides
       box(W + 40, H / 2 - 100, 80, H + 400, st),
-      box(W / 2, -140, W + 400, 80, st),              // ceiling, a little above the stage
+      box(W / 2, -40, W + 400, 80, st),               // ceiling: the top of the stage (balls never cover the title)
     ];
     jarWalls = [
       box(left + th / 2, (top + bottom) / 2, th, bottom - top, st),
@@ -170,6 +171,7 @@ export function initJar({ reduced, gsap }) {
 
   /* ---------- Balls in and out ---------- */
   // drop point: the middle of the mouth, away from the rim (a ball hitting the rim bounces out)
+  const dropY = () => Math.max(G.r + 4, G.top - G.r * 2.2);
   const mouthX = () => (G.left + G.right) / 2 + (Math.random() - 0.5) * Math.max(0, G.jw - 2 * G.t - 4.4 * G.r) + jx;
   function addBall(tl, x, y) {
     tl.b = world.add(circle(x, y, G.r, { restitution: 0.32, friction: 0.35, data: tl, angularDamping: 0.9 }));
@@ -191,7 +193,7 @@ export function initJar({ reduced, gsap }) {
   }
   function respawn(tl) {
     const b = tl.b;
-    b.x = mouthX(); b.y = Math.max(-40, G.top - G.r * 2.2); b.vx = 0; b.vy = 120; b.w = 0;
+    b.x = mouthX(); b.y = dropY(); b.vx = 0; b.vy = 120; b.w = 0;
     world.wake(b); tl.out = 0;
     tl.el.classList.remove('is-back'); void tl.el.offsetWidth; tl.el.classList.add('is-back');
     loop.keep(0.3);
@@ -232,7 +234,7 @@ export function initJar({ reduced, gsap }) {
   let queue = [], queueT = 0;
   function feed(h) {
     if (!queue.length || (queueT -= h) > 0) return;
-    const y = Math.max(-40, G.top - G.r * 2.2);
+    const y = dropY();
     for (let k = 0; k < 4; k++) {
       const x = mouthX();
       const free = tools2.every((o) => !o.b || (o.b.x - x) ** 2 + (o.b.y - y) ** 2 > (G.r * 2.3) ** 2);
@@ -263,6 +265,7 @@ export function initJar({ reduced, gsap }) {
       if (!b) continue;
       const inside = b.x > G.left + jx && b.x < G.right + jx && b.y > G.top - G.r * 1.5;
       if (inside || b === held) tl.out = 0; else if ((tl.out += h) > 3) respawn(tl);
+      if (!inside && b !== held) tl.out = Math.max(tl.out, 1e-3);
     }
   }
   function render() {
@@ -275,7 +278,8 @@ export function initJar({ reduced, gsap }) {
     }
     if (open) placeBubble();
   }
-  const loop = run({ world, el: stage, gsap, render, before });
+  // keep stepping while a ball waits outside the jar (it must come back even if everything sleeps)
+  const loop = run({ world, el: stage, gsap, render, before, busy: () => queue.length > 0 || tools2.some((tl) => tl.out > 0) });
 
   /* ---------- Pointer ---------- */
   const toWorld = (cx, cy) => { const r = stage.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; };
@@ -314,8 +318,8 @@ export function initJar({ reduced, gsap }) {
     world.wake();
     for (const tl of tools2) {
       if (!tl.b) continue;
-      tl.b.vy -= 700 + Math.random() * 700;
-      tl.b.vx += (Math.random() - 0.5) * 500;
+      tl.b.vy -= 380 + Math.random() * 320;
+      tl.b.vx += (Math.random() - 0.5) * 360;
       tl.b.w += (Math.random() - 0.5) * 14;
     }
     loop.keep(1.5);
