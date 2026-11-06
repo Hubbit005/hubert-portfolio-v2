@@ -1395,3 +1395,54 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   #ksk-pretor > .ambient{ height: 34svh; }
   #ksk-pretor > .container{ padding-top: 16svh; }
 }
+
+/* ==========================================================================
+   AI tools jar (js/jar.js, physics in js/physics.js)
+   With the jar the tools block is two columns: the jar, and the list (kept for screen readers,
+   the keyboard, no JS and reduced motion; it stays visible, a little more compact).
+   ========================================================================== */
+.tools.has-jar{ display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 0 var(--s-7); align-items: start; }
+.tools.has-jar > .mini-title{ grid-column: 1 / -1; }
+.tools.has-jar .tool-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; gap: 8px; }
+.tools.has-jar .tool__btn{ padding: 8px 12px; gap: 10px; grid-template-columns: 32px 1fr; }
+.tools.has-jar .tool__logo{ width: 32px; height: 32px; }
+.jar{ position: relative; display: grid; justify-items: center; gap: var(--s-3); }
+.jar__stage{ position: relative; width: 100%; height: 470px; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.jar__glass{ position: absolute; display: block; max-width: none; overflow: visible; pointer-events: none; will-change: transform; }
+.jar__glass--front{ z-index: 2; }
+.jar__balls{ position: absolute; inset: 0; z-index: 1; }
+.jar__ball{
+  position: absolute; left: 0; top: 0; display: grid; place-items: center; border-radius: 50%;
+  opacity: 0; touch-action: none; cursor: grab; will-change: transform;
+  background: radial-gradient(circle at 34% 28%, var(--toy-ball-hi) 0%, var(--toy-ball) 42%, var(--toy-ball-lo) 100%);
+  box-shadow: inset -3px -5px 10px rgb(0 0 0 / 0.18), 0 3px 8px rgb(0 0 0 / 0.22);
+  color: var(--toy-ball-ink); --surface: var(--toy-ball);
+}
+.jar__ball.is-in{ opacity: 1; }
+.jar__ball img, .jar__ball svg{ width: 52%; height: 52%; object-fit: contain; pointer-events: none; }
+.jar__ball svg{ fill: currentColor; }
+.jar__ball svg .k{ fill: var(--toy-ball); }
+.jar__ball svg .t{ fill-opacity: 0.55; }
+.jar__ball svg .t2{ fill-opacity: 0.3; }
+.jar__ball.is-picked{ box-shadow: inset -3px -5px 10px rgb(0 0 0 / 0.18), 0 0 0 3px var(--accent), 0 3px 8px rgb(0 0 0 / 0.22); }
+.jar__ball.is-back{ animation: jar-back var(--t-3) var(--ease-spring); }
+@keyframes jar-back{ from{ scale: 0; } to{ scale: 1; } }
+.is-holding .jar__ball, .is-holding{ cursor: grabbing; }
+.jar__bubble{
+  position: absolute; left: 0; top: 0; z-index: 3; width: max-content; max-width: min(280px, 90%);
+  padding: 10px 14px; border-radius: var(--r-sm); background: var(--ink); color: var(--bg);
+  font-size: var(--fs-small); line-height: 1.4; box-shadow: var(--shadow-2); pointer-events: none;
+}
+.jar__bubble[hidden]{ display: none; }
+.jar__bubble.is-in{ animation: jar-bubble var(--t-2) var(--ease-out); }
+@keyframes jar-bubble{ from{ opacity: 0; scale: 0.92; } to{ opacity: 1; scale: 1; } }
+.jar__bubble-name{ display: block; font-weight: 700; margin-bottom: 2px; }
+.jar__shake{ min-height: 44px; }
+@media (max-width: 899px) {
+  .tools.has-jar{ grid-template-columns: minmax(0, 1fr); }
+  .tools.has-jar .jar{ margin-bottom: var(--s-5); }
+}
+@media (max-width: 600px) {
+  .jar__stage{ height: 380px; }
+  .tools.has-jar .tool-grid{ grid-template-columns: minmax(0, 1fr); }
+}
