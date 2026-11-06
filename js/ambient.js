@@ -1,0 +1,50 @@
+/* Ambient film shots (Higgsfield) behind the case study headers and the footer wordmark.
+   Decoration only: aria-hidden, muted, no controls, no facts. The HTML holds just the poster, so
+   without JS (and with reduced motion or Save-Data) only the still frame shows. Otherwise the video
+   file is attached when it comes near the screen, plays only while it is on screen and pauses
+   outside it. Phones get the 640 px file. A slight parallax (yPercent ±6) follows the scroll. */
+
+export function initAmbient({ reduced, gsap, ScrollTrigger }) {
+  const vids = [...document.querySelectorAll('video[data-ambient]')];
+  if (!vids.length) return;
+  if (reduced || navigator.connection?.saveData) return; // posters only
+
+  const small = matchMedia('(max-width: 700px)').matches || matchMedia('(pointer: coarse)').matches;
+  const canWebm = !!document.createElement('video').canPlayType('video/webm; codecs="vp9"');
+
+  function attach(v) {
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = '1';
+    const base = v.dataset.ambient;
+    const list = small ? [[`${base}-640.mp4`, 'video/mp4']] : [...(canWebm ? [[`${base}-1280.webm`, 'video/webm']] : []), [`${base}-1280.mp4`, 'video/mp4']];
+    list.forEach(([src, type]) => { const s = document.createElement('source'); s.src = src; s.type = type; v.appendChild(s); });
+    v.muted = true;
+    v.load();
+  }
+  const play = (v) => { const p = v.play(); if (p && p.catch) p.catch(() => { /* autoplay refused: the poster stays */ }); };
+
+  // Near the screen (one screen ahead): attach the file.
+  const near = new IntersectionObserver((entries) => {
+    entries.forEach((en) => { if (en.isIntersecting) { attach(en.target); near.unobserve(en.target); } });
+  }, { rootMargin: '100% 0px' });
+  // On screen: play; off screen: pause.
+  const onScreen = new IntersectionObserver((entries) => {
+    entries.forEach((en) => {
+      const v = en.target;
+      if (en.isIntersecting) { attach(v); play(v); } else if (!v.paused) v.pause();
+    });
+  }, { threshold: 0.01 });
+  vids.forEach((v) => { near.observe(v); onScreen.observe(v); });
+  document.addEventListener('visibilitychange', () => {
+    vids.forEach((v) => { if (document.hidden) v.pause(); });
+  });
+
+  if (gsap && ScrollTrigger) {
+    vids.forEach((v) => {
+      gsap.fromTo(v, { yPercent: -6 }, {
+        yPercent: 6, ease: 'none',
+        scrollTrigger: { trigger: v.parentElement, start: 'top bottom', end: 'bottom top', scrub: true },
+      });
+    });
+  }
+}

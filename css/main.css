@@ -1272,7 +1272,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .footer__top:hover, .footer__top:focus-visible{ background: var(--ink); color: var(--bg); }
 .footer__top:active{ transform: scale(0.95); }
 .footer__top:focus-visible{ outline-offset: 4px; border-radius: 50%; }
-.top-ring{ position: absolute; inset: 0; pointer-events: none; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-strong); }
+.top-ring{ position: absolute; inset: 0; pointer-events: none; border-radius: 50%; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line-strong); }
 .top-ring i{ position: absolute; inset: 0; display: block; border-radius: 50%; }
 .top-ring__half--r{ clip-path: inset(0 0 0 50%); }
 .top-ring__half--l{ clip-path: inset(0 50% 0 0); }
@@ -1288,3 +1288,44 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .footer__top-wrap{ width: 88px; height: 88px; }
   .footer__top{ padding: 12px; font-size: 0.66rem; }
 }
+
+/* ==========================================================================
+   Ambient film shots (js/ambient.js): behind case headers and the footer wordmark
+   The video is decoration under a --bg gradient (strong at the edges, weaker in the middle), so the
+   text keeps its contrast. Content sits above it (positioned later in the DOM).
+   ========================================================================== */
+.case > .container{ position: relative; }
+.ambient{
+  position: absolute; left: 0; right: 0; top: 0; height: clamp(460px, 82vh, 800px);
+  overflow: hidden; pointer-events: none; border-radius: inherit;
+  /* soft edges top and bottom, so no band shows against the living background */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 58%, transparent 100%);
+}
+.ambient__video{
+  position: absolute; inset: -8% 0; width: 100%; height: 116%; max-width: none;
+  object-fit: cover; opacity: 0.6;
+}
+/* --bg gradient: strong on the left where the text runs, weaker in the middle */
+.ambient::after{
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to right, rgb(var(--bg-rgb) / 0.78) 0%, rgb(var(--bg-rgb) / 0.55) 38%, rgb(var(--bg-rgb) / 0.12) 70%, rgb(var(--bg-rgb) / 0.35) 100%);
+}
+.case--dark .ambient{ border-radius: clamp(20px, 3vw, 40px) clamp(20px, 3vw, 40px) 0 0; }
+.ambient--footer{ top: auto; bottom: 0; height: 100%; border-radius: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 100%); mask-image: linear-gradient(to bottom, transparent 0%, #000 30%, #000 100%); }
+.footer{ position: relative; }
+.ambient--footer .ambient__video{ opacity: 0.62; }
+.ambient--footer::after{
+  background:
+    linear-gradient(to bottom, rgb(var(--bg-rgb)) 0%, rgb(var(--bg-rgb) / 0.2) 35%, rgb(var(--bg-rgb) / 0.35) 75%, rgb(var(--bg-rgb) / 0.9) 100%);
+}
+.footer .wordmark, .footer .footer__inner{ position: relative; }
+@media (max-width: 700px) {
+  .ambient{ height: clamp(380px, 70vh, 560px); }
+  .ambient__video{ opacity: 0.5; }
+  .ambient::after{ background: linear-gradient(to bottom, rgb(var(--bg-rgb) / 0.45), rgb(var(--bg-rgb) / 0.62)); }
+}
+@media print { .ambient{ display: none; } }
+/* The two tilted phones (training plans) must never widen the page */
+#smaller-projects{ overflow-x: clip; }

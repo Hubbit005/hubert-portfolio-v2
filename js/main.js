@@ -8,6 +8,7 @@ import { initCursor } from './cursor.js';
 import { initCasesMotion } from './cases-motion.js';
 import { initChart } from './chart.js';
 import { initFooter } from './footer.js';
+import { initAmbient } from './ambient.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -218,6 +219,7 @@ async function boot() {
   initCasesMotion({ reduced, gsap, ScrollTrigger });
   initChart({ reduced, gsap, ScrollTrigger });
   initFooter({ reduced, gsap });
+  initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });
   initMagnetic();
