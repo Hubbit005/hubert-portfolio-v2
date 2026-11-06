@@ -9,7 +9,7 @@
    tilts it down onto the wheel; the word stays around it as a ring. Same scene, same renderer.
    The canvas covers the whole hero; a camera view offset keeps the word centred on the stage.
    No WebGL, reduced motion or a load error: the static word stays (facing front). */
-import { PROJECTS } from './roulette.js';
+import { PROJECTS } from './roulette.js?v=20261106';
 
 const WORD = 'HUBERT';
 const SEP = '+';

@@ -11,9 +11,9 @@
    Reduced motion: no delay and no scale animation, only the state changes. Touch and no JS: nothing
    changes and the system cursor stays (html.has-cursor is only added once this module runs). */
 
-const LINK = 'a[href], button, [role="button"], label[for], summary, select, input, textarea, .lang-switch__btn';
+const LINK = 'a[href], button, [role="button"], label[for], summary, select, input, textarea, .lang-switch__btn, .jar__ball';
 const TEXT = 'p, dd, figcaption, .list li, .bg-list li, .timeline h4, .flow__note';
-const DRAG = '.hero__stage.is-3d:not(.is-locked), .hero.is-wheel .hero__gl, #arc-viewport';
+const DRAG = '.hero__stage.is-3d:not(.is-locked), .hero.is-wheel .hero__gl, #arc-viewport, .jar__stage, .wordmark.is-physical .wordmark__line--fill > span';
 const OFF = 'video[controls], #model-embed.is-loaded, #model-embed.is-loaded *';
 
 export function initCursor({ reduced, gsap }) {
@@ -104,7 +104,11 @@ export function initCursor({ reduced, gsap }) {
     else if (e.relatedTarget.tagName === 'IFRAME') setState('off');
   });
   document.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') cursor.classList.add('is-down'); });
-  document.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
+  document.addEventListener('pointerup', () => {
+    cursor.classList.remove('is-down');
+    // after a drag (a ball, a letter) the pointer may be over something else: look again
+    requestAnimationFrame(() => { const el = document.elementFromPoint(mx, my); lastTarget = el; setState(classify(el)); });
+  });
   window.addEventListener('blur', () => cursor.classList.remove('is-down'));
   // The page scrolls under a still pointer: the element under it changes.
   window.addEventListener('scroll', () => {

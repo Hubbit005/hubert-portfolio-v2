@@ -133,6 +133,21 @@
   --z-nav: 500; /* above the carousel's fade and controls (z-index up to 401) while scrolling */
   --z-cursor: 900; /* above the carousel cards and its fade (z-index up to 401) */
   --z-panel: 80;
+  /* Toys (task 08). Glass follows the text colour; the tool balls are porcelain in both themes. */
+  --jar-glass: var(--ink);
+  --jar-edge: var(--ink);
+  --toy-ball-hi: #ffffff;
+  --toy-ball: #e6e6e1;
+  --toy-ball-lo: #9d9d96;
+  --toy-ball-ink: #0d0d0d;
+  /* Training plan demo: the colours of the client template in the screenshots (demo only, not brand) */
+  --demo-bg: #f5f5f3;
+  --demo-card: #ffffff;
+  --demo-ink: #1b1b1a;
+  --demo-ink-2: #62625c;
+  --demo-line: #e3e3de;
+  --demo-green: #11735c;
+  --demo-green-soft: #dceee8;
 }
 
 /* Dark: explicit choice */

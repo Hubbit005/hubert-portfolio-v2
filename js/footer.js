@@ -5,7 +5,8 @@
        fits on the screen (otherwise its top could never be seen) and without reduced motion.
      Wordmark: a huge HUBERT across the screen (decorative, aria-hidden). Its letters rise from below
        one after another as the footer is uncovered; first only the outline, and at the very end of
-       the page the accent fill wipes in (clip-path).
+       the page the accent fill wipes in (clip-path). Then it fires 'wordmarkready' and the letters
+       can be thrown (js/letters.js).
      E-mail and phone: the text leans a little towards the pointer (fine pointer only).
      Back to top: a round button with a thin ring around it that shows the scroll progress (two
        rotating half rings: transforms only, no number). The click scrolls through Lenis (main.js).
@@ -54,7 +55,7 @@ export function initFooter({ reduced, gsap }) {
 
   /* ---------- Letters and fill ---------- */
   const motion = !reduced && gsap && word;
-  let lettersIn = !motion;
+  let lettersIn = !motion, lettersDone = false;
   if (motion) {
     gsap.set(letters, { yPercent: 105 });
     gsap.set(fillLine, { clipPath: 'inset(100% 0% 0% 0%)' });
@@ -79,12 +80,19 @@ export function initFooter({ reduced, gsap }) {
     const shown = Math.min(1, Math.max(0, (y - (maxScroll - contactH)) / contactH));
     if (!lettersIn && shown > 0.3) {
       lettersIn = true;
-      gsap.to(letters, { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: (i) => (i % 6) * 0.07 });
+      gsap.to(letters, { yPercent: 0, duration: 1.1, ease: 'expo.out', stagger: (i) => (i % 6) * 0.07, onComplete: () => { lettersDone = true; } });
     }
     const f = Math.min(1, Math.max(0, (y - (maxScroll - Math.min(contactH * 0.22, 160))) / Math.min(contactH * 0.22, 160)));
+    if (word.dataset.ready) return; // the letters are physical now (js/letters.js): no more clipping
     if (force || Math.abs(f - lastFill) > 0.002) {
       lastFill = f;
       fillLine.style.clipPath = `inset(${((1 - f) * 100).toFixed(2)}% 0% 0% 0%)`;
+    }
+    // Fill done and letters up: the word may become physical (js/letters.js)
+    if (f >= 1 && lettersDone) {
+      word.dataset.ready = '1';
+      fillLine.style.clipPath = 'none';
+      document.dispatchEvent(new CustomEvent('wordmarkready'));
     }
   }
   if (gsap) gsap.ticker.add(() => update(false));
