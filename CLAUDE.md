@@ -55,7 +55,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 ## Nigdy
 
 - Nie wrzucaj do repo prywatnych materiałów Huberta (CV, przygotowania do rozmów, notatki, dane osobowe). Repo jest publiczne.
-- Nie używaj płatnych generacji (Higgsfield i podobne) bez pytania. Najpierw podaj dokładny koszt w kredytach i poczekaj na zgodę.
+- Nie używaj płatnych generacji (Higgsfield i podobne) bez pytania. Żadne zadanie z `prompts/` ich nie wymaga. Jeśli mimo to coś by ich potrzebowało: najpierw podaj dokładny koszt w kredytach i poczekaj na zgodę. Twardy limit na cały projekt: 1000 kredytów Higgsfield.
 - Bez `git push --force` i bez przepisywania historii.
 - Nie zmieniaj repo `Hubbit005/hubert-portfolio`.
 
