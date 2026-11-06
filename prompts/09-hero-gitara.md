@@ -92,7 +92,7 @@ Jak w `07-kontrola.md`. Dozwolone nowe teksty to tylko etykiety z punktów 3 i 5
 - ruletka: 10 losowań, za każdym razem karta zgadza się z kieszenią kulki,
 - ikony: przeciąganie i rzut, nic nie zasłania napisu ani przycisków,
 - gitara: odtworzenie, stop, wyjście z ekranu w trakcie grania, klawiatura,
-- Lighthouse mobile ≥ 90 (assety nie mogą blokować pierwszego wyświetlenia).
+- Lighthouse mobile: po zadaniu 08 wynik to 52–59, czyli dużo poniżej celu 90, głównie przez hero. To zadanie nie może go obniżyć. Spróbuj go podnieść: hero 3D, ikony i ruletkę na telefonie ładuj dopiero po pierwszym wyświetleniu albo po pierwszej interakcji, zmniejsz obrazy i JS na telefonie, wideo dopiero przy zbliżaniu się do ekranu. Zapisz wynik przed i po.
 
 Niezależna recenzja z oceną „efekt wow” i „czy chce się w to klikać”. Cel ≥ 8, maks. 2 rundy poprawek.
 
