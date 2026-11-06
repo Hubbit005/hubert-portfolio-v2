@@ -1446,3 +1446,22 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .jar__stage{ height: 380px; }
   .tools.has-jar .tool-grid{ grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ==========================================================================
+   Footer letters to throw (js/letters.js)
+   Physical only after the fill (data-ready). The contact block lies above the letters.
+   ========================================================================== */
+.contact > .container{ position: relative; z-index: 2; }
+.wordmark.is-physical{ overflow: visible; z-index: 1; }
+.wordmark.is-physical .wordmark__line--fill > span{ cursor: grab; touch-action: pan-y; will-change: transform; }
+.wordmark.is-physical .wordmark__line--stroke > span{ will-change: transform; }
+#contact.is-holding, #contact.is-holding .wordmark__line--fill > span{ cursor: grabbing; }
+.letters-reset{
+  min-height: 44px; padding: 0 16px; border-radius: var(--r-pill);
+  border: 1.5px solid var(--line-strong); background: transparent; color: var(--ink);
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out);
+}
+.letters-reset:hover, .letters-reset:focus-visible{ background: var(--ink); color: var(--bg); }
+.letters-reset[hidden]{ display: none; }
+.letters-reset:not([hidden]) + .motion-toggle{ margin-left: 0; }
+.letters-reset:not([hidden]){ margin-left: auto; }

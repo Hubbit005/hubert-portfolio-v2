@@ -13,7 +13,7 @@
 
 const LINK = 'a[href], button, [role="button"], label[for], summary, select, input, textarea, .lang-switch__btn';
 const TEXT = 'p, dd, figcaption, .list li, .bg-list li, .timeline h4, .flow__note';
-const DRAG = '.hero__stage.is-3d:not(.is-locked), .hero.is-wheel .hero__gl, #arc-viewport';
+const DRAG = '.hero__stage.is-3d:not(.is-locked), .hero.is-wheel .hero__gl, #arc-viewport, .jar__stage, .wordmark.is-physical .wordmark__line--fill > span';
 const OFF = 'video[controls], #model-embed.is-loaded, #model-embed.is-loaded *';
 
 export function initCursor({ reduced, gsap }) {

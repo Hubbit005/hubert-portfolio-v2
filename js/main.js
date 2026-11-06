@@ -11,6 +11,7 @@ import { initFooter } from './footer.js';
 import { initAmbient } from './ambient.js';
 import { initPause } from './pause.js';
 import { initJar } from './jar.js';
+import { initLetters } from './letters.js';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -223,6 +224,7 @@ async function boot() {
   initChart({ reduced, gsap, ScrollTrigger });
   initFooter({ reduced, gsap });
   initJar({ reduced, gsap });
+  initLetters({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });
