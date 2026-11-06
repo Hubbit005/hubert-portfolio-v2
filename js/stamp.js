@@ -57,7 +57,10 @@ export function initStamp({ reduced }) {
   document.addEventListener('pointerdown', (e) => { down = { x: e.clientX, y: e.clientY }; }, { passive: true, capture: true });
   // The whole stamp (not only the click point) must land on empty space: the centre and a ring of
   // points around it are tested, so a stamp never covers a heading or a button next to the click.
-  const RING = [...Array(8)].map((_, i) => [Math.cos((i * Math.PI) / 4) * 30, Math.sin((i * Math.PI) / 4) * 30]);
+  const RING = [...Array(16)].map((_, i) => {
+    const a = (i * Math.PI) / 8, rr = i % 2 ? 48 : 40; // a 64 px square turned up to 12° reaches ~45 px
+    return [Math.cos(a) * rr, Math.sin(a) * rr];
+  }).concat([...Array(4)].map((_, i) => [Math.cos((i * Math.PI) / 2 + 0.78) * 22, Math.sin((i * Math.PI) / 2 + 0.78) * 22]));
   function clear(x, y) {
     for (const [dx, dy] of [[0, 0], ...RING]) {
       const px = x + dx, py = y + dy;

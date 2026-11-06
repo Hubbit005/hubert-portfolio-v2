@@ -45,27 +45,33 @@ export function initLetters({ reduced, gsap }) {
     walls = []; letters = [];
     const c = contact.getBoundingClientRect();
     const W = c.width, H = c.height;
-    const shelf = rel(inner.getBoundingClientRect(), c).y;
-    const st = { isStatic: true, friction: 0.6, restitution: 0.15 };
-    walls.push(box(W / 2, shelf + 100, W + 400, 200, st));   // the shelf (footer's top line)
-    // side walls a little inside the edges: the glyphs overhang their boxes
-    walls.push(box(-54, H / 2, 120, H * 3, st), box(W + 54, H / 2, 120, H * 3, st));
-    walls.push(box(W / 2, -60, W + 400, 120, st));            // top of the contact section
-    // The contact block's text and buttons are walls
-    // Narrow screens: the button row sits right above the word, so the letters fly behind it (it lies
-    // above them and gets a solid background); the e-mail and phone stay walls.
-    const sel = W < 700 ? '.sec-head__title, .contact__lead, .contact__mail' : '.sec-head__title, .contact__lead, .contact__mail, .contact__actions .btn:not([hidden])';
-    contact.querySelectorAll(sel).forEach((el) => {
-      const r = rel(el.getBoundingClientRect(), c);
-      if (r.w && r.h) walls.push(box(r.x + r.w / 2, r.y + r.h / 2, r.w + 8, r.h + 8, st));
-    });
-    walls.forEach((w) => world.add(w));
-    fill.forEach((el, i) => {
-      // the layout box, without the transform the physics wrote
+    // the letters' layout boxes (without the transform the physics wrote)
+    const rects = fill.map((el, i) => {
       const sx = el.style.transform; el.style.transform = 'none'; stroke[i].style.transform = 'none';
       const r = rel(el.getBoundingClientRect(), c);
       el.style.transform = sx; stroke[i].style.transform = sx;
-      const b = box(r.x + r.w / 2, r.y + r.h / 2, r.w * 0.9, r.h * 0.92, { restitution: 0.25, friction: 0.55, density: 0.0008, angularDamping: 0.4 });
+      return r;
+    });
+    const HH = 0.46; // half height of a letter body, as a share of its line box
+    // The shelf is exactly under the letters at home: a letter that wakes up does not drop.
+    const shelf = Math.max(...rects.map((r) => r.y + r.h / 2 + r.h * HH));
+    const st = { isStatic: true, friction: 0.6, restitution: 0.15 };
+    walls.push(box(W / 2, shelf + 100, W + 400, 200, st));   // the shelf
+    // side walls inside the edges: the glyphs overhang their boxes when they turn
+    walls.push(box(-46, H / 2, 120, H * 3, st), box(W + 46, H / 2, 120, H * 3, st));
+    walls.push(box(W / 2, -60, W + 400, 120, st));            // top of the contact section
+    // Narrow screens: the button row sits right above the word, so the letters fly behind it (it lies
+    // above them and gets a solid background); the e-mail and phone stay walls. Text walls are group 2:
+    // a letter held by the pointer passes them (it follows the hand), and bounces off them once let go.
+    const sel = W < 700 ? '.sec-head__title, .contact__lead, .contact__mail' : '.sec-head__title, .contact__lead, .contact__mail, .contact__actions .btn:not([hidden])';
+    contact.querySelectorAll(sel).forEach((el) => {
+      const r = rel(el.getBoundingClientRect(), c);
+      if (r.w && r.h) walls.push(box(r.x + r.w / 2, r.y + r.h / 2, r.w + 8, r.h + 8, { ...st, group: 2 }));
+    });
+    walls.forEach((w) => world.add(w));
+    rects.forEach((r, i) => {
+      // as wide as the letter (the word's tight spacing makes neighbours touch, not overlap)
+      const b = box(r.x + r.w / 2, r.y + r.h / 2, r.w * 0.97, r.h * HH * 2, { restitution: 0.25, friction: 0.55, density: 0.0008, angularDamping: 0.4 });
       world.add(b);
       world.sleep(b);
       b.data = { i };
@@ -135,16 +141,18 @@ export function initLetters({ reduced, gsap }) {
     world, el: contact, toWorld,
     pick: (x, y, e) => (active && !returning && e.target.closest?.('.wordmark') ? world.pick(x, y, (b) => b.data && 'i' in b.data, e.pointerType === 'touch' ? 10 : 0) : null),
     canDrag: (e) => e.pointerType !== 'touch',
-    onGrab: () => { lastTouch = performance.now(); contact.classList.add('is-holding'); resetBtn.hidden = false; loop?.keep(0.5); },
-    onDrop: () => { lastTouch = performance.now(); contact.classList.remove('is-holding'); loop?.keep(0.5); },
+    onGrab: (b) => { b.mask = 0xffff & ~2; lastTouch = performance.now(); contact.classList.add('is-holding'); resetBtn.hidden = false; loop?.keep(0.5); },
+    onDrop: (b) => { b.mask = 0xffff; lastTouch = performance.now(); contact.classList.remove('is-holding'); loop?.keep(0.5); },
     onTap: (b, e) => {
       if (e.pointerType !== 'touch') return;
       world.wake(b);
       // up and towards the middle, away from the walls above the left letters
       const W = contact.clientWidth;
-      b.vy = -1500 - Math.random() * 400;
-      b.vx = Math.max(-700, Math.min(700, (W / 2 - b.x) * 2.2)) + (Math.random() - 0.5) * 300;
-      b.w = (Math.random() - 0.5) * 14;
+      // narrow screens: a low hop with a spin, so the peak stays in sight under the button row
+      const narrow = W < 700;
+      b.vy = narrow ? -820 - Math.random() * 200 : -1500 - Math.random() * 400;
+      b.vx = Math.max(-700, Math.min(700, (W / 2 - b.x) * (narrow ? 1.2 : 2.2))) + (Math.random() - 0.5) * 300;
+      b.w = (Math.random() < 0.5 ? -1 : 1) * (8 + Math.random() * 10);
       lastTouch = performance.now();
       resetBtn.hidden = false;
       loop?.keep(0.5);

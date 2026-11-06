@@ -104,7 +104,11 @@ export function initCursor({ reduced, gsap }) {
     else if (e.relatedTarget.tagName === 'IFRAME') setState('off');
   });
   document.addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') cursor.classList.add('is-down'); });
-  document.addEventListener('pointerup', () => cursor.classList.remove('is-down'));
+  document.addEventListener('pointerup', () => {
+    cursor.classList.remove('is-down');
+    // after a drag (a ball, a letter) the pointer may be over something else: look again
+    requestAnimationFrame(() => { const el = document.elementFromPoint(mx, my); lastTarget = el; setState(classify(el)); });
+  });
   window.addEventListener('blur', () => cursor.classList.remove('is-down'));
   // The page scrolls under a still pointer: the element under it changes.
   window.addEventListener('scroll', () => {

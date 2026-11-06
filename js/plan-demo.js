@@ -70,7 +70,7 @@ export function initPlanDemo({ reduced, gsap }) {
     return `
       <div class="pd__top">
         <p class="pd__kicker">${esc(t('demo.kicker'))}</p>
-        <h4 class="pd__title" tabindex="-1">Client A</h4>
+        <h4 class="pd__title" tabindex="-1">${esc(t('demo.client'))}</h4>
         <p class="pd__muted">${esc(t('demo.goal'))}</p>
       </div>
       <div class="pd__stats">
