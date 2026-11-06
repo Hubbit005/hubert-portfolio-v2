@@ -48,6 +48,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 ## Sposób pracy
 
 - Jedno zadanie z `prompts/` = jeden commit z opisem po polsku. Po każdym commicie push.
+- Przy każdej zmianie JS lub CSS podbij wersję `?v=RRRRMMDD` (jedna wartość w `index.html` i we wszystkich importach w `js/`; `vendor/` bez wersji).
 - Przed pierwszym zadaniem zrób zrzuty ekranu obecnej strony (stan wyjściowy) Playwrightem i trzymaj je poza repo.
 - Po każdym zadaniu sprawdź Playwrightem: 1440×900 i 390×844, EN i PL (`#pl`), z i bez reduced motion. Konsola bez błędów.
 - Nie pytaj Huberta o rzeczy opisane w tym pliku albo w promptach. Pytaj tylko, gdy coś wymagałoby zmiany treści, dodania faktu albo wydania pieniędzy.
