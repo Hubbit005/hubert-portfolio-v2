@@ -40,15 +40,12 @@ export function initStamp({ reduced }) {
   const layer = document.createElement('div');
   layer.className = 'stamps';
   layer.setAttribute('aria-hidden', 'true');
-  // One ink filter for every stamp: rough edges and paper grain (SVG, no image file)
+  // One filter for every stamp: rough ink edges. The grain is the Higgsfield ink texture (CSS mask).
   layer.innerHTML = `
     <svg width="0" height="0" focusable="false" style="position:absolute">
       <filter id="stamp-ink" x="-10%" y="-10%" width="120%" height="120%">
         <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="7" result="n"/>
-        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="d"/>
-        <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="2" result="g"/>
-        <feColorMatrix in="g" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.75" result="holes"/>
-        <feComposite in="d" in2="holes" operator="in"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
       </filter>
     </svg>`;
   document.body.appendChild(layer);
@@ -85,6 +82,8 @@ export function initStamp({ reduced }) {
     s.style.left = `${e.pageX}px`;
     s.style.top = `${e.pageY}px`;
     s.style.setProperty('--r', `${(Math.random() * 24 - 12).toFixed(1)}deg`);
+    s.style.setProperty('--mx', `${Math.round(Math.random() * 100)}%`);
+    s.style.setProperty('--my', `${Math.round(Math.random() * 100)}%`);
     s.innerHTML = `<svg viewBox="0 0 64 64" focusable="false"><g filter="url(#stamp-ink)"><rect x="3" y="3" width="58" height="58" rx="13" fill="none" stroke="currentColor" stroke-width="4"/><path d="${shapes}" fill="currentColor"/></g></svg>`;
     s.addEventListener('animationend', (ev) => { if (ev.animationName === 'stamp-out') s.remove(); });
     layer.appendChild(s);

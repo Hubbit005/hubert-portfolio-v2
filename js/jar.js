@@ -28,9 +28,9 @@ export function initJar({ reduced, gsap }) {
   wrap.className = 'jar';
   wrap.innerHTML = `
     <div class="jar__stage" aria-hidden="true">
-      <svg class="jar__glass jar__glass--back" focusable="false"></svg>
+      <div class="jar__glass jar__glass--back"></div>
       <div class="jar__balls"></div>
-      <svg class="jar__glass jar__glass--front" focusable="false"></svg>
+      <div class="jar__glass jar__glass--front"></div>
       <div class="jar__bubble" hidden><b class="jar__bubble-name"></b><span class="jar__bubble-text"></span></div>
     </div>
     <button class="btn btn--ghost jar__shake" type="button"></button>`;
@@ -80,20 +80,26 @@ export function initJar({ reduced, gsap }) {
   const G = {}; // stage W/H, jar left/right/top/bottom, wall thickness, ball radius
   let walls = [], jarWalls = [], jx = 0, jv = 0, jPrev = 0, jDrag = null, shake = 0, shakeT = 0;
 
+  /* The glass is a Higgsfield render (assets/higgsfield/jar.webp, cropped to the jar), shown a little
+     wider than the photo. Back layer: the jar; front layer: the same picture, faint and screen-blended
+     over the balls (glass reflections in front of them), plus a warm accent reflection on the right.
+     The physics walls follow the glass: sides 6% of the width, the thick base 11% of the height. */
+  const RATIO = 1.25, SIDE = 0.06, BASE = 0.11, RIM = 0.02;
   function geometry() {
     const W = stage.clientWidth, H = stage.clientHeight;
     const small = W < 480;
-    const jw = Math.min(W * (small ? 0.84 : 0.78), small ? 300 : 360);
-    const jh = Math.min(H - (small ? 56 : 70), jw * 1.08);
-    const bottom = H - 6;
+    let jw = Math.min(W * (small ? 0.8 : 0.78), small ? 300 : 340);
+    let jh = jw * RATIO;
+    if (jh > H - 24) { jh = H - 24; jw = jh / RATIO; }
+    const bottom = H - 4;
     Object.assign(G, {
       W, H, jw, jh, bottom, top: bottom - jh, left: (W - jw) / 2, right: (W + jw) / 2,
-      t: small ? 10 : 12, r: Math.round(Math.max(18, Math.min(30, jw / 10.5))),
+      t: jw * SIDE, base: jh * BASE, r: Math.round(Math.max(18, Math.min(30, jw / 10.5))),
     });
   }
   function buildWalls() {
     walls.forEach((w) => world.remove(w)); jarWalls = [];
-    const { W, H, top, bottom, left, right, t: th, jw } = G;
+    const { W, H, top, bottom, left, right, t: th, base, jw, jh } = G;
     const st = { isStatic: true, friction: 0.5, restitution: 0.2 };
     walls = [
       box(W / 2, H + 40, W + 400, 80, st),            // stage floor
@@ -101,10 +107,11 @@ export function initJar({ reduced, gsap }) {
       box(W + 40, H / 2 - 100, 80, H + 400, st),
       box(W / 2, -40, W + 400, 80, st),               // ceiling: the top of the stage (balls never cover the title)
     ];
+    const wallTop = top + jh * RIM;
     jarWalls = [
-      box(left + th / 2, (top + bottom) / 2, th, bottom - top, st),
-      box(right - th / 2, (top + bottom) / 2, th, bottom - top, st),
-      box((left + right) / 2, bottom - th / 2, jw, th, st),
+      box(left + th / 2, (wallTop + bottom) / 2, th, bottom - wallTop, st),
+      box(right - th / 2, (wallTop + bottom) / 2, th, bottom - wallTop, st),
+      box((left + right) / 2, bottom - base / 2, jw, base, st),
     ];
     jarWalls.forEach((w) => { w.baseX = w.x; });
     walls.push(...jarWalls);
@@ -112,57 +119,8 @@ export function initJar({ reduced, gsap }) {
     // walls first in the list: picks and drawing go over the balls only
     world.bodies.sort((a, b) => (b.isStatic ? 1 : 0) - (a.isStatic ? 1 : 0));
   }
-
-  /* Glass, drawn for the measured size: back (body tint, far rim) and front (highlights, near rim,
-     a warm reflection of the accent on the right). */
   function drawGlass() {
-    const { jw, jh, t: th } = G;
-    const w = jw, h = jh + 10, rx = Math.min(46, w * 0.16), lip = 16;
-    const outline = `M ${th * 0.2} ${lip} L ${th * 0.2} ${h - rx - 6} Q ${th * 0.2} ${h - 4} ${rx} ${h - 4} L ${w - rx} ${h - 4} Q ${w - th * 0.2} ${h - 4} ${w - th * 0.2} ${h - rx - 6} L ${w - th * 0.2} ${lip}`;
-    const vb = `0 -6 ${w} ${h + 8}`;
-    backSvg.setAttribute('viewBox', vb);
-    frontSvg.setAttribute('viewBox', vb);
-    backSvg.innerHTML = `
-      <defs>
-        <linearGradient id="jg-body" x1="0" x2="1">
-          <stop offset="0" stop-color="var(--jar-glass)" stop-opacity="0.26"/>
-          <stop offset="0.18" stop-color="var(--jar-glass)" stop-opacity="0.07"/>
-          <stop offset="0.8" stop-color="var(--jar-glass)" stop-opacity="0.05"/>
-          <stop offset="1" stop-color="var(--jar-glass)" stop-opacity="0.22"/>
-        </linearGradient>
-      </defs>
-      <path d="${outline} Z" fill="url(#jg-body)"/>
-      <ellipse cx="${w / 2}" cy="${lip}" rx="${w / 2 - 2}" ry="9" fill="none" stroke="var(--jar-edge)" stroke-opacity="0.35" stroke-width="1.5"/>`;
-    frontSvg.innerHTML = `
-      <defs>
-        <linearGradient id="jg-hi" x1="0" x2="1">
-          <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-          <stop offset="0.45" stop-color="#fff" stop-opacity="0.32"/>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="jg-warm" x1="0" x2="1">
-          <stop offset="0" stop-color="rgb(var(--glow-rgb))" stop-opacity="0"/>
-          <stop offset="0.7" stop-color="rgb(var(--glow-rgb))" stop-opacity="0.42"/>
-          <stop offset="1" stop-color="rgb(var(--glow-rgb))" stop-opacity="0.12"/>
-        </linearGradient>
-        <linearGradient id="jg-fade" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
-          <stop offset="0.75" stop-color="#fff" stop-opacity="0.5"/>
-          <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-        </linearGradient>
-        <mask id="jg-m"><rect x="0" y="0" width="${w}" height="${h}" fill="url(#jg-fade)"/></mask>
-      </defs>
-      <path d="${outline}" fill="none" stroke="var(--jar-edge)" stroke-opacity="0.55" stroke-width="1.6"/>
-      <g mask="url(#jg-m)">
-        <rect x="${w * 0.07}" y="${lip + 14}" width="${w * 0.07}" height="${h - lip - rx - 30}" rx="${w * 0.035}" fill="url(#jg-hi)"/>
-        <rect x="${w * 0.17}" y="${lip + 30}" width="${w * 0.018}" height="${(h - lip) * 0.45}" rx="${w * 0.009}" fill="#fff" fill-opacity="0.22"/>
-      </g>
-      <rect x="${w * 0.8}" y="${lip + 10}" width="${w * 0.17}" height="${h - lip - rx - 10}" rx="${w * 0.06}" fill="url(#jg-warm)"/>
-      <path d="M ${rx * 0.7} ${h - 7} Q ${w / 2} ${h + 2} ${w - rx * 0.7} ${h - 7}" fill="none" stroke="var(--jar-edge)" stroke-opacity="0.4" stroke-width="3" stroke-linecap="round"/>
-      <path d="M 3 ${lip} A ${w / 2 - 3} 9 0 0 0 ${w - 3} ${lip}" fill="none" stroke="var(--jar-edge)" stroke-opacity="0.7" stroke-width="2"/>
-      <path d="M ${w * 0.12} ${lip + 5} A ${w / 2 - 3} 9 0 0 0 ${w * 0.42} ${lip + 8.5}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="1.5" stroke-linecap="round"/>`;
-    const vbH = h + 8;
-    [backSvg, frontSvg].forEach((s) => Object.assign(s.style, { left: `${G.left}px`, top: `${G.top - lip - 6}px`, width: `${w}px`, height: `${vbH}px` }));
+    [backSvg, frontSvg].forEach((el) => Object.assign(el.style, { left: `${G.left}px`, top: `${G.top}px`, width: `${G.jw}px`, height: `${G.jh}px` }));
   }
 
   function sizeBalls() {

@@ -1589,3 +1589,28 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 /* Letters fly behind the contact buttons on phones: the buttons get a solid background */
 #contact:has(.wordmark.is-physical) .contact__actions .btn{ --btn-bg: var(--bg); }
+
+/* ==========================================================================
+   Higgsfield textures for the toys (task 08, point H): glass jar, resin ball, stamp ink, ceramic letters
+   ========================================================================== */
+.jar__glass{ background: url(../assets/higgsfield/jar.webp) center / 100% 100% no-repeat; }
+.jar__glass--front{
+  background:
+    linear-gradient(to right, transparent 74%, rgb(var(--glow-rgb) / 0.32) 88%, rgb(var(--glow-rgb) / 0.08) 97%, transparent),
+    url(../assets/higgsfield/jar.webp) center / 100% 100% no-repeat;
+  opacity: 0.5; mix-blend-mode: screen;
+}
+.jar__ball{
+  background: url(../assets/higgsfield/ball.webp) center / 100% 100% no-repeat;
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.28);
+}
+.jar__ball.is-picked{ box-shadow: 0 0 0 3px var(--accent), 0 3px 8px rgb(0 0 0 / 0.28); }
+.stamp svg{
+  -webkit-mask: url(../assets/higgsfield/stamp-mask.webp) var(--mx, 50%) var(--my, 50%) / 150% 150%;
+  mask: url(../assets/higgsfield/stamp-mask.webp) var(--mx, 50%) var(--my, 50%) / 150% 150%;
+}
+.wordmark__line--fill > span{
+  background: url(../assets/higgsfield/ceramic.webp) center / cover;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
