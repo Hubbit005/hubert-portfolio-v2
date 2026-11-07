@@ -1579,3 +1579,29 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .jar__shake:hover:not(:focus-visible)::before, .letters-reset:hover:not(:focus-visible)::before{ transform: translateY(102%); }
   .jar__shake:hover:not(:focus-visible), .letters-reset:hover:not(:focus-visible){ color: var(--btn-fg); border-color: var(--btn-bd); }
 }
+
+/* ==========================================================================
+   Hero chrome icons (js/hero-icons.js): above the 3D canvas, below text and buttons
+   ========================================================================== */
+.hero-icons{ position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity var(--t-4) var(--ease-out); }
+.hero-icons.is-in{ opacity: 1; }
+.hero-icons.is-away{ opacity: 0.32; }
+.hero-icon{
+  position: absolute; left: 0; top: 0; height: auto; max-width: none; pointer-events: auto;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; cursor: grab;
+  /* depth: far icons are softer and darker; all get a warm glow underneath */
+  filter: drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
+          blur(calc(var(--z) * 1.4px)) brightness(calc(1 - var(--z) * 0.32));
+}
+.hero-icons.is-away .hero-icon{ pointer-events: none; }
+.hero-icons.is-holding .hero-icon{ cursor: grabbing; }
+/* cursor states for the icons and the guitar */
+.cursor__grab, .cursor__play{ width: 40px; height: 40px; margin: -20px 0 0 -20px; max-width: none; opacity: 0; transform: scale(0.6); transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out); }
+.cursor__grab{ fill: var(--ink); }
+.cursor.is-grab .cursor__ring{ --rs: 0.9; border-style: dashed; }
+.cursor.is-grab .cursor__grab{ opacity: 1; transform: scale(var(--press, 1)); }
+.cursor__play{ width: 24px; height: 24px; margin: -12px 0 0 -10px; fill: var(--on-accent); }
+.cursor.is-play{ mix-blend-mode: normal; }
+.cursor.is-play .cursor__ring{ --rs: 1.1; border-color: var(--accent); background: var(--accent); }
+.cursor.is-play .cursor__play{ opacity: 1; transform: scale(var(--press, 1)); }
+.cursor-dot.is-grab, .cursor-dot.is-play{ opacity: 0; }
