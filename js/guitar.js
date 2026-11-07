@@ -69,7 +69,7 @@ export function initGuitar({ reduced, gsap }) {
   const SEG = 28;
   function drawStrings(energy, time) {
     for (let i = 0; i < 6; i++) {
-      const e = reduced ? 0 : energy[i];
+      const e = reduced ? 0 : Math.max(energy[i], kick * (1 - i * 0.08));
       const x0 = NUT_X[i], x1 = BRIDGE_X[i];
       if (e < 0.004) { paths[i].setAttribute('d', `M${x0} ${NUT_Y} L${x1} ${BRIDGE_Y}`); paths[i].style.opacity = '0.0'; continue; }
       // standing wave: fundamental plus a little second harmonic; the phase flips fast (a blur of motion)
@@ -188,7 +188,7 @@ export function initGuitar({ reduced, gsap }) {
 
   /* ---------- One frame: floating, cable, and the playing visuals (GSAP ticker) ---------- */
   let ticking = false, onScreen = false, time = 0;
-  let tilt = 0, tiltT = 0;
+  let tilt = 0, tiltT = 0, kick = 0; // kick: a pluck from scrolling in the scene (task 13)
   let lvlS = 0, hit = 0, bassS = 0; // smoothed level, hit envelope, smoothed bass
   const zero = new Float32Array(6);
   const TAU = Math.PI * 2;
@@ -200,6 +200,7 @@ export function initGuitar({ reduced, gsap }) {
   function frame(_, deltaMs) {
     const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
     if (!window.__motionPaused) time += dt;
+    kick *= Math.exp(-dt * 4);
     if (!L) measure();
     const g = guitar;
     const energy = g ? g.update() : zero;
@@ -212,7 +213,7 @@ export function initGuitar({ reduced, gsap }) {
     bassS += (bass - bassS) * (1 - Math.exp(-dt * (bass > bassS ? 30 : 8)));
     const live = !reduced && !window.__motionPaused;
     // paused motion and silence: the scene stands still, nothing to write (the cable is already drawn)
-    if (!live && !playing && L.drawn && lvlS < 0.004 && hit < 0.01 && energy.every((e) => e < 0.004)) {
+    if (!live && !playing && kick < 0.01 && L.drawn && lvlS < 0.004 && hit < 0.01 && energy.every((e) => e < 0.004)) {
       if (!onScreen) { gsap.ticker.remove(frame); ticking = false; }
       return;
     }
@@ -261,7 +262,7 @@ export function initGuitar({ reduced, gsap }) {
     sec.style.setProperty('--lvl', lvl.toFixed(3));
 
     // rest: off screen and silent (or reduced motion and silent) → stop the loop
-    const quiet = !playing && energy.every((e) => e < 0.004) && lvlS < 0.004 && hit < 0.01;
+    const quiet = !playing && kick < 0.01 && energy.every((e) => e < 0.004) && lvlS < 0.004 && hit < 0.01;
     if (quiet && (!onScreen || reduced)) {
       drawStrings(zero, 0);
       lamp.style.opacity = ''; led.style.opacity = ''; led.style.transform = '';
@@ -304,5 +305,6 @@ export function initGuitar({ reduced, gsap }) {
   }
 
   wake();
-  return { stop };
+  function nudge() { kick = 1; if (!playing) start(); wake(); }
+  return { stop, nudge };
 }
