@@ -87,7 +87,7 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero" id="home" aria-labelledby="hero-title">
-      <!-- Two panels (task 11): the hero and the guitar scene (#guitar). js/hero-panel.js slides the track;
+      <!-- Two panels (tasks 11, 12): the hero and the guitar scene (#guitar). js/hero-panel.js zooms between them;
            without JS the guitar is a normal block under the hero. -->
       <div class="hero__track" id="hero-track">
         <div class="hero__main hero__panel" id="hero-main">
@@ -137,11 +137,14 @@
               </a>
               <a class="btn btn--ghost" href="#contact" data-magnetic><span data-i18n="home.4">Contact</span></a>
             </div>
+            <button class="guitar-mini" id="guitar-mini" type="button" aria-controls="guitar" aria-expanded="false">
+              <span class="guitar-mini__scene" aria-hidden="true"><span class="guitar-mini__float">
+                <img class="guitar-mini__amp" src="assets/hf/amp-700.webp" width="700" height="744" alt="" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="guitar-mini__guitar" src="assets/hf/guitar-900.webp" width="343" height="900" alt="" loading="lazy" decoding="async" fetchpriority="low">
+              </span></span>
+              <span class="guitar-mini__label mono" data-i18n="guitar.1">Play something</span>
+            </button>
           </div>
-          <button class="hero-arrow" id="hero-arrow" type="button" aria-controls="guitar" aria-expanded="false" data-magnetic>
-            <svg class="hero-arrow__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-            <span class="hero-arrow__label mono" data-i18n="guitar.1">Play something</span>
-          </button>
         </div>
       <section class="section guitar hero__panel" id="guitar" aria-labelledby="guitar-title">
         <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-film="assets/hf/smoke"></video></div>

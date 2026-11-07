@@ -104,7 +104,8 @@ export function initHeroIcons({ reduced, gsap }) {
       if (phone) {
         // between the nav and the text block (role, lead, buttons)
         const foot = host.querySelector('.hero__foot')?.getBoundingClientRect();
-        const bot = foot ? foot.top - hr.top - 8 : H * 0.6;
+        const mini = host.querySelector('#guitar-mini')?.getBoundingClientRect();
+        const bot = foot ? Math.min(foot.top, mini?.top || foot.top) - hr.top - 8 : H * 0.6;
         E = { cx: W * 0.5, cy: (navH + bot) / 2, rx: W * 0.47, ry: Math.max(60, (bot - navH) / 2) };
       }
       world.bodies.sort((a, b) => (b.isStatic ? 1 : 0) - (a.isStatic ? 1 : 0));

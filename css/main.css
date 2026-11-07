@@ -1611,57 +1611,69 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* ==========================================================================
    Hero word as one twisted chrome solid (js/hero.js, task 10)
    --hero-side: room kept free on each side of the word (px, read by js/hero.js): on wider screens
-   the big "to the guitar" arrow stands at the hero's right edge.
+   the icons orbit there.
    ========================================================================== */
 .hero{ --hero-side: 24px; }
 @media (min-width: 701px) { .hero{ --hero-side: 196px; } }
 
 /* ==========================================================================
-   Hero with two panels (js/hero-panel.js, task 11): the hero and the guitar scene (#guitar)
-   Without JS (html.no-js) the guitar panel is a normal block under the hero and the arrows are hidden.
+   Hero and the guitar scene (js/hero-panel.js, tasks 11 and 12). Both panels share one grid cell.
+   A small lit guitar + amp (#guitar-mini, bottom right) zooms into the full scene (#guitar):
+   clip-path + transform from the small scene's box to the full hero (FLIP; js sets --gz-*), 0.9 s.
+   Without JS (html.no-js) the guitar panel is a normal block under the hero and the mini is hidden.
    ========================================================================== */
-.no-js .hero-arrow, .no-js .guitar-back{ display: none; }
-.js .hero__track{ display: flex; align-items: stretch; will-change: transform; transition: transform 0.85s var(--ease-out); }
-.js .hero__track > .hero__panel{ flex: 0 0 100%; min-width: 0; }
-.js .hero.is-guitar .hero__track{ transform: translateX(-100%); }
-.js .hero.is-instant .hero__track, .js .hero.is-instant .guitar__bg{ transition: none; }
+.no-js .guitar-mini, .no-js .guitar-back{ display: none; }
+.js .hero__track{ display: grid; }
+.js .hero__track > .hero__panel{ grid-area: 1 / 1; min-width: 0; }
+.js #hero-main{ transition: transform 0.9s var(--ease-out), opacity 0.6s var(--ease-out); }
+.js .hero.is-guitar #hero-main{ transform: scale(0.9); opacity: 0; }
+.js .hero #guitar{
+  z-index: 4; visibility: hidden; opacity: 0;
+  transform-origin: var(--gz-o, 100% 100%); transform: scale(var(--gz-s, 0.2));
+  clip-path: inset(var(--gz-clip, 0) round 24px);
+  transition: transform 0.9s var(--ease-out), clip-path 0.9s var(--ease-out), opacity 0.35s var(--ease-out), visibility 0s linear 0.9s;
+}
+.js .hero.is-guitar #guitar{ visibility: visible; opacity: 1; transform: none; clip-path: inset(0 round 0); transition-delay: 0s; }
+.js .hero.is-instant #hero-main, .js .hero.is-instant #guitar{ transition: none; }
 @media (prefers-reduced-motion: reduce) {
-  /* no sliding: a short cross-fade (the track jumps while both panels are faded) */
-  .js .hero__track{ transition: none; }
-  .js .hero__panel{ transition: opacity 0.26s ease; }
-  .js .hero.has-track .hero__panel[inert]{ opacity: 0; }
-  .js .hero .guitar__bg, .js .hero.is-guitar .guitar__bg{ transition: none; transform: none; left: 0; }
+  /* no zoom: a short cross-fade */
+  .js #hero-main, .js .hero #guitar{ transform: none !important; clip-path: none !important; transition: opacity 0.26s ease, visibility 0s linear 0.26s; }
+  .js .hero.is-guitar #guitar{ transition: opacity 0.26s ease, visibility 0s; }
 }
 
-/* The big arrow "to the guitar" (panel 1, right edge, vertically in the middle) */
-.hero-arrow{
-  position: absolute; z-index: 3; right: var(--gutter); top: 50%;
-  display: grid; justify-items: center; gap: 10px; padding: 0; border: 0; background: none;
-  color: var(--ink); cursor: pointer; transform: translateY(-50%);
-  transition: opacity var(--t-3) var(--ease-out), visibility var(--t-3), translate var(--t-2) var(--ease-out);
+/* The small scene: a guitar leaning on the amp, lit from below (bottom right of the hero, in .hero__foot) */
+.guitar-mini{
+  position: absolute; z-index: 3; right: 0; bottom: 0; /* inside .hero__foot: on the buttons' baseline */
+  display: grid; justify-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  color: var(--ink-2); cursor: pointer; transition: opacity var(--t-3) var(--ease-out), visibility var(--t-3);
 }
-.hero-arrow__icon{
-  box-sizing: border-box; width: 96px; height: 96px; padding: 26px; border-radius: 50%;
-  fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-  border: 2px solid var(--accent); background: rgb(var(--bg-rgb) / 0.55);
-  box-shadow: 0 0 34px rgb(var(--glow-rgb) / 0.38), inset 0 0 18px rgb(var(--glow-rgb) / 0.16);
-  transition: background-color var(--t-2) var(--ease-out), stroke var(--t-2) var(--ease-out), box-shadow var(--t-3) var(--ease-out);
+.guitar-mini__scene{ position: relative; display: block; width: 190px; height: 200px; transition: transform var(--t-3) var(--ease-out); }
+.guitar-mini__scene::before{
+  content: ""; position: absolute; left: -20%; right: -20%; bottom: -24px; height: 70px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.55), rgb(var(--glow-rgb) / 0));
+  opacity: 0.7; transition: opacity var(--t-3) var(--ease-out);
 }
-.hero-arrow__label{ font-size: 0.7rem; color: var(--ink-2); white-space: nowrap; transition: color var(--t-2) var(--ease-out); }
-.hero-arrow:hover .hero-arrow__icon, .hero-arrow:focus-visible .hero-arrow__icon{ background: var(--accent); stroke: var(--on-accent); box-shadow: 0 0 48px rgb(var(--glow-rgb) / 0.6); }
-.hero-arrow:hover .hero-arrow__label, .hero-arrow:focus-visible .hero-arrow__label{ color: var(--ink); }
-.hero-arrow:focus-visible{ outline: none; }
-.hero-arrow:focus-visible .hero-arrow__icon{ outline: 3px solid var(--ink); outline-offset: 4px; }
-/* a nudge to the left every few seconds (transform of the icon only) */
-.motion-ok .hero-arrow__icon{ animation: arrow-nudge 4.2s var(--ease-out) 2.5s infinite; }
-@keyframes arrow-nudge{ 0%, 76%, 100%{ transform: none; } 82%{ transform: translateX(-12px); } 88%{ transform: translateX(2px); } 93%{ transform: translateX(-5px); } }
-.motion-paused .hero-arrow__icon, .hero-arrow:hover .hero-arrow__icon{ animation-play-state: paused; }
-.hero.is-roulette .hero-arrow{ opacity: 0; visibility: hidden; }
-@media (min-width: 1400px) { .hero-arrow__icon{ width: 104px; height: 104px; padding: 28px; } }
+.guitar-mini__float{ position: absolute; inset: 0; }
+.guitar-mini img{ position: absolute; bottom: 0; width: auto; filter: drop-shadow(0 5px 8px rgb(var(--glow-rgb) / 0.5)) drop-shadow(0 1px 1px rgb(var(--glow-rgb) / 0.7)); }
+.guitar-mini__amp{ right: 0; height: 140px; }
+.guitar-mini__guitar{ left: 14px; height: 190px; transform: rotate(-9deg); transform-origin: 50% 100%; }
+.guitar-mini__label{ font-size: 0.7rem; white-space: nowrap; transition: color var(--t-2) var(--ease-out); }
+.guitar-mini:hover .guitar-mini__scene, .guitar-mini:focus-visible .guitar-mini__scene{ transform: scale(1.06); }
+.guitar-mini:hover .guitar-mini__scene::before, .guitar-mini:focus-visible .guitar-mini__scene::before{ opacity: 1; }
+.guitar-mini:hover .guitar-mini__label, .guitar-mini:focus-visible .guitar-mini__label{ color: var(--ink); }
+.guitar-mini:focus-visible{ outline: 3px solid var(--ink); outline-offset: 6px; border-radius: var(--r-lg); }
+.motion-ok .guitar-mini__float{ animation: mini-float 5s ease-in-out infinite; }
+@keyframes mini-float{ 50%{ transform: translateY(-5px); } }
+.motion-paused .guitar-mini__float{ animation-play-state: paused; }
+.hero.is-roulette .guitar-mini{ opacity: 0; visibility: hidden; }
+@media (hover: none) { .guitar-mini:hover .guitar-mini__scene{ transform: none; } }
 @media (max-width: 700px) {
-  .hero-arrow{ right: 14px; top: 53%; gap: 6px; }
-  .hero-arrow__icon{ width: 60px; height: 60px; padding: 16px; }
-  .hero-arrow__label{ font-size: 0.62rem; }
+  /* above the text block, at the right edge */
+  .guitar-mini{ bottom: calc(100% + 8px); gap: 4px; }
+  .guitar-mini__scene{ width: 112px; height: 120px; }
+  .guitar-mini__amp{ height: 84px; }
+  .guitar-mini__guitar{ left: 8px; height: 116px; }
+  .guitar-mini__label{ font-size: 0.62rem; }
 }
 
 /* Panel 2: the guitar scene, as tall as the hero */
@@ -1676,9 +1688,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .js .hero .guitar .sec-head__title{ outline: none; }
 .js .hero .guitar .guitar__inner > .sec-head{ justify-self: center; }
 .guitar__inner{ position: relative; }
-/* the smoke moves a little slower than the guitar and the amp while the track slides */
-.js .hero .guitar__bg{ left: -32%; transform: translateX(32%); transition: transform 0.85s var(--ease-out); -webkit-mask-image: none; mask-image: none; }
-.js .hero.is-guitar .guitar__bg{ transform: none; }
+.js .hero .guitar__bg{ -webkit-mask-image: none; mask-image: none; }
 /* panel 2's pictures load only when it is prepared (js/hero-panel.js) */
 .js .hero .guitar:not(.is-prepared) .guitar__stage{ display: none; }
 
