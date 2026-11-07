@@ -17,7 +17,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Czego nie zmieniać (zamrożone)
 
-1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): pomarańczowo-różowa poświata zostaje. Od 7.11.2026 (decyzje Huberta) hero jest odblokowane dla: chromowanych ikon i ruletki (zadanie 09), napisu HUBERT jako chromowanej skręconej bryły 3D (zadanie 10) oraz strzałki i drugiego panelu z gitarą (zadanie 11). Ikony są ostre, bez rozmycia; głębię dają tylko wielkość i jasność. Logika wyboru projektu i karta wyniku ruletki zostają.
+1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): pomarańczowo-różowa poświata zostaje. Od 7.11.2026 (decyzje Huberta) hero jest odblokowane dla: chromowanych ikon i ruletki (zadanie 09), napisu HUBERT jako chromowanej skręconej bryły 3D (zadanie 10) oraz sceny z gitarą (zadania 11 i 12). Ikony są ostre, bez rozmycia, i poruszają się tylko w elipsie wokół napisu; głębię dają tylko wielkość i jasność. Od zadania 12 ruletka to gra kasynowa na numery i monety, a nie losowanie projektów.
 2. **Karuzela projektów** (`#work`, `js/carousel.js`): zostaje jak jest.
 3. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też. Wyjątki tylko według promptów (np. zadanie 11 usuwa blok „Where AI speeds me up” / „What I decide” i przenosi `#guitar` do hero).
 4. **Kotwice** (`#guitar`, `#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
@@ -25,7 +25,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Twarde zasady treści
 
-- **Żadnych nowych liczb:** statystyk, procentów, liczników, „lat doświadczenia”, wyników. Hubert nie ma danych, a strona nie może zawierać nic nieprawdziwego.
+- **Żadnych nowych liczb:** statystyk, procentów, liczników, „lat doświadczenia”, wyników. Hubert nie ma danych, a strona nie może zawierać nic nieprawdziwego. Wyjątek: liczby w grze w ruletkę (numery, monety, wygrane i przegrane gracza), bo to stan gry, a nie fakty o Hubercie.
 - Nowy tekst tylko tam, gdzie wymaga go zadanie (np. etykiety i przyciski z promptu). Zawsze w parze EN w `index.html` i PL w `js/i18n.js`, w stylu istniejących kluczy.
 - Elementy czysto dekoracyjne mają `aria-hidden="true"`.
 
@@ -33,7 +33,8 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 - `prefers-reduced-motion: reduce`: wszystkie nowe efekty mają wersję statyczną, a treść jest widoczna od razu. Wzór: `js/motion.js`.
 - Strona działa i wszystko widać bez JS (klasy `no-js` / `js` w `<html>`).
-- Urządzenia dotykowe (`hover: none` / `pointer: coarse`): bez własnego kursora i bez efektów zależnych od najechania myszą.
+- Kursor systemowy na wszystkich urządzeniach, bez własnego kursora (decyzja Huberta, zadanie 12).
+- Urządzenia dotykowe (`hover: none` / `pointer: coarse`): bez efektów zależnych od najechania myszą.
 - Klawiatura: widoczny focus, nic nie łapie fokusu, kolejność tabulacji bez zmian.
 - Kontrast tekstu nie może spaść przez nowe tło (WCAG AA).
 
@@ -49,6 +50,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 ## Sposób pracy
 
 - Nowa sesja Claude Code na każde zadanie (albo na parę zadań, jeśli prompt tak mówi).
+- Oszczędzaj limit Huberta: na start każdej sesji włącz skill **Ponytail** (`/ponytail`, najmniej kodu) i używaj grafu **Graphify** zbudowanego tylko z `js/`, `css/`, `index.html` zamiast czytania całych plików. Instalacja i szczegóły w `prompts/12-ruletka-kasyno-gitara.md`, punkt 0.
 - Jedno zadanie z `prompts/` = jeden commit z opisem po polsku (albo commit na punkt, jeśli prompt tak mówi). Po każdym commicie push. Na końcu pull request do `main`.
 - Przy każdej zmianie JS lub CSS podbij wersję `?v=RRRRMMDD` (jedna wartość w `index.html` i we wszystkich importach w `js/`; `vendor/` bez wersji).
 - Przed pierwszym zadaniem zrób zrzuty ekranu obecnej strony (stan wyjściowy) Playwrightem i trzymaj je poza repo.
