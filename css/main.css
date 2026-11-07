@@ -229,17 +229,8 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
   transform-style: preserve-3d;
 }
 @media (max-width: 600px) { .hero__stage{ --fs: clamp(48px, 16.5vw, 120px); min-height: calc(var(--fs) * 3); } }
-.hero__bar{
-  position: absolute; left: 50%; top: 50%;
-  width: calc(var(--fs) * 0.92); height: calc(var(--fs) * 1.95);
-  margin: calc(var(--fs) * -0.975) 0 0 calc(var(--fs) * -0.46);
-  background: var(--accent);
-  border-radius: 2px;
-  transform: translateZ(0);
-  transform-origin: 50% 100%;
-}
 .hero__title{ position: relative; font-size: var(--fs); line-height: 1; transform-style: preserve-3d; }
-.cyl{
+.hero__word{
   position: relative; display: block;
   font-family: var(--font-display); font-stretch: 125%; font-weight: 900;
   letter-spacing: -0.01em; text-transform: uppercase;
@@ -869,10 +860,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero.is-roulette .roulette-open, .hero.is-roulette .hero__role, .hero.is-roulette .hero__foot{
   opacity: 0 !important; visibility: hidden; transition: opacity var(--t-2) var(--ease-out), visibility 0s linear var(--t-2);
 }
-.hero.is-roulette .hero__bar{ opacity: 0; }
 .hero__stage{ transition: opacity var(--t-3) var(--ease-out); }
 .hero.is-roulette-fb .hero__stage{ opacity: 0.16; }
-.hero.is-roulette-fb .hero__bar{ opacity: 1; }
 .hero.is-wheel .hero__gl{ pointer-events: auto; cursor: grab; touch-action: none; }
 .hero.is-wheel .hero__gl.is-grabbing{ cursor: grabbing; }
 
@@ -1718,3 +1707,11 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 @media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
 /* Play/Stop: a clear "on" state while the riff plays */
 .guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
+
+/* ==========================================================================
+   Hero word as one twisted chrome solid (js/hero.js, task 10)
+   --hero-side: room kept free on each side of the word (px, read by js/hero.js): on wider screens
+   the big "to the guitar" arrow stands at the hero's right edge.
+   ========================================================================== */
+.hero{ --hero-side: 24px; }
+@media (min-width: 701px) { .hero{ --hero-side: 196px; } }

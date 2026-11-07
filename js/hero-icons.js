@@ -108,12 +108,12 @@ export function initHeroIcons({ reduced, gsap }) {
         }
       });
     }
-    // The word's visible extent: the stage's font size gives the 3D word's height; its width is the
-    // word on the front of the cylinder (about 6 em, never wider than 84% of the hero, see hero.js).
+    // The word's visible extent: js/hero.js publishes the 3D solid's size on the stage (data-ww,
+    // data-wh, px); without it (static word) the stage's font size gives a close estimate.
     function wordBox(hr) {
       const sr = stage.getBoundingClientRect();
       const fs = parseFloat(getComputedStyle(stage.querySelector('.hero__title') || stage).fontSize) || 100;
-      const w = Math.min(hr.width * 0.86, fs * 6.4), h = fs * 1.95;
+      const w = +stage.dataset.ww || Math.min(hr.width * 0.86, fs * 6.2), h = +stage.dataset.wh || fs * 1.1;
       return { left: sr.left + sr.width / 2 - w / 2, top: sr.top + sr.height / 2 - h / 2, width: w, height: h };
     }
 

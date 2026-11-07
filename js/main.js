@@ -219,7 +219,7 @@ document.addEventListener('langchange', () => {
 async function boot() {
   try { await document.fonts.ready; } catch (e) { /* ignore */ }
   const roulette = initRoulette();
-  initHero({ reduced, lenis, onRoulette: (api) => roulette.attach(api) });
+  initHero({ reduced, lenis, gsap, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
   initPause({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
