@@ -13,8 +13,8 @@
    and stops in a pocket. That pocket is the result (card and aria-live). Sound: js/roulette-sound.js.
    The canvas covers the whole hero; a camera view offset keeps the word centred on the stage.
    No WebGL, reduced motion or a load error: the static word stays (facing front). */
-import { PROJECTS } from './roulette.js?v=20261106';
-import { createRouletteSound } from './roulette-sound.js?v=20261106';
+import { PROJECTS } from './roulette.js?v=20261107';
+import { createRouletteSound } from './roulette-sound.js?v=20261107';
 
 const WORD = 'HUBERT';
 const SEP = '+';
