@@ -4,7 +4,7 @@
    the whole hero (FLIP: transform from its centre + clip-path, 0.9 s, --ease-out; the values are set
    here as --gz-*), while panel 1 shrinks a little and fades. Back ("Back" button or Esc) zooms back.
    While panel 2 shows, the 3D word, the icons and the roulette stop rendering (hero.dataset.panel =
-   'guitar', read in their GSAP ticker callbacks). Going back stops the guitar.
+   'guitar', read in their GSAP ticker callbacks). The song keeps playing after going back (task 13).
    The hidden panel is inert; focus goes to panel 2's heading and back to the small scene. #guitar in
    the address opens panel 2 at once. The button has aria-controls and aria-expanded.
    Task 13: while panel 2 shows, the page is locked (see lock()) and scrolling in it plays the song.
@@ -85,7 +85,6 @@ export function initHeroPanel({ reduced, gsap }) {
     panel.inert = !on;
     lock(on);
     arrow.setAttribute('aria-expanded', String(on));
-    if (!on) guitar?.stop?.();
     playFilm(on);
     try { history.replaceState(null, '', on ? '#guitar' : location.pathname + location.search); } catch (e) { /* ignore */ }
     clearTimeout(timer);

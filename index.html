@@ -165,9 +165,12 @@
               </span></span>
               <span class="guitar-mini__label mono" data-i18n="guitar.1">Play something</span>
             </button>
+            <button class="guitar-mini__pause" id="guitar-mini-pause" type="button" aria-label="Pause music" hidden><span aria-hidden="true">❚❚</span></button>
           </div>
         </div>
       <section class="section guitar hero__panel" id="guitar" aria-labelledby="guitar-title">
+        <!-- Hubert's song; data-start: where it begins (seconds). Nothing loads before the first Play. -->
+        <audio id="guitar-song" preload="none" data-start="0"><source src="assets/audio/song.webm" type='audio/webm; codecs="opus"'><source src="assets/audio/song.m4a" type="audio/mp4"></audio>
         <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-film="assets/hf/smoke"></video></div>
         <div class="container guitar__inner">
           <header class="sec-head">

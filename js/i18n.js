@@ -429,7 +429,8 @@
       'roulette.win': 'You win', 'roulette.lose': 'You lose',
       'roulette.spinning': 'Spinning',
       'roulette.sound': 'Sound on/off',
-      'guitar.play': 'Play', 'guitar.stop': 'Stop',
+      'guitar.play': 'Play', 'guitar.pause': 'Pause',
+      'guitar.pauseMusic': 'Pause music', 'guitar.playMusic': 'Play music',
     },
     pl: {
       'meta.title': 'Hubert · Junior UX/UI Designer, AI-native · Portfolio',
@@ -483,7 +484,8 @@
       'roulette.win': 'Wygrywasz', 'roulette.lose': 'Przegrywasz',
       'roulette.spinning': 'Koło się kręci',
       'roulette.sound': 'Dźwięk wł./wył.',
-      'guitar.play': 'Zagraj', 'guitar.stop': 'Stop',
+      'guitar.play': 'Zagraj', 'guitar.pause': 'Pauza',
+      'guitar.pauseMusic': 'Wstrzymaj muzykę', 'guitar.playMusic': 'Włącz muzykę',
     },
   };
 
