@@ -1,7 +1,6 @@
 /* Case studies (#cases): the motion layer. The content, its order and the anchors stay as they are;
    this module only changes how they are shown.
-     1. case index: large names with a line that fills with the accent on hover, and a cover that
-        floats next to the pointer and cross-fades between projects (fine pointer only);
+     1. case index: large names with a line that fills with the accent on hover (CSS);
      2. case titles: letters rise from a mask one after another (screen readers get the whole text);
         facts and "What I did" come in as a cascade;
      3. browser shots: start tilted back in 3D and straighten towards the middle of the screen (scrub);
@@ -14,19 +13,9 @@
    Anything already on screen when the page loads is never hidden. Reduced motion or no JS: all of it
    is simply visible, without motion (the film strip stays a grid). */
 
-const COVERS = {
-  'basko-clean': 'assets/cards/basko',
-  'ksk-pretor': 'assets/cards/ksk',
-  livingroom: 'assets/cards/living',
-  'psychologist-site': 'type',
-  'smaller-projects': 'assets/cards/training',
-};
-
 export function initCasesMotion({ reduced, gsap, ScrollTrigger }) {
   const root = document.getElementById('cases');
   if (!root) return;
-  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (!reduced && fine && gsap) initIndexCover(root, gsap);
   if (reduced || !gsap || !ScrollTrigger) return;
 
   const small = matchMedia('(max-width: 700px)').matches || matchMedia('(pointer: coarse)').matches;
@@ -191,80 +180,6 @@ export function initCasesMotion({ reduced, gsap, ScrollTrigger }) {
   }
 
   window.addEventListener('load', () => ScrollTrigger.refresh());
-}
-
-/* ---------- 1. index: large list + floating cover ---------- */
-function initIndexCover(root, gsap) {
-  const index = root.querySelector('.case-index');
-  if (!index) return;
-  const links = [...index.querySelectorAll('a[href^="#"]')];
-  let floater = null;
-  const covers = new Map();
-  let x = 0, y = 0, tx = 0, ty = 0, rot = 0, on = false, active = null;
-
-  function build() {
-    floater = document.createElement('div');
-    floater.className = 'case-cover';
-    floater.setAttribute('aria-hidden', 'true');
-    links.forEach((a) => {
-      const id = a.getAttribute('href').slice(1);
-      const src = COVERS[id];
-      if (!src) return;
-      const slot = document.createElement('div');
-      slot.className = 'case-cover__img';
-      if (src === 'type') {
-        const tc = document.querySelector('.card--psy .type-cover');
-        if (tc) slot.appendChild(tc.cloneNode(true));
-      } else {
-        slot.innerHTML = `<picture><source type="image/webp" srcset="${src}.webp"><img src="${src}.jpg" alt="" width="600" height="800" decoding="async"></picture>`;
-      }
-      floater.appendChild(slot);
-      covers.set(a, slot);
-    });
-    document.body.appendChild(floater);
-    gsap.ticker.add(follow);
-  }
-
-  // Target: 24 px right of and below the pointer. Near the right edge it flips to the left of the
-  // pointer, near the bottom it moves up, so the whole cover always stays on screen.
-  let px = 0, py = 0;
-  function target() {
-    const w = floater.offsetWidth, h = floater.offsetHeight, m = 12;
-    tx = px + 24 + w > innerWidth - m ? px - 24 - w : px + 24;
-    ty = Math.max(m, Math.min(innerHeight - m - h, py + 24));
-    tx = Math.max(m, tx);
-  }
-  function follow(_, deltaMs) {
-    if (!floater || !on) return;
-    target();
-    const k = 1 - Math.pow(1 - 0.18, Math.min(deltaMs || 16, 50) / 16.67);
-    const ox = x;
-    x += (tx - x) * k;
-    y += (ty - y) * k;
-    rot += (Math.max(-6, Math.min(6, (x - ox) * 0.25)) - rot) * k;
-    floater.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${rot.toFixed(2)}deg)`;
-  }
-
-  function setActive(a) {
-    if (active === a || !floater) return;
-    if (active && covers.get(active)) covers.get(active).classList.remove('is-on');
-    active = a;
-    const slot = a && covers.get(a);
-    if (slot) slot.classList.add('is-on');
-    floater.classList.toggle('is-on', !!slot);
-  }
-
-  index.addEventListener('pointermove', (e) => {
-    if (e.pointerType !== 'mouse') return;
-    px = e.clientX; py = e.clientY;
-    const a = e.target.closest('a');
-    if (!a) { setActive(null); return; }
-    if (!floater) build();
-    if (!on) { on = true; target(); x = tx; y = ty; }
-    setActive(a);
-  }, { passive: true });
-  index.addEventListener('pointerleave', () => { on = false; if (floater) setActive(null); });
-  window.addEventListener('scroll', () => { if (on && floater) setActive(null); on = false; }, { passive: true });
 }
 
 function escapeHtml(s) {

@@ -209,7 +209,8 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 }
 
 /* ---------- Hero ---------- */
-.hero{
+.hero{ position: relative; overflow: hidden; overflow: clip; isolation: isolate; } /* clip: not a scroll container */
+.hero__main{
   position: relative;
   min-height: 100svh;
   display: grid;
@@ -229,17 +230,8 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
   transform-style: preserve-3d;
 }
 @media (max-width: 600px) { .hero__stage{ --fs: clamp(48px, 16.5vw, 120px); min-height: calc(var(--fs) * 3); } }
-.hero__bar{
-  position: absolute; left: 50%; top: 50%;
-  width: calc(var(--fs) * 0.92); height: calc(var(--fs) * 1.95);
-  margin: calc(var(--fs) * -0.975) 0 0 calc(var(--fs) * -0.46);
-  background: var(--accent);
-  border-radius: 2px;
-  transform: translateZ(0);
-  transform-origin: 50% 100%;
-}
 .hero__title{ position: relative; font-size: var(--fs); line-height: 1; transform-style: preserve-3d; }
-.cyl{
+.hero__word{
   position: relative; display: block;
   font-family: var(--font-display); font-stretch: 125%; font-weight: 900;
   letter-spacing: -0.01em; text-transform: uppercase;
@@ -556,13 +548,6 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .wf__t{ font-family: var(--font-display); font-stretch: 118%; font-weight: 820; font-size: var(--fs-h3); line-height: 1.05; text-transform: uppercase; }
 .wf p{ color: var(--ink-2); }
 
-.split-panel{ display: grid; gap: 0; margin-block: clamp(3rem, 2rem + 3vw, 5rem); border-radius: var(--r-lg); overflow: hidden; border: 1.5px solid var(--ink); }
-@media (min-width: 860px) { .split-panel{ grid-template-columns: 1fr 1fr; } }
-.split-panel__col{ padding: clamp(1.5rem, 1rem + 2vw, 2.75rem); background: var(--surface); }
-.split-panel__col + .split-panel__col{ background: var(--ink); color: var(--bg); }
-.split-panel__col + .split-panel__col .list li::before{ background: var(--accent); }
-
-
 /* ---------- About ---------- */
 .about__grid{ display: grid; gap: var(--s-7); }
 @media (min-width: 1000px) { .about__grid{ grid-template-columns: 1.3fr 0.7fr; gap: var(--s-9); } }
@@ -647,9 +632,9 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
   font-size: clamp(0.95rem, 0.8rem + 0.6vw, 1.35rem); letter-spacing: 0.04em; text-transform: uppercase;
 }
 .hero__role span{ color: var(--accent-ink); margin-inline: 0.4em; }
-.hero{ grid-template-rows: 1fr auto auto; }
+.hero__main{ grid-template-rows: 1fr auto auto; }
 @media (max-width: 600px) {
-  .hero{ min-height: 92svh; padding-top: 84px; }
+  .hero__main{ min-height: 92svh; padding-top: 84px; }
   .hero__stage{ --fs: clamp(56px, 19vw, 120px); min-height: calc(var(--fs) * 2.6); }
   .hero__role{ margin-top: 0; }
 }
@@ -710,8 +695,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .case--minor#psychologist-site .case__title{ font-size: clamp(1.9rem, 1rem + 3.4vw, 4rem); }
 .minor__title{ font-stretch: 104%; font-weight: 780; font-size: clamp(1.25rem, 1rem + 0.9vw, 1.7rem); }
 
-@media (min-width: 601px) and (max-width: 1099px) { .hero{ min-height: 82svh; } }
-@media (max-width: 600px) { .hero{ min-height: 80svh; } }
+@media (min-width: 601px) and (max-width: 1099px) { .hero__main{ min-height: 82svh; } }
+@media (max-width: 600px) { .hero__main{ min-height: 80svh; } }
 
 /* ---------- Review round 4 ---------- */
 :root{ --section-pad: clamp(4rem, 2.5rem + 5vw, 7.5rem); }
@@ -732,7 +717,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Forms in prototypes: readable line length */
 
 /* Spacing */
-@media (min-width: 601px) and (max-width: 1099px) { .hero{ min-height: 0; padding-top: 150px; } }
+@media (min-width: 601px) and (max-width: 1099px) { .hero__main{ min-height: 0; padding-top: 150px; } }
 .shot--video .shot__frame--16x9{ max-height: 72vh; }
 .sub__grid.sub__grid--video-stack{ grid-template-columns: minmax(0, 1fr); }
 
@@ -869,10 +854,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero.is-roulette .roulette-open, .hero.is-roulette .hero__role, .hero.is-roulette .hero__foot{
   opacity: 0 !important; visibility: hidden; transition: opacity var(--t-2) var(--ease-out), visibility 0s linear var(--t-2);
 }
-.hero.is-roulette .hero__bar{ opacity: 0; }
 .hero__stage{ transition: opacity var(--t-3) var(--ease-out); }
 .hero.is-roulette-fb .hero__stage{ opacity: 0.16; }
-.hero.is-roulette-fb .hero__bar{ opacity: 1; }
 .hero.is-wheel .hero__gl{ pointer-events: auto; cursor: grab; touch-action: none; }
 .hero.is-wheel .hero__gl.is-grabbing{ cursor: grabbing; }
 
@@ -1123,22 +1106,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .case-index a::after{ display: none; }
 }
 
-/* Floating cover next to the pointer (fine pointer only, built by JS) */
-.case-cover{
-  position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
-  width: clamp(280px, 21vw, 320px); aspect-ratio: 3 / 4; margin: 0;
-  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
-}
-.case-cover.is-on{ opacity: 1; }
-.case-cover__img{
-  position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-sm); box-shadow: var(--shadow-3);
-  opacity: 0; transform: scale(0.92);
-  transition: opacity var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out);
-}
-.case-cover__img.is-on{ opacity: 1; transform: none; }
-.case-cover__img img{ width: 100%; height: 100%; object-fit: cover; }
-.case-cover .type-cover__word{ font-size: 1.7rem; }
-
 /* 2. Titles split into letters (visual copy is aria-hidden, the sr-only copy is read) */
 .split__w{ display: inline-block; white-space: nowrap; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
 .split__c{ display: inline-block; }
@@ -1329,12 +1296,11 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .motion-paused .film-strip__track{ animation-play-state: paused !important; }
 /* Phones: the film band is narrow, so each shot is framed on its subject */
 @media (max-width: 700px) {
-  /* task 09: the chrome objects sit in the right part of each shot */
-  #basko-clean .ambient__video{ object-position: 72% 40%; }
-  #ksk-pretor .ambient__video{ object-position: 62% 45%; }
-  #livingroom .ambient__video{ object-position: 88% 45%; }
-  #psychologist-site .ambient__video{ object-position: 80% 50%; }
-  #smaller-projects .ambient__video{ object-position: 58% 50%; }
+  #basko-clean .ambient__video{ object-position: 96% 30%; }
+  #ksk-pretor .ambient__video{ object-position: 32% 72%; }
+  #livingroom .ambient__video{ object-position: 18% 50%; }
+  #psychologist-site .ambient__video{ object-position: 6% 50%; }
+  #smaller-projects .ambient__video{ object-position: 62% 50%; }
 }
 
 /* ---------- Review round 2 ---------- */
@@ -1350,7 +1316,11 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .motion-skip:focus{ transform: translateY(0); }
 .motion-skip[hidden]{ display: none; }
-/* (task 09: the KSK shot is chrome casings now, so it uses the normal band on phones) */
+/* Phones: the KSK shot is mostly mist, so its band is lower */
+@media (max-width: 700px) {
+  #ksk-pretor > .ambient{ height: 34svh; }
+  #ksk-pretor > .container{ padding-top: 16svh; }
+}
 
 /* ==========================================================================
    AI tools jar (js/jar.js, physics in js/physics.js)
@@ -1589,9 +1559,9 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero-icon{
   position: absolute; left: 0; top: 0; height: auto; max-width: none; pointer-events: auto;
   touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; cursor: grab;
-  /* depth: far icons are softer and darker; all get a warm glow underneath */
+  /* depth: far icons are smaller and darker (all stay sharp); all get a warm glow underneath */
   filter: drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
-          blur(calc(var(--z) * 1.4px)) brightness(calc(1 - var(--z) * 0.32));
+          brightness(calc(1 - var(--z) * 0.32));
 }
 .hero-icons.is-away .hero-icon{ pointer-events: none; }
 .hero-icons.is-holding .hero-icon{ cursor: grabbing; }
@@ -1718,3 +1688,130 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 @media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
 /* Play/Stop: a clear "on" state while the riff plays */
 .guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
+
+/* ==========================================================================
+   Hero word as one twisted chrome solid (js/hero.js, task 10)
+   --hero-side: room kept free on each side of the word (px, read by js/hero.js): on wider screens
+   the big "to the guitar" arrow stands at the hero's right edge.
+   ========================================================================== */
+.hero{ --hero-side: 24px; }
+@media (min-width: 701px) { .hero{ --hero-side: 196px; } }
+
+/* ==========================================================================
+   Hero with two panels (js/hero-panel.js, task 11): the hero and the guitar scene (#guitar)
+   Without JS (html.no-js) the guitar panel is a normal block under the hero and the arrows are hidden.
+   ========================================================================== */
+.no-js .hero-arrow, .no-js .guitar-back{ display: none; }
+.js .hero__track{ display: flex; align-items: stretch; will-change: transform; transition: transform 0.85s var(--ease-out); }
+.js .hero__track > .hero__panel{ flex: 0 0 100%; min-width: 0; }
+.js .hero.is-guitar .hero__track{ transform: translateX(-100%); }
+.js .hero.is-instant .hero__track, .js .hero.is-instant .guitar__bg{ transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  /* no sliding: a short cross-fade (the track jumps while both panels are faded) */
+  .js .hero__track{ transition: none; }
+  .js .hero__panel{ transition: opacity 0.26s ease; }
+  .js .hero.has-track .hero__panel[inert]{ opacity: 0; }
+  .js .hero .guitar__bg, .js .hero.is-guitar .guitar__bg{ transition: none; transform: none; left: 0; }
+}
+
+/* The big arrow "to the guitar" (panel 1, right edge, vertically in the middle) */
+.hero-arrow{
+  position: absolute; z-index: 3; right: var(--gutter); top: 50%;
+  display: grid; justify-items: center; gap: 10px; padding: 0; border: 0; background: none;
+  color: var(--ink); cursor: pointer; transform: translateY(-50%);
+  transition: opacity var(--t-3) var(--ease-out), visibility var(--t-3), translate var(--t-2) var(--ease-out);
+}
+.hero-arrow__icon{
+  box-sizing: border-box; width: 96px; height: 96px; padding: 26px; border-radius: 50%;
+  fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  border: 2px solid var(--accent); background: rgb(var(--bg-rgb) / 0.55);
+  box-shadow: 0 0 34px rgb(var(--glow-rgb) / 0.38), inset 0 0 18px rgb(var(--glow-rgb) / 0.16);
+  transition: background-color var(--t-2) var(--ease-out), stroke var(--t-2) var(--ease-out), box-shadow var(--t-3) var(--ease-out);
+}
+.hero-arrow__label{ font-size: 0.7rem; color: var(--ink-2); white-space: nowrap; transition: color var(--t-2) var(--ease-out); }
+.hero-arrow:hover .hero-arrow__icon, .hero-arrow:focus-visible .hero-arrow__icon{ background: var(--accent); stroke: var(--on-accent); box-shadow: 0 0 48px rgb(var(--glow-rgb) / 0.6); }
+.hero-arrow:hover .hero-arrow__label, .hero-arrow:focus-visible .hero-arrow__label{ color: var(--ink); }
+.hero-arrow:focus-visible{ outline: none; }
+.hero-arrow:focus-visible .hero-arrow__icon{ outline: 3px solid var(--ink); outline-offset: 4px; }
+/* a nudge to the left every few seconds (transform of the icon only) */
+.motion-ok .hero-arrow__icon{ animation: arrow-nudge 4.2s var(--ease-out) 2.5s infinite; }
+@keyframes arrow-nudge{ 0%, 76%, 100%{ transform: none; } 82%{ transform: translateX(-12px); } 88%{ transform: translateX(2px); } 93%{ transform: translateX(-5px); } }
+.motion-paused .hero-arrow__icon, .hero-arrow:hover .hero-arrow__icon{ animation-play-state: paused; }
+.hero.is-roulette .hero-arrow{ opacity: 0; visibility: hidden; }
+@media (min-width: 1400px) { .hero-arrow__icon{ width: 104px; height: 104px; padding: 28px; } }
+@media (max-width: 700px) {
+  .hero-arrow{ right: 14px; top: 53%; gap: 6px; }
+  .hero-arrow__icon{ width: 60px; height: 60px; padding: 16px; }
+  .hero-arrow__label{ font-size: 0.62rem; }
+}
+
+/* Panel 2: the guitar scene, as tall as the hero */
+.js .hero .guitar{
+  display: grid; align-content: center; padding: 84px 0 clamp(20px, 4vh, 40px);
+  overflow: hidden; scroll-margin-top: 0;
+  contain: size; /* as tall as the hero, never taller: the hero's height comes from panel 1 */
+}
+.js .hero .guitar .sec-head{ margin-bottom: clamp(16px, 4vh, 44px); text-align: center; }
+.js .hero .guitar .sec-head__title{ text-align: center; }
+@media (min-width: 701px) { .js .hero .guitar .guitar__stage{ height: clamp(400px, 52vh, 500px); } }
+.js .hero .guitar .sec-head__title{ outline: none; }
+.js .hero .guitar .guitar__inner > .sec-head{ justify-self: center; }
+.guitar__inner{ position: relative; }
+/* the smoke moves a little slower than the guitar and the amp while the track slides */
+.js .hero .guitar__bg{ left: -32%; transform: translateX(32%); transition: transform 0.85s var(--ease-out); -webkit-mask-image: none; mask-image: none; }
+.js .hero.is-guitar .guitar__bg{ transform: none; }
+/* panel 2's pictures load only when it is prepared (js/hero-panel.js) */
+.js .hero .guitar:not(.is-prepared) .guitar__stage{ display: none; }
+
+/* Back: arrow to the right at panel 2's left edge */
+.guitar-back{
+  position: absolute; z-index: 3; left: var(--gutter); top: 50%; transform: translateY(-50%);
+  display: grid; justify-items: center; gap: 8px; padding: 0; border: 0; background: none; color: var(--ink-2); cursor: pointer;
+  transition: translate var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out);
+}
+.guitar-back__icon{
+  box-sizing: border-box; width: 64px; height: 64px; padding: 18px; border-radius: 50%;
+  fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  border: 1.5px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.6);
+  transition: background-color var(--t-2) var(--ease-out), stroke var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.guitar-back__label{ font-size: 0.7rem; }
+.guitar-back:hover, .guitar-back:focus-visible{ color: var(--ink); }
+.guitar-back:hover .guitar-back__icon, .guitar-back:focus-visible .guitar-back__icon{ background: var(--ink); stroke: var(--bg); border-color: var(--ink); }
+.guitar-back:focus-visible{ outline: none; }
+.guitar-back:focus-visible .guitar-back__icon{ outline: 3px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 700px) {
+  /* phones: Back sits at the bottom left, in the row of the Play button */
+  .guitar-back{ top: auto; bottom: 0; transform: none; grid-auto-flow: column; align-items: center; gap: 6px; }
+  .guitar-back__icon{ width: 48px; height: 48px; padding: 13px; }
+  .js .hero .guitar{ align-content: start; padding-top: 76px; padding-bottom: 16px; }
+  .js .hero .guitar .sec-head__title{ font-size: clamp(1.4rem, 7.2vw, 2rem); }
+  .js .hero .guitar .guitar__stage{ height: auto; padding-block: var(--s-5) 0; grid-template-columns: 0.72fr 1.28fr; gap: 4px; align-items: end; }
+  .js .hero .guitar .guitar__item--guitar{ width: 100%; max-width: 104px; justify-self: start; }
+  .js .hero .guitar .guitar__play{ margin-top: var(--s-5); }
+}
+
+/* Pedal on the floor between the guitar and the amp, with its LED */
+.pedal{ position: absolute; z-index: 1; left: 50%; bottom: 6%; width: clamp(110px, 9vw, 136px); transform: translateX(-62%); display: grid; justify-items: center; pointer-events: none; }
+.pedal__img{ display: block; width: 100%; height: auto; max-width: none; filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.55)); }
+.pedal__led{
+  position: absolute; left: 53.7%; top: 55.4%; width: 22%; aspect-ratio: 1; margin: -11% 0 0 -11%; border-radius: 50%;
+  background: radial-gradient(circle, var(--led-hot) 0%, var(--accent) 30%, rgb(var(--glow-rgb) / 0.35) 52%, rgb(var(--glow-rgb) / 0) 72%);
+  opacity: 0; mix-blend-mode: screen; will-change: opacity, transform;
+}
+.pedal__shadow{ width: 110%; height: 16px; margin-top: -10px; animation: none; }
+@media (max-width: 700px) { .pedal{ width: 64px; bottom: 0; left: 52%; z-index: 4; } }
+.guitar.is-playing .pedal__led{ opacity: 0.9; }
+/* Cable: SVG over the stage, drawn by js/guitar.js */
+.cable{ position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
+.cable__rim{ fill: none; stroke: rgb(var(--glow-rgb) / 0.42); stroke-linecap: round; }
+.cable__wire{ fill: none; stroke: var(--cable); stroke-width: 5; stroke-linecap: round; }
+.cable__shine{ fill: none; stroke: rgb(255 255 255 / 0.32); stroke-width: 1.4; stroke-linecap: round; }
+.cable__plug{ stroke: var(--cable-plug); stroke-width: 9; stroke-linecap: round; }
+.cable__tip{ stroke: var(--cable-tip); stroke-width: 4; stroke-linecap: round; }
+.guitar__item--guitar{ z-index: 3; }
+.guitar__item--amp{ z-index: 1; }
+/* Amp: speaker cores darken on a hit (opacity), the floats are driven by js/guitar.js now */
+.amp__core{ position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(circle, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0) 70%); opacity: 0; }
+.js .hero .guitar__float, .js .hero .guitar__shadow{ animation: none; }
+.js .hero .guitar__tilt{ transition: none; }

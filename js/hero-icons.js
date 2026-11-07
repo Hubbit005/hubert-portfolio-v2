@@ -4,13 +4,13 @@
    small orbit around its home and sways a little. They can be grabbed, thrown, knocked into each other
    and they bounce off the hero's edges. The word, the role line, the lead, the buttons and the roulette
    button are walls, so the icons never cover them. About 5 s after the last touch the icons glide
-   back onto their orbits. Sizes 90–150 px (desktop); the small ones are softer and darker, as if
+   back onto their orbits. Sizes 90–150 px (desktop); the small ones are darker (never blurred), as if
    further back. A soft shadow in --glow-rgb.
    Roulette open: the icons drift to the sides and dim. Phones: 4 icons, smaller; a tap tosses one
    (no dragging, the page always scrolls). Loaded after the hero's 3D word has started (or after
    the page load without WebGL), so they never slow the first view.
    Decorative (aria-hidden). Reduced motion or paused motion: the icons stand still at home. */
-import { World, circle, box, run, hand } from './physics.js?v=20261107';
+import { World, circle, box, run, hand } from './physics.js?v=20261108';
 
 // home: share of the hero's width / height; s: size in px (desktop); z: depth 0 (near) … 1 (far)
 const DESK = [
@@ -26,7 +26,7 @@ const DESK = [
 const PHONE = [
   { id: 'guitar', x: 0.13, y: 0.20, s: 74, z: 0 },
   { id: 'car', x: 0.86, y: 0.21, s: 70, z: 0.3 },
-  { id: 'diamond', x: 0.88, y: 0.49, s: 58, z: 0.5 },
+  { id: 'diamond', x: 0.62, y: 0.47, s: 58, z: 0.5 },
   { id: 'dollar', x: 0.10, y: 0.49, s: 56, z: 0.6 },
 ];
 const IDLE = 5; // s without touching before the icons go home
@@ -35,6 +35,8 @@ export function initHeroIcons({ reduced, gsap }) {
   const hero = document.getElementById('home');
   const stage = document.getElementById('hero-stage');
   if (!hero || !stage || !gsap) return;
+  // the layer lives in panel 1 (it slides away with it, task 11); classes stay on the hero (#home)
+  const host = stage.closest('.hero__panel') || hero;
   const phone = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
   const LIST = phone ? PHONE : DESK;
 
@@ -72,14 +74,14 @@ export function initHeroIcons({ reduced, gsap }) {
       layer.appendChild(el);
       return { ...d, el, i, b: null, home: { x: 0, y: 0 }, phase: Math.random() * Math.PI * 2, per: 7 + Math.random() * 6, orbit: 10 + Math.random() * 12 };
     });
-    hero.appendChild(layer);
+    host.appendChild(layer);
 
     const world = new World({ gravity: 0, iterations: 6 });
     let walls = [];
     let W = 1, H = 1, t = 0, lastTouch = -1e9, roulette = hero.classList.contains('is-roulette');
 
     function measure() {
-      const hr = hero.getBoundingClientRect();
+      const hr = host.getBoundingClientRect();
       W = hr.width; H = hr.height;
       walls.forEach((w) => world.remove(w)); walls = [];
       const st = { isStatic: true, restitution: 0.5, friction: 0.2 };
@@ -88,7 +90,7 @@ export function initHeroIcons({ reduced, gsap }) {
       walls.push(box(W / 2, navH - 40, W + 200, 80, st), box(W / 2, H + 40, W + 200, 80, st), box(-40, H / 2, 80, H + 200, st), box(W + 40, H / 2, 80, H + 200, st));
       // Things the icons must never cover: the word (the bar and the word's band), text and buttons
       const word = wordBox(hr);
-      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open'].flatMap((s) => [...hero.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
+      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open', '#hero-arrow'].flatMap((s) => [...host.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
       parts.forEach((r) => {
         if (!r || !r.width) return;
         const x = r.left - hr.left, y = r.top - hr.top;
@@ -108,12 +110,12 @@ export function initHeroIcons({ reduced, gsap }) {
         }
       });
     }
-    // The word's visible extent: the stage's font size gives the 3D word's height; its width is the
-    // word on the front of the cylinder (about 6 em, never wider than 84% of the hero, see hero.js).
+    // The word's visible extent: js/hero.js publishes the 3D solid's size on the stage (data-ww,
+    // data-wh, px); without it (static word) the stage's font size gives a close estimate.
     function wordBox(hr) {
       const sr = stage.getBoundingClientRect();
       const fs = parseFloat(getComputedStyle(stage.querySelector('.hero__title') || stage).fontSize) || 100;
-      const w = Math.min(hr.width * 0.86, fs * 6.4), h = fs * 1.95;
+      const w = +stage.dataset.ww || Math.min(hr.width * 0.86, fs * 6.2), h = +stage.dataset.wh || fs * 1.1;
       return { left: sr.left + sr.width / 2 - w / 2, top: sr.top + sr.height / 2 - h / 2, width: w, height: h };
     }
 
@@ -167,10 +169,10 @@ export function initHeroIcons({ reduced, gsap }) {
         new MutationObserver(() => layer.classList.toggle('is-away', hero.classList.contains('is-roulette'))).observe(hero, { attributes: true, attributeFilter: ['class'] });
         return;
       }
-      const loop = run({ world, el: hero, gsap, render, before, busy: () => true, hz: phone ? 60 : 120, margin: '0px' });
+      const loop = run({ world, el: host, gsap, render, before, busy: () => true, hold: () => hero.dataset.panel === 'guitar', hz: phone ? 60 : 120, margin: '0px' });
       hand({
         world, el: layer,
-        toWorld: (cx, cy) => { const r = hero.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },
+        toWorld: (cx, cy) => { const r = host.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },
         pick: (x, y, e) => (e.target.classList?.contains('hero-icon') && !roulette ? world.pick(x, y, (b) => !!b.data?.el, e.pointerType === 'touch' ? 8 : 4) : null),
         canDrag: (e) => e.pointerType !== 'touch',
         onGrab: () => { lastTouch = t; layer.classList.add('is-holding'); },

@@ -236,30 +236,6 @@
     "ai.17": "Kontrola",
     // EN: Before anything goes to the client, I check it against the brief and the brand.
     "ai.18": "Zanim cokolwiek trafi do klienta, sprawdzam, czy zgadza się z briefem i z marką.",
-    // EN: Where AI speeds me up
-    "ai.20": "Gdzie AI mnie przyspiesza",
-    // EN: Code for pages, prototypes and animations.
-    "ai.21": "Kod stron, prototypów i animacji.",
-    // EN: Market and competitor data with sources.
-    "ai.22": "Dane o rynku i konkurencji ze źródłami.",
-    // EN: Drafts of long documents and their structure.
-    "ai.23": "Szkice i struktura długich dokumentów.",
-    // EN: Image and video variants to compare.
-    "ai.24": "Warianty obrazów i wideo do porównania.",
-    // EN: Dictation instead of typing.
-    "ai.25": "Dyktowanie zamiast pisania.",
-    // EN: What I decide
-    "ai.26": "O czym decyduję",
-    // EN: What the problem is and who the user is.
-    "ai.27": "Jaki jest problem i kto jest użytkownikiem.",
-    // EN: Which states and edge cases the product must handle.
-    "ai.28": "Jakie stany i przypadki brzegowe produkt musi obsłużyć.",
-    // EN: Whether a visual fits the brand. Basko's realistic 3D ad did not, so I dropped it.
-    "ai.29": "Czy grafika pasuje do marki. Realistyczna reklama 3D dla Basko nie pasowała, więc ją odrzuciłem.",
-    // EN: What a client's material may show: no client logos without consent, no personal data.
-    "ai.30": "Co mogą pokazywać materiały klienta: logo jego klientów tylko za zgodą, żadnych danych osobowych.",
-    // EN: Whether the result is ready for the client.
-    "ai.31": "Czy wynik jest gotowy dla klienta.",
     // EN: Tools I use and what I made with them
     "ai.38": "Narzędzia, których używam",
     // EN: This portfolio

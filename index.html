@@ -42,8 +42,8 @@
       if (l === 'pl') { d.lang = 'pl'; d.classList.add('lang-pending'); }
     })();
   </script>
-  <link rel="stylesheet" href="css/tokens.css?v=20261107">
-  <link rel="stylesheet" href="css/main.css?v=20261107">
+  <link rel="stylesheet" href="css/tokens.css?v=20261108">
+  <link rel="stylesheet" href="css/main.css?v=20261108">
 </head>
 <body>
   <div class="glow" aria-hidden="true"><i class="glow__hero"></i><i class="glow__low"></i></div>
@@ -87,54 +87,101 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero" id="home" aria-labelledby="hero-title">
-      <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
-        <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
-        <span data-i18n="roulette-open.1">Spin my work</span>
-      </button>
-      <div class="hero__stage" id="hero-stage">
-        <span class="hero__bar" aria-hidden="true"></span>
-        <h1 class="hero__title" id="hero-title">
-          <span class="sr-only">Hubert</span>
-          <span class="cyl" id="cyl" aria-hidden="true">
-            <!-- Static fallback (no JS / reduced motion before init): the word facing front -->
-            <span class="cyl__static">HUBERT</span>
-          </span>
-        </h1>
-      </div>
-      <div class="roulette" id="roulette" role="region" aria-label="Project roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
-        <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>
-        <div class="roulette__bar" id="roulette-bar">
-          <p class="roulette__hint mono">Drag the wheel or press Spin</p>
-          <div class="roulette__actions">
-            <button class="btn btn--primary" id="roulette-spin" type="button"><span data-i18n="roulette-spin.1">Spin</span></button>
-            <button class="btn btn--ghost" id="roulette-back" type="button"><span data-i18n="roulette-back.1">Back</span></button>
+      <!-- Two panels (task 11): the hero and the guitar scene (#guitar). js/hero-panel.js slides the track;
+           without JS the guitar is a normal block under the hero. -->
+      <div class="hero__track" id="hero-track">
+        <div class="hero__main hero__panel" id="hero-main">
+          <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
+            <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
+            <span data-i18n="roulette-open.1">Spin my work</span>
+          </button>
+          <div class="hero__stage" id="hero-stage">
+            <h1 class="hero__title" id="hero-title">
+              <span class="sr-only">Hubert</span>
+              <span class="hero__word" aria-hidden="true">
+                <!-- Static word (no JS, no WebGL, and until the 3D solid has started) -->
+                <span class="cyl__static">HUBERT</span>
+              </span>
+            </h1>
           </div>
-        </div>
-        <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-name" hidden>
-          <div class="roulette__cover" id="roulette-cover"></div>
-          <div class="roulette__body">
-            <p class="roulette__kicker mono" data-i18n="roulette-card.1">You landed on</p>
-            <p class="roulette__name" id="roulette-name"></p>
-            <p class="roulette__cat mono" id="roulette-cat"></p>
-            <div class="roulette__actions">
-              <a class="btn btn--primary btn--sm" id="roulette-go" href="#work"><span data-i18n="roulette-go.1">Open project</span></a>
-              <button class="btn btn--ghost btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
-              <button class="btn btn--ghost btn--sm" id="roulette-back2" type="button"><span data-i18n="roulette-back.1">Back</span></button>
+          <div class="roulette" id="roulette" role="region" aria-label="Project roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
+            <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>
+            <div class="roulette__bar" id="roulette-bar">
+              <p class="roulette__hint mono">Drag the wheel or press Spin</p>
+              <div class="roulette__actions">
+                <button class="btn btn--primary" id="roulette-spin" type="button"><span data-i18n="roulette-spin.1">Spin</span></button>
+                <button class="btn btn--ghost" id="roulette-back" type="button"><span data-i18n="roulette-back.1">Back</span></button>
+              </div>
+            </div>
+            <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-name" hidden>
+              <div class="roulette__cover" id="roulette-cover"></div>
+              <div class="roulette__body">
+                <p class="roulette__kicker mono" data-i18n="roulette-card.1">You landed on</p>
+                <p class="roulette__name" id="roulette-name"></p>
+                <p class="roulette__cat mono" id="roulette-cat"></p>
+                <div class="roulette__actions">
+                  <a class="btn btn--primary btn--sm" id="roulette-go" href="#work"><span data-i18n="roulette-go.1">Open project</span></a>
+                  <button class="btn btn--ghost btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
+                  <button class="btn btn--ghost btn--sm" id="roulette-back2" type="button"><span data-i18n="roulette-back.1">Back</span></button>
+                </div>
+              </div>
+            </article>
+          </div>
+          <p class="hero__role">Junior UX/UI Designer <span aria-hidden="true">·</span> AI-native</p>
+
+          <div class="hero__foot">
+            <p class="hero__lead" data-i18n="home.2">I design and build websites and clickable prototypes. I work with AI tools and make the design decisions myself.</p>
+            <div class="hero__cta">
+              <a class="btn btn--primary" href="#work" data-magnetic>
+                <span data-i18n="home.3">View work</span>
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+              </a>
+              <a class="btn btn--ghost" href="#contact" data-magnetic><span data-i18n="home.4">Contact</span></a>
             </div>
           </div>
-        </article>
-      </div>
-      <p class="hero__role">Junior UX/UI Designer <span aria-hidden="true">·</span> AI-native</p>
-
-      <div class="hero__foot">
-        <p class="hero__lead" data-i18n="home.2">I design and build websites and clickable prototypes. I work with AI tools and make the design decisions myself.</p>
-        <div class="hero__cta">
-          <a class="btn btn--primary" href="#work" data-magnetic>
-            <span data-i18n="home.3">View work</span>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
-          </a>
-          <a class="btn btn--ghost" href="#contact" data-magnetic><span data-i18n="home.4">Contact</span></a>
+          <button class="hero-arrow" id="hero-arrow" type="button" aria-controls="guitar" aria-expanded="false" data-magnetic>
+            <svg class="hero-arrow__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+            <span class="hero-arrow__label mono" data-i18n="guitar.1">Play something</span>
+          </button>
         </div>
+      <section class="section guitar hero__panel" id="guitar" aria-labelledby="guitar-title">
+        <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-film="assets/hf/smoke"></video></div>
+        <div class="container guitar__inner">
+          <header class="sec-head">
+            <h2 class="sec-head__title" id="guitar-title" tabindex="-1"><span class="mask"><span data-i18n="guitar.1">Play something</span></span></h2>
+          </header>
+          <button class="guitar-back" id="guitar-back" type="button" data-magnetic><svg class="guitar-back__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="guitar-back__label mono" data-i18n="roulette-back.1">Back</span></button>
+          <p class="sr-only" id="guitar-desc" data-i18n="guitar.2">Electric guitar and amplifier. Press Play to hear a short riff.</p>
+          <div class="guitar__stage">
+            <span class="guitar__glow" aria-hidden="true"></span>
+            <div class="guitar__item guitar__item--guitar" aria-hidden="true" data-cursor-play>
+              <div class="guitar__float">
+                <div class="guitar__tilt">
+                  <img class="guitar__img" src="assets/hf/guitar-900.webp" srcset="assets/hf/guitar-900.webp 343w, assets/hf/guitar-1600.webp 609w" sizes="(min-width: 900px) 210px, 36vw" width="609" height="1600" alt="" loading="lazy" decoding="async">
+                  <svg class="guitar__strings" viewBox="0 0 609 1600" preserveAspectRatio="none" focusable="false"></svg>
+                </div>
+              </div>
+              <span class="guitar__shadow"></span>
+            </div>
+            <div class="guitar__item guitar__item--amp" aria-hidden="true">
+              <div class="guitar__float">
+                <img class="amp__img" src="assets/hf/amp-700.webp" srcset="assets/hf/amp-700.webp 700w, assets/hf/amp-1200.webp 1200w" sizes="(min-width: 900px) 380px, 52vw" width="1200" height="1275" alt="" loading="lazy" decoding="async">
+                <span class="amp__lamp"></span>
+                <span class="amp__cone amp__cone--l"><span class="amp__core"></span></span>
+                <span class="amp__cone amp__cone--r"><span class="amp__core"></span></span>
+              </div>
+              <span class="guitar__shadow"></span>
+            </div>
+            <div class="pedal" aria-hidden="true">
+              <img class="pedal__img" src="assets/hf/pedal-240.webp" srcset="assets/hf/pedal-240.webp 240w, assets/hf/pedal-400.webp 400w" sizes="(min-width: 900px) 128px, 72px" width="400" height="634" alt="" loading="lazy" decoding="async">
+              <span class="pedal__led"></span>
+              <span class="guitar__shadow pedal__shadow"></span>
+            </div>
+            <svg class="cable" aria-hidden="true" focusable="false"></svg>
+          </div>
+          <button class="btn btn--primary guitar__play" id="guitar-play" type="button" aria-pressed="false" aria-describedby="guitar-desc"><span class="guitar__play-icon" aria-hidden="true">▶</span><span class="guitar__play-label" data-i18n="guitar.3">Play</span></button>
+        </div>
+      </section>
       </div>
     </section>
 
@@ -228,7 +275,7 @@
 
       <!-- ---------- CASE 01 BASKO CLEAN ---------- -->
       <article class="case" id="basko-clean" aria-labelledby="basko-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-basko-poster.webp" data-ambient="assets/hf/bg-basko"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/basko-poster.webp" data-ambient="assets/higgsfield/basko"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="basko-title"><span class="mask"><span>Basko Clean</span></span></h3>
@@ -294,7 +341,7 @@
 
       <!-- ---------- CASE 02 KSK PRETOR ---------- -->
       <article class="case case--dark" id="ksk-pretor" aria-labelledby="ksk-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-ksk-poster.webp" data-ambient="assets/hf/bg-ksk"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/ksk-poster.webp" data-ambient="assets/higgsfield/ksk"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="ksk-title"><span class="mask"><span>KSK Pretor</span></span></h3>
@@ -393,7 +440,7 @@
 
       <!-- ---------- CASE 03 LIVINGROOM ---------- -->
       <article class="case" id="livingroom" aria-labelledby="living-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-living-poster.webp" data-ambient="assets/hf/bg-living"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/living-poster.webp" data-ambient="assets/higgsfield/living"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="living-title"><span class="mask"><span>Livingroom</span></span></h3>
@@ -448,7 +495,7 @@
 
       <!-- ---------- CASE 04 PSYCHOLOGIST ---------- -->
       <article class="case case--minor" id="psychologist-site" aria-labelledby="psy-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-psy-poster.webp" data-ambient="assets/hf/bg-psy"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/psy-poster.webp" data-ambient="assets/higgsfield/psy"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="psy-title"><span class="mask"><span data-i18n="arc-track.15">Website for Agata Patelka</span></span> <span class="tag-progress mono" data-i18n="arc-track.13">In progress</span></h3>
@@ -489,7 +536,7 @@
 
       <!-- ---------- CASE 05 SMALLER PROJECTS ---------- -->
       <article class="case case--minor" id="smaller-projects" aria-labelledby="smaller-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-gym-poster.webp" data-ambient="assets/hf/bg-gym"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/gym-poster.webp" data-ambient="assets/higgsfield/gym"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="smaller-title"><span class="mask"><span data-i18n="smaller-title.1">Smaller projects</span></span></h3>
@@ -563,29 +610,6 @@
             <p data-i18n="ai.18">Before anything goes to the client, I check it against the brief and the brand.</p>
           </li>
         </ol>
-
-        <div class="split-panel">
-          <div class="split-panel__col">
-            <h3 class="mini-title" data-i18n="ai.20">Where AI speeds me up</h3>
-            <ul class="list">
-              <li data-i18n="ai.21">Code for pages, prototypes and animations.</li>
-              <li data-i18n="ai.22">Market and competitor data with sources.</li>
-              <li data-i18n="ai.23">Drafts of long documents and their structure.</li>
-              <li data-i18n="ai.24">Image and video variants to compare.</li>
-              <li data-i18n="ai.25">Dictation instead of typing.</li>
-            </ul>
-          </div>
-          <div class="split-panel__col">
-            <h3 class="mini-title" data-i18n="ai.26">What I decide</h3>
-            <ul class="list">
-              <li data-i18n="ai.27">What the problem is and who the user is.</li>
-              <li data-i18n="ai.28">Which states and edge cases the product must handle.</li>
-              <li data-i18n="ai.29">Whether a visual fits the brand. Basko's realistic 3D ad did not, so I dropped it.</li>
-              <li data-i18n="ai.30">What a client's material may show: no client logos without consent, no personal data.</li>
-              <li data-i18n="ai.31">Whether the result is ready for the client.</li>
-            </ul>
-          </div>
-        </div>
 
         <div class="tools">
           <h3 class="mini-title" data-i18n="ai.38">Tools I use</h3>
@@ -719,39 +743,6 @@
       </div>
     </section>
 
-    <!-- ============ GUITAR (task 09): no menu item. js/guitar.js + js/guitar-audio.js ============ -->
-    <section class="section guitar" id="guitar" aria-labelledby="guitar-title">
-      <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-ambient="assets/hf/smoke"></video></div>
-      <div class="container guitar__inner">
-        <header class="sec-head">
-          <h2 class="sec-head__title" id="guitar-title"><span class="mask"><span data-i18n="guitar.1">Play something</span></span></h2>
-        </header>
-        <p class="sr-only" id="guitar-desc" data-i18n="guitar.2">Electric guitar and amplifier. Press Play to hear a short riff.</p>
-        <div class="guitar__stage">
-          <span class="guitar__glow" aria-hidden="true"></span>
-          <div class="guitar__item guitar__item--guitar" aria-hidden="true" data-cursor-play>
-            <div class="guitar__float">
-              <div class="guitar__tilt">
-                <img class="guitar__img" src="assets/hf/guitar-900.webp" srcset="assets/hf/guitar-900.webp 343w, assets/hf/guitar-1600.webp 609w" sizes="(min-width: 900px) 210px, 36vw" width="609" height="1600" alt="" loading="lazy" decoding="async">
-                <svg class="guitar__strings" viewBox="0 0 609 1600" preserveAspectRatio="none" focusable="false"></svg>
-              </div>
-            </div>
-            <span class="guitar__shadow"></span>
-          </div>
-          <div class="guitar__item guitar__item--amp" aria-hidden="true">
-            <div class="guitar__float">
-              <img class="amp__img" src="assets/hf/amp-700.webp" srcset="assets/hf/amp-700.webp 700w, assets/hf/amp-1200.webp 1200w" sizes="(min-width: 900px) 380px, 52vw" width="1200" height="1275" alt="" loading="lazy" decoding="async">
-              <span class="amp__lamp"></span>
-              <span class="amp__cone amp__cone--l"></span>
-              <span class="amp__cone amp__cone--r"></span>
-            </div>
-            <span class="guitar__shadow"></span>
-          </div>
-        </div>
-        <button class="btn btn--primary guitar__play" id="guitar-play" type="button" aria-pressed="false" aria-describedby="guitar-desc"><span class="guitar__play-icon" aria-hidden="true">▶</span><span class="guitar__play-label" data-i18n="guitar.3">Play</span></button>
-      </div>
-    </section>
-
     <!-- CV and contact share one wrapper: the contact (with the footer) lies under the CV and is
          uncovered like a curtain at the end of the page (js/footer.js, only when it fits the screen). -->
     <div class="curtain" id="curtain">
@@ -838,7 +829,7 @@
   </main>
 
   <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label">Open</span></div>
-  <script src="js/i18n.js?v=20261107"></script>
+  <script src="js/i18n.js?v=20261108"></script>
   <script>
     /* Scripts start after the first paint (task 09, phone performance): the text is already on screen,
        so the libraries and the modules never hold the first view back. Order: GSAP, ScrollTrigger and
@@ -854,7 +845,7 @@
       }
       function boot() {
         var left = 3;
-        var next = function () { if (--left === 0) add('js/main.js?v=20261107', true); };
+        var next = function () { if (--left === 0) add('js/main.js?v=20261108', true); };
         add('vendor/js/gsap.min.js', false, next);
         add('vendor/js/ScrollTrigger.min.js', false, next);
         add('vendor/js/lenis.min.js', false, next);
