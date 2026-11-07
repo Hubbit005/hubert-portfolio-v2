@@ -26,7 +26,7 @@ Decyzje Huberta z 7.11.2026. Jedna sesja, commit na punkt, na końcu jeden PR do
 
 ## 4. Piosenka
 
-Plik: `assets/audio/song.webm` i `song.m4a` (nagranie Huberta, już w repo). `data-start`: **DO_UZUPELNIENIA** sekund.
+Plik: `assets/audio/song.webm` i `song.m4a` (nagranie Huberta, już w repo). `data-start`: **0** (od początku nagrania; decyzja Huberta).
 
 Nie dodawaj żadnych nagrań z płyt ani utworów innych wykonawców.
 
