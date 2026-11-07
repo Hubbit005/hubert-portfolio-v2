@@ -1112,22 +1112,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .case-index a::after{ display: none; }
 }
 
-/* Floating cover next to the pointer (fine pointer only, built by JS) */
-.case-cover{
-  position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
-  width: clamp(280px, 21vw, 320px); aspect-ratio: 3 / 4; margin: 0;
-  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
-}
-.case-cover.is-on{ opacity: 1; }
-.case-cover__img{
-  position: absolute; inset: 0; overflow: hidden; border-radius: var(--r-sm); box-shadow: var(--shadow-3);
-  opacity: 0; transform: scale(0.92);
-  transition: opacity var(--t-2) var(--ease-out), transform var(--t-3) var(--ease-out);
-}
-.case-cover__img.is-on{ opacity: 1; transform: none; }
-.case-cover__img img{ width: 100%; height: 100%; object-fit: cover; }
-.case-cover .type-cover__word{ font-size: 1.7rem; }
-
 /* 2. Titles split into letters (visual copy is aria-hidden, the sr-only copy is read) */
 .split__w{ display: inline-block; white-space: nowrap; overflow: hidden; vertical-align: top; padding-bottom: 0.06em; margin-bottom: -0.06em; }
 .split__c{ display: inline-block; }
