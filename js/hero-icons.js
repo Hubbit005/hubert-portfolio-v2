@@ -92,7 +92,8 @@ export function initHeroIcons({ reduced, gsap }) {
       parts.forEach((r) => {
         if (!r || !r.width) return;
         const x = r.left - hr.left, y = r.top - hr.top;
-        walls.push(box(x + r.width / 2, y + r.height / 2, r.width + 16, r.height + 16, st));
+        // group 2: the hero's text walls; they stop counting while the roulette is open (text hidden)
+        walls.push(box(x + r.width / 2, y + r.height / 2, r.width + 16, r.height + 16, { ...st, group: 2 }));
       });
       walls.forEach((w) => world.add(w));
       world.bodies.sort((a, b) => (b.isStatic ? 1 : 0) - (a.isStatic ? 1 : 0));
@@ -125,7 +126,8 @@ export function initHeroIcons({ reduced, gsap }) {
         const side = order.filter((o, j) => (j < Math.ceil(icons.length / 2)) === left).sort((a, b) => a.home.y - b.home.y);
         const k = side.indexOf(ic), n = Math.max(1, side.length - 1);
         const top = Math.max(150, H * 0.2), bottom = H * 0.88;
-        return { x: left ? W * 0.05 : W * 0.95, y: side.length > 1 ? top + (bottom - top) * (k / n) : (top + bottom) / 2 };
+        const m = Math.max(W * 0.05, ic.b.r + 8); // fully on screen
+        return { x: left ? m : W - m, y: side.length > 1 ? top + (bottom - top) * (k / n) : (top + bottom) / 2 };
       }
       const a = (t / ic.per) * Math.PI * 2 + ic.phase;
       return { x: ic.home.x + Math.cos(a) * ic.orbit, y: ic.home.y + Math.sin(a * 1.3) * ic.orbit * 0.7 };
@@ -189,6 +191,7 @@ export function initHeroIcons({ reduced, gsap }) {
         if (on === roulette) return;
         roulette = on; lastTouch = -1e9;
         layer.classList.toggle('is-away', on);
+        icons.forEach((ic) => { ic.b.mask = on ? 0xffff & ~2 : 0xffff; world.wake(ic.b); });
       });
       ro.observe(hero, { attributes: true, attributeFilter: ['class'] });
       // paused motion: back home and still

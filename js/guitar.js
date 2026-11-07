@@ -75,6 +75,7 @@ export function initGuitar({ reduced, gsap }) {
     label.textContent = t(on ? 'guitar.stop' : 'guitar.play');
     icon.textContent = on ? '■' : '▶';
     sec.classList.toggle('is-playing', on);
+    document.getElementById('cursor')?.classList.toggle('is-stop', on); // the play cursor shows stop at once
     sec.dispatchEvent(new CustomEvent('guitarstate'));
   }
   async function start() {

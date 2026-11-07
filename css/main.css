@@ -1712,3 +1712,9 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .cursor.is-stop .cursor__sq{ display: inline; }
 .cursor.is-stop .cursor__tri{ display: none; }
 .guitar.is-playing .guitar__string{ stroke-width: 3px; }
+/* Review round 2 (task 09) */
+/* the result card covers the right column of icons: hide the icons while it shows; phones: no room */
+.hero:has(#roulette-card:not([hidden])) .hero-icons{ opacity: 0; }
+@media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
+/* Play/Stop: a clear "on" state while the riff plays */
+.guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
