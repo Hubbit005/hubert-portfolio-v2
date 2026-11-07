@@ -1,6 +1,6 @@
 /* Hero: the word HUBERT as one extruded, bevelled chrome solid, twisted around its long (horizontal)
    axis like a twisted ice lolly (three.js, task 10). The twist is a vertex deformation in the shader:
-   the cross-section turns more and more along X (about 118° over the whole word), so the middle reads
+   the cross-section turns more and more along X (about 96° over the whole word), so the middle reads
    straight on and the ends show the twist. Positions and normals are turned together, so the light
    and the reflections follow the twist. Font: vendor/fonts/typeface/archivo-900-125-hubert.json
    (Archivo, widest width, black weight; converted once offline).
@@ -31,14 +31,13 @@ const DEPTH = 0.3;        // extrusion depth, in em
 const PERSP = 13;         // camera distance, in em
 const TAU = Math.PI * 2;
 const DEG = Math.PI / 180;
-const TWIST = 118 * DEG;  // twist over the whole word (ends ±59°)
-const WAVE = 14 * DEG;    // the travelling wave on top of the twist
+const TWIST = 96 * DEG;   // twist over the whole word (ends ±48°)
+const WAVE = 10 * DEG;    // the travelling wave on top of the twist
 const YAW = 15 * DEG;     // calm turn around the vertical axis
 const ENTER_MS = 1800;
 const ELEV = 58 * DEG;    // camera elevation in the roulette view
 const TURN_MS = 1250;     // camera move between the views
 const WHEEL_R = 2.5;      // roulette wheel radius, in em
-const PINK = '#ff8fbf';   // second reflection light (the icons' pink chrome); not a page colour
 
 function hasWebGL() {
   try {
@@ -112,14 +111,15 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
   const amb = new THREE.AmbientLight(0xffffff, 0.35);
   const key = new THREE.DirectionalLight(0xffffff, 1.4);
   key.position.set(-0.4, 0.9, 0.8);
-  const warm = new THREE.DirectionalLight(0xff5a1f, 2.6);
+  const warm = new THREE.DirectionalLight(0xff5a1f, 1.9);
   warm.position.set(0.9, -0.5, 0.5);
-  const pink = new THREE.DirectionalLight(PINK, 1.8);
+  const pink = new THREE.DirectionalLight(0xffffff, 1.8);
   pink.position.set(-0.9, -0.3, 0.6);
   scene.add(amb, key, warm, pink);
   function applyTheme() {
-    const acc = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff5a1f';
-    warm.color.set(acc);
+    const cs = getComputedStyle(document.documentElement);
+    warm.color.set(cs.getPropertyValue('--accent').trim() || '#ff5a1f');
+    pink.color.set(cs.getPropertyValue('--chrome-pink').trim() || '#ffffff'); // tokens.css
   }
 
   /* ---------- The word: one solid, glyphs merged into one geometry ---------- */
@@ -142,7 +142,7 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
 
   // Twist in the vertex shader: angle(x) = twist · x / LEN + wave · sin(2π · x / LEN − time)
   const twistU = { uTwist: { value: TWIST }, uWave: { value: WAVE }, uPhase: { value: 0 }, uLen: { value: LEN } };
-  const wordMat = new THREE.MeshStandardMaterial({ color: '#f4eaee', metalness: 1, roughness: 0.14, envMapIntensity: 1.3, transparent: true });
+  const wordMat = new THREE.MeshStandardMaterial({ color: '#f4eaee', metalness: 1, roughness: 0.14, envMapIntensity: 1.75, transparent: true });
   wordMat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, twistU);
     sh.vertexShader = sh.vertexShader
@@ -371,7 +371,7 @@ mat3 twistAt(float x) {
   function place(e, r) {
     const calm = reduced ? 0 : 1;
     const enter = 1 - e;                       // the entrance: a fast unwinding roll
-    twistU.uTwist.value = (TWIST * (1 + 0.12 * Math.sin(time * 0.5) * calm) + enter * TAU * 1.2) * (1 - r);
+    twistU.uTwist.value = (TWIST * (1 + 0.06 * Math.sin(time * 0.5) * calm) + enter * TAU * 1.2) * (1 - r);
     twistU.uWave.value = WAVE * calm * (1 - r);
     twistU.uPhase.value = time * 0.9;
     wordG.rotation.order = 'YXZ';

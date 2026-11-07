@@ -96,7 +96,12 @@ export function initHeroPanel({ reduced, gsap }) {
   arrow.addEventListener('click', () => show(true));
   back.addEventListener('click', () => show(false));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && open && !e.defaultPrevented) { e.preventDefault(); show(false); }
+    // only while the panel is in use: focus inside it, or the hero on screen; never over the open menu
+    if (e.key !== 'Escape' || !open || e.defaultPrevented) return;
+    if (document.getElementById('nav')?.classList.contains('is-open')) return;
+    const r = hero.getBoundingClientRect();
+    if (!panel.contains(document.activeElement) && (r.bottom < 80 || r.top > innerHeight * 0.5)) return;
+    e.preventDefault(); show(false);
   });
 
   /* ---------- Swipe (touch): clearly horizontal, at least 60 px ---------- */
@@ -118,7 +123,10 @@ export function initHeroPanel({ reduced, gsap }) {
   hero.addEventListener('touchcancel', () => { sw = null; }, { passive: true });
 
   /* ---------- #guitar in the address ---------- */
-  const fromHash = () => { if (location.hash === '#guitar') show(true, { instant: true, focus: false }); };
+  const fromHash = () => {
+    if (location.hash === '#guitar') show(true, { instant: true, focus: false });
+    else if (open) show(false, { focus: false });
+  };
   fromHash();
   window.addEventListener('hashchange', fromHash);
   // a link to #guitar elsewhere on the page opens the panel (main.js scrolls to the hero)

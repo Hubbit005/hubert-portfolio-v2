@@ -208,6 +208,12 @@ export function initGuitar({ reduced, gsap }) {
     lvlS += (lvl - lvlS) * (1 - Math.exp(-dt * 5));
     bassS += (bass - bassS) * (1 - Math.exp(-dt * (bass > bassS ? 30 : 8)));
     const live = !reduced && !window.__motionPaused;
+    // paused motion and silence: the scene stands still, nothing to write (the cable is already drawn)
+    if (!live && !playing && L.drawn && lvlS < 0.004 && hit < 0.01 && energy.every((e) => e < 0.004)) {
+      if (!onScreen) { gsap.ticker.remove(frame); ticking = false; }
+      return;
+    }
+    L.drawn = true;
 
     // floating and the floor shadows
     const sg = float(5.4, 0, -14, 1);

@@ -74,6 +74,12 @@
   --focus-halo: #ff4f12;
   --glow-rgb: 255 118 52;
   --glow-a: 0.22;
+  /* Objects in the guitar scene and the 3D word's lights (not page colours) */
+  --cable: #1c1c1f;
+  --cable-plug: #2a2a2c;
+  --cable-tip: #c9c9cf;
+  --led-hot: #fff1e0;
+  --chrome-pink: #ff8fbf;
 
   /* Typography */
   --font-display: "Archivo", "Arial Black", system-ui, sans-serif;

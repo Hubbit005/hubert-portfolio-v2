@@ -209,7 +209,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 }
 
 /* ---------- Hero ---------- */
-.hero{ position: relative; overflow: hidden; isolation: isolate; }
+.hero{ position: relative; overflow: hidden; overflow: clip; isolation: isolate; } /* clip: not a scroll container */
 .hero__main{
   position: relative;
   min-height: 100svh;
@@ -1711,6 +1711,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .js .hero__track{ transition: none; }
   .js .hero__panel{ transition: opacity 0.26s ease; }
   .js .hero.has-track .hero__panel[inert]{ opacity: 0; }
+  .js .hero .guitar__bg, .js .hero.is-guitar .guitar__bg{ transition: none; transform: none; left: 0; }
 }
 
 /* The big arrow "to the guitar" (panel 1, right edge, vertically in the middle) */
@@ -1750,7 +1751,9 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   overflow: hidden; scroll-margin-top: 0;
   contain: size; /* as tall as the hero, never taller: the hero's height comes from panel 1 */
 }
-.js .hero .guitar .sec-head{ margin-bottom: 0; text-align: center; }
+.js .hero .guitar .sec-head{ margin-bottom: clamp(16px, 4vh, 44px); text-align: center; }
+.js .hero .guitar .sec-head__title{ text-align: center; }
+@media (min-width: 701px) { .js .hero .guitar .guitar__stage{ height: clamp(400px, 52vh, 500px); } }
 .js .hero .guitar .sec-head__title{ outline: none; }
 .js .hero .guitar .guitar__inner > .sec-head{ justify-self: center; }
 .guitar__inner{ position: relative; }
@@ -1784,7 +1787,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .js .hero .guitar{ align-content: start; padding-top: 76px; padding-bottom: 16px; }
   .js .hero .guitar .sec-head__title{ font-size: clamp(1.4rem, 7.2vw, 2rem); }
   .js .hero .guitar .guitar__stage{ height: auto; padding-block: var(--s-5) 0; grid-template-columns: 0.72fr 1.28fr; gap: 4px; align-items: end; }
-  .js .hero .guitar .guitar__item--guitar{ width: 100%; max-width: 116px; }
+  .js .hero .guitar .guitar__item--guitar{ width: 100%; max-width: 104px; justify-self: start; }
   .js .hero .guitar .guitar__play{ margin-top: var(--s-5); }
 }
 
@@ -1793,19 +1796,19 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .pedal__img{ display: block; width: 100%; height: auto; max-width: none; filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.55)); }
 .pedal__led{
   position: absolute; left: 53.7%; top: 55.4%; width: 22%; aspect-ratio: 1; margin: -11% 0 0 -11%; border-radius: 50%;
-  background: radial-gradient(circle, #fff1e0 0%, var(--accent) 30%, rgb(var(--glow-rgb) / 0.35) 52%, rgb(var(--glow-rgb) / 0) 72%);
+  background: radial-gradient(circle, var(--led-hot) 0%, var(--accent) 30%, rgb(var(--glow-rgb) / 0.35) 52%, rgb(var(--glow-rgb) / 0) 72%);
   opacity: 0; mix-blend-mode: screen; will-change: opacity, transform;
 }
 .pedal__shadow{ width: 110%; height: 16px; margin-top: -10px; animation: none; }
-@media (max-width: 700px) { .pedal{ width: 72px; bottom: 2%; left: 46%; } }
+@media (max-width: 700px) { .pedal{ width: 64px; bottom: 0; left: 52%; z-index: 4; } }
 .guitar.is-playing .pedal__led{ opacity: 0.9; }
 /* Cable: SVG over the stage, drawn by js/guitar.js */
 .cable{ position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 2; }
 .cable__rim{ fill: none; stroke: rgb(var(--glow-rgb) / 0.42); stroke-linecap: round; }
-.cable__wire{ fill: none; stroke: #1c1c1f; stroke-width: 5; stroke-linecap: round; }
+.cable__wire{ fill: none; stroke: var(--cable); stroke-width: 5; stroke-linecap: round; }
 .cable__shine{ fill: none; stroke: rgb(255 255 255 / 0.32); stroke-width: 1.4; stroke-linecap: round; }
-.cable__plug{ stroke: #2a2a2c; stroke-width: 9; stroke-linecap: round; }
-.cable__tip{ stroke: #c9c9cf; stroke-width: 4; stroke-linecap: round; }
+.cable__plug{ stroke: var(--cable-plug); stroke-width: 9; stroke-linecap: round; }
+.cable__tip{ stroke: var(--cable-tip); stroke-width: 4; stroke-linecap: round; }
 .guitar__item--guitar{ z-index: 3; }
 .guitar__item--amp{ z-index: 1; }
 /* Amp: speaker cores darken on a hit (opacity), the floats are driven by js/guitar.js now */
