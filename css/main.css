@@ -882,30 +882,18 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .roulette__card.is-in{ animation: rouletteIn var(--t-3) var(--ease-out) both; }
 @keyframes rouletteIn{ from{ opacity: 0; transform: translateY(calc(-50% + 18px)); } to{ opacity: 1; transform: translateY(-50%); } }
-.roulette__cover{ aspect-ratio: 16 / 9; background: #111; overflow: hidden; }
-.roulette__cover img{ width: 100%; height: 100%; object-fit: cover; }
-.roulette__cover.is-type{ display: grid; align-items: end; padding: 14px 16px; background: #dfe5dc; color: #0d0d0d; }
-.roulette__type{ font-family: var(--font-display); font-stretch: 125%; font-weight: 900; font-size: 1.5rem; line-height: 0.92; text-transform: uppercase; }
 .roulette__body{ display: grid; gap: 4px; padding: 16px 18px 18px; }
 .roulette__kicker{ color: var(--accent-ink); }
 .roulette__name{ font-family: var(--font-display); font-stretch: 118%; font-weight: 850; font-size: clamp(1.3rem, 1rem + 1vw, 1.7rem); line-height: 1.05; text-transform: uppercase; }
-.roulette__cat{ color: var(--ink-2); margin-bottom: 12px; }
 .roulette__card .roulette__actions{ justify-content: flex-start; }
 
 /* Simple panel without the wheel (reduced motion or no WebGL): the card sits in the middle */
 .roulette.is-fallback .roulette__card{ right: auto; left: 50%; transform: translate(-50%, -50%); animation: none; }
-.roulette.is-fallback .roulette__bar{ display: none; }
 
 @media (max-width: 700px) {
-  .roulette__card{ left: var(--gutter); right: var(--gutter); top: auto; bottom: 16px; width: auto; transform: none; grid-template-columns: 104px 1fr; }
-  .roulette__card.is-in{ animation-name: rouletteInUp; }
-  @keyframes rouletteInUp{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
-  .roulette__cover{ aspect-ratio: auto; height: 100%; }
-  .roulette__cover.is-type{ padding: 10px; }
-  .roulette__type{ font-size: 0.95rem; }
-  .roulette__body{ padding: 12px 14px 14px; }
-  .roulette__cat{ margin-bottom: 8px; }
-  .roulette__card .btn--sm{ min-height: 40px; padding: 0 14px; font-size: 0.74rem; }
+  .roulette__card{ left: var(--gutter); right: var(--gutter); top: auto; bottom: 16px; width: auto; transform: none; }
+        .roulette__body{ padding: 12px 14px 14px; }
+    .roulette__card .btn--sm{ min-height: 40px; padding: 0 14px; font-size: 0.74rem; }
   .roulette.is-fallback .roulette__card{ left: var(--gutter); right: var(--gutter); top: 50%; bottom: auto; transform: translateY(-50%); }
 }
 @media (prefers-reduced-motion: reduce) { .roulette__card.is-in{ animation: none; } }
@@ -1756,3 +1744,90 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Task 12: song progress, a thin bar along the bottom of the Play button (js/guitar.js) */
 .guitar__play{ position: relative; overflow: hidden; }
 .guitar__progress{ position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
+
+/* ==========================================================================
+   Task 12: roulette as a casino game (js/roulette.js). Bet table (0 + 3×12 and red/black), stake,
+   coins and a small wins/losses chart. Desktop: coins and chart on the right, above the result card;
+   phones: everything under the wheel, the table scrolls sideways.
+   ========================================================================== */
+.roulette__bar{ gap: 10px; bottom: clamp(12px, 2vh, 24px); }
+.roulette__bet{ display: flex; flex-wrap: wrap; justify-content: center; align-items: end; gap: 10px 18px; max-width: 100%; }
+.roulette__bet fieldset{ border: 0; margin: 0; padding: 0; min-width: 0; max-width: 100%; }
+.roulette__bet legend{ padding: 0; margin-bottom: 4px; font-size: 0.68rem; color: var(--ink-2); }
+.roulette__table{ display: flex; gap: 6px; max-width: 100%; overflow-x: auto; padding: 2px; }
+.roulette__grid{ display: grid; grid-template-columns: repeat(13, 32px); grid-template-rows: repeat(3, 30px); gap: 2px; flex: none; }
+.roulette__cell{
+  position: relative; display: grid; place-items: center; min-width: 32px; min-height: 30px; padding: 0 8px;
+  border-radius: 4px; border: 1px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.85);
+  font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink); cursor: pointer; user-select: none;
+}
+.roulette__grid .roulette__cell{ padding: 0; }
+.roulette__cell input{ position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.roulette__cell.is-red{ background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.roulette__cell.is-black{ background: #1d1d21; color: #f2f2ee; }
+.roulette__cell.is-green{ background: #2e5b45; color: #f2f2ee; border-color: transparent; }
+.roulette__cell:has(input:checked){ box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); z-index: 1; }
+.roulette__cell:has(input:focus-visible){ outline: 3px solid var(--ink); outline-offset: 3px; z-index: 2; }
+.roulette__cell:has(input:disabled){ opacity: 0.35; cursor: not-allowed; }
+.roulette__colour{ min-width: 64px; align-self: stretch; text-transform: uppercase; }
+.roulette__stake{ display: flex; gap: 6px; }
+.roulette__stake legend{ float: left; width: 100%; }
+.roulette__stake .roulette__cell{ min-height: 36px; }
+.roulette__bet fieldset:disabled{ opacity: 0.6; }
+
+.roulette__stats{
+  position: absolute; right: var(--gutter); top: 84px; z-index: 1; pointer-events: auto;
+  display: grid; gap: 10px; justify-items: start; padding: 14px 16px; border-radius: var(--r-md);
+  border: 1px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.85);
+}
+.roulette:has(.roulette__sound) .roulette__stats{ top: 136px; }
+.roulette__coins{ display: grid; gap: 2px; }
+.roulette__coins .mono{ font-size: 0.68rem; color: var(--ink-2); }
+.roulette__coins strong{ font-family: var(--font-display); font-stretch: 118%; font-weight: 850; font-size: 1.8rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.roulette__chart{ display: flex; gap: 14px; align-items: end; }
+.roulette__col{ position: relative; display: grid; justify-items: center; gap: 4px; min-width: 44px; padding: 0; border: 0; background: none; color: var(--ink-2); cursor: pointer; font-size: 0.62rem; }
+.roulette__col svg{ width: 20px; height: 60px; }
+.roulette__col rect{ fill: var(--ink); transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(var(--h, 0)); transition: transform 0.7s var(--ease-out); }
+#roulette-wins rect{ fill: var(--accent); }
+.roulette__tip{
+  position: absolute; bottom: calc(100% + 4px); left: 50%; translate: -50% 0; padding: 2px 8px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--bg); font-family: var(--font-mono); font-size: 0.72rem;
+  opacity: 0; transition: opacity var(--t-2) var(--ease-out); pointer-events: none;
+}
+.roulette__col:focus-visible{ outline: 3px solid var(--ink); outline-offset: 3px; }
+.roulette__col:hover .roulette__tip, .roulette__col:focus-visible .roulette__tip, .roulette__col.is-tip .roulette__tip{ opacity: 1; }
+@media (hover: none) { .roulette__col:hover .roulette__tip{ opacity: 0; } .roulette__col.is-tip .roulette__tip{ opacity: 1; } }
+.roulette__stats [hidden]{ display: none; }
+
+.roulette__card{ top: auto; bottom: clamp(20px, 5vh, 48px); transform: none; }
+.roulette__card.is-in{ animation-name: rouletteInUp; }
+@keyframes rouletteInUp{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
+.roulette__name{ display: flex; align-items: center; gap: 10px; }
+.roulette__dot{ width: 18px; height: 18px; border-radius: 50%; flex: none; border: 1px solid var(--line-strong); }
+.roulette__dot.is-red{ background: var(--accent); } .roulette__dot.is-black{ background: #1d1d21; } .roulette__dot.is-green{ background: #2e5b45; }
+.roulette__kicker{ margin-bottom: 10px; font-size: 0.9rem; color: var(--ink-2); }
+.roulette__card.is-win .roulette__kicker{ color: var(--accent-ink); }
+.roulette.is-fallback .roulette__card{ top: auto; bottom: clamp(20px, 5vh, 48px); transform: translateX(-50%); }
+@media (prefers-reduced-motion: reduce) { .roulette__col rect{ transition: none; } }
+
+@media (max-width: 700px) {
+  .roulette__bar{ left: 12px; right: 12px; bottom: 12px; transform: none; width: auto; max-width: none; }
+  .roulette__grid{ grid-template-columns: repeat(13, 44px); grid-template-rows: repeat(3, 44px); }
+  .roulette__cell{ min-width: 44px; min-height: 44px; }
+  .roulette__stake .roulette__cell{ min-height: 44px; min-width: 52px; }
+  .roulette__hint{ display: none; }
+  .roulette__stats{ position: static; grid-auto-flow: column; align-items: end; justify-content: space-between; padding: 8px 12px; }
+  .roulette__coins strong{ font-size: 1.4rem; }
+  .roulette__col svg{ height: 36px; }
+  .roulette:not([hidden]){ display: flex; flex-direction: column; justify-content: flex-end; padding: 0 12px 12px; gap: 8px; }
+  .roulette__bar, .roulette__card, .roulette.is-fallback .roulette__card{ position: static; transform: none; }
+  /* table on its own row (scrolls sideways), then stake and the buttons side by side */
+  .roulette__bar{ display: grid; grid-template-columns: auto 1fr; align-items: end; justify-items: stretch; gap: 8px; }
+  .roulette__bet{ display: contents; }
+  .roulette__pick{ grid-column: 1 / -1; }
+  .roulette__actions{ justify-content: flex-end; flex-wrap: nowrap; gap: 6px; }
+  .roulette__actions .btn{ min-height: 44px; padding: 0 16px; font-size: 0.78rem; }
+  .roulette__stake .roulette__cell{ min-width: 44px; padding: 0 6px; }
+  .roulette__stats{ padding: 6px 12px; }
+  .roulette__col svg{ height: 28px; }
+}

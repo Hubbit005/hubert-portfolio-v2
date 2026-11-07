@@ -93,7 +93,7 @@
         <div class="hero__main hero__panel" id="hero-main">
           <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
             <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
-            <span data-i18n="roulette-open.1">Spin my work</span>
+            <span data-i18n="roulette-open.1">Play roulette</span>
           </button>
           <div class="hero__stage" id="hero-stage">
             <h1 class="hero__title" id="hero-title">
@@ -104,24 +104,45 @@
               </span>
             </h1>
           </div>
-          <div class="roulette" id="roulette" role="region" aria-label="Project roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
+          <div class="roulette" id="roulette" role="region" aria-label="Roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
             <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>
+            <div class="roulette__stats">
+              <p class="roulette__coins"><span class="mono" data-i18n="roulette-coins.1">Coins</span> <strong id="roulette-coins">1000</strong></p>
+              <div class="roulette__chart">
+                <button class="roulette__col" id="roulette-wins" type="button"><svg viewBox="0 0 20 60" aria-hidden="true" focusable="false"><rect width="20" height="60"/></svg><span class="mono" data-i18n="roulette-wins.1">Wins</span> <span class="roulette__tip">0</span></button>
+                <button class="roulette__col" id="roulette-losses" type="button"><svg viewBox="0 0 20 60" aria-hidden="true" focusable="false"><rect width="20" height="60"/></svg><span class="mono" data-i18n="roulette-losses.1">Losses</span> <span class="roulette__tip">0</span></button>
+              </div>
+              <button class="btn btn--primary btn--sm" id="roulette-reset" type="button" hidden><span data-i18n="roulette-reset.1">Get 1000 coins</span></button>
+            </div>
             <div class="roulette__bar" id="roulette-bar">
-              <p class="roulette__hint mono">Drag the wheel or press Spin</p>
+              <p class="roulette__hint mono" data-i18n="roulette-hint.1">Place your bet and press Spin</p>
+              <form class="roulette__bet" id="roulette-bet" onsubmit="return false">
+                <fieldset class="roulette__pick">
+                  <legend class="mono" data-i18n="roulette-number.1">Number</legend>
+                  <div class="roulette__table">
+                    <div class="roulette__grid" id="roulette-grid"></div>
+                    <label class="roulette__cell roulette__colour is-red"><input type="radio" name="pick" value="red" checked><span data-i18n="roulette-red.1">Red</span></label>
+                    <label class="roulette__cell roulette__colour is-black"><input type="radio" name="pick" value="black"><span data-i18n="roulette-black.1">Black</span></label>
+                  </div>
+                </fieldset>
+                <fieldset class="roulette__stake">
+                  <legend class="mono" data-i18n="roulette-stake.1">Stake</legend>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="10" checked><span>10</span></label>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="50"><span>50</span></label>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="100"><span>100</span></label>
+                </fieldset>
+              </form>
               <div class="roulette__actions">
                 <button class="btn btn--primary" id="roulette-spin" type="button"><span data-i18n="roulette-spin.1">Spin</span></button>
                 <button class="btn btn--ghost" id="roulette-back" type="button"><span data-i18n="roulette-back.1">Back</span></button>
               </div>
             </div>
-            <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-name" hidden>
-              <div class="roulette__cover" id="roulette-cover"></div>
+            <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-num" hidden>
               <div class="roulette__body">
-                <p class="roulette__kicker mono" data-i18n="roulette-card.1">You landed on</p>
-                <p class="roulette__name" id="roulette-name"></p>
-                <p class="roulette__cat mono" id="roulette-cat"></p>
+                <p class="roulette__name" id="roulette-num"></p>
+                <p class="roulette__kicker mono" id="roulette-outcome"></p>
                 <div class="roulette__actions">
-                  <a class="btn btn--primary btn--sm" id="roulette-go" href="#work"><span data-i18n="roulette-go.1">Open project</span></a>
-                  <button class="btn btn--ghost btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
+                  <button class="btn btn--primary btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
                   <button class="btn btn--ghost btn--sm" id="roulette-back2" type="button"><span data-i18n="roulette-back.1">Back</span></button>
                 </div>
               </div>

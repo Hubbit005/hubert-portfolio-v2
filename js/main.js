@@ -217,7 +217,7 @@ document.addEventListener('langchange', () => {
 /* ---------- Boot ---------- */
 async function boot() {
   try { await document.fonts.ready; } catch (e) { /* ignore */ }
-  const roulette = initRoulette();
+  const roulette = initRoulette({ gsap });
   initHero({ reduced, lenis, gsap, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
   initPause({ reduced });

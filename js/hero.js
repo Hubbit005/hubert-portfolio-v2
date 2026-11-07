@@ -11,7 +11,7 @@
    (js/hero-icons.js) bounce off it: hero.js publishes the word's size on the stage (data-ww, data-wh).
    Material: chrome like the icons and the roulette (metalness 1, low roughness, the studio reflection
    map assets/hf/env-studio.jpg through PMREMGenerator), with accent and pink lights in the reflections.
-   Roulette: "Spin my work" works as before. Opening it unwinds the twist; the word floats up and away
+   Roulette ("Play roulette", task 12: 37 pockets of the European wheel, js/roulette.js). Opening it unwinds the twist; the word floats up and away
    and fades while the camera tilts down onto the chrome wheel. A real chrome ball decides the result:
    it runs along the rim against the wheel's turn, slows down, spirals in, bounces off the frets between
    the fields and stops in a pocket. That pocket is the result (card and aria-live). Sound:
@@ -22,7 +22,7 @@
    roulette uses the simple panel (js/roulette.js). No WebGL or a load error: the static word stays.
    One loop: the GSAP ticker, only while the hero is on screen, the tab is visible and the guitar panel
    (js/hero-panel.js, hero.dataset.panel) does not cover it. */
-import { PROJECTS } from './roulette.js?v=20261108';
+import { ORDER, RED } from './roulette.js?v=20261108';
 import { createRouletteSound } from './roulette-sound.js?v=20261108';
 
 const WORD = 'HUBERT';
@@ -168,7 +168,7 @@ mat3 twistAt(float x) {
   applyTheme();
 
   /* ---------- Roulette wheel (hidden until opened) ---------- */
-  const N = PROJECTS.length;
+  const N = ORDER.length;
   const SECTOR = TAU / N;
   const RW = WHEEL_R;                // wheel radius, in em
   const WY = -capH / 2 - 0.02;       // wheel face height: at the foot of the letters
@@ -179,11 +179,6 @@ mat3 twistAt(float x) {
   rou.add(wheelGroup);
   try { await document.fonts.load('800 40px Archivo'); } catch (e) { /* draw with the fallback font */ }
   const faceTex = new THREE.CanvasTexture(wheelCanvas(small ? 768 : 1024));
-  // Field labels follow the page language: redraw the face when it changes.
-  document.addEventListener('langchange', () => {
-    faceTex.image = wheelCanvas(small ? 768 : 1024);
-    faceTex.needsUpdate = true;
-  });
   faceTex.colorSpace = THREE.SRGBColorSpace;
   faceTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
   // Chrome: standard materials with the studio reflection map (loadEnv below, shared with the word).
@@ -250,12 +245,13 @@ mat3 twistAt(float x) {
     const g = c.getContext('2d');
     const r = size / 2;
     const k = size / 1024;
-    const fills = [['#ff4f12', '#0d0d0d'], ['#1d1d21', '#f2f2ee']]; // accent and dark chrome
+    // red pockets in the accent, black in dark chrome, 0 in a muted green (the only extra colour)
+    const fill = (n) => (n === 0 ? ['#2e5b45', '#f2f2ee'] : RED.has(n) ? ['#ff4f12', '#0d0d0d'] : ['#1d1d21', '#f2f2ee']);
     g.translate(r, r);
     // Canvas direction (sin a, cos a) is local wheel angle a (see the texture mapping of the face).
     const th = (a) => Math.PI / 2 - a;
     for (let i = 0; i < N; i++) {
-      const [bg, fg] = fills[i % 2];
+      const [bg, fg] = fill(ORDER[i]);
       const a0 = i * SECTOR - SECTOR / 2, a1 = i * SECTOR + SECTOR / 2;
       g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, r, th(a1), th(a0)); g.closePath();
       g.fillStyle = bg; g.fill();
@@ -265,12 +261,8 @@ mat3 twistAt(float x) {
       g.fillStyle = fg;
       g.textBaseline = 'middle';
       if ('fontStretch' in g) g.fontStretch = 'expanded';
-      let fs = 46 * k;
-      g.font = `800 ${fs}px Archivo, "Arial Black", sans-serif`;
-      const room = 222 * k; // the pocket ring (outer 20%) stays free for the ball
-      const w = g.measureText(PROJECTS[i].label).width;
-      if (w > room) { fs *= room / w; g.font = `800 ${fs}px Archivo, "Arial Black", sans-serif`; }
-      g.fillText(PROJECTS[i].label, 172 * k, 0);
+      g.font = `800 ${50 * k}px Archivo, "Arial Black", sans-serif`;
+      g.fillText(String(ORDER[i]), 318 * k, 0); // in the outer field, inside the pocket ring
       g.restore();
     }
     // separators
@@ -332,7 +324,7 @@ mat3 twistAt(float x) {
     bandH = Math.min(Hc - bandY, Math.ceil(half * 2));
     // Roulette view: wheel centre on screen and camera distance so the wheel fits.
     const narrow = W < 700;
-    yOffR = Hv / 2 - Hc * (narrow ? 0.37 : 0.45);
+    yOffR = Hv / 2 - Hc * (narrow ? 0.3 : 0.45); // phones: the bet table sits under the wheel
     xShiftR = W >= 1100 ? W * 0.11 : 0; // wide screens: wheel left of centre, result card on the right
     const rho = WHEEL_R * 1.25 * sc;
     const fitW = W * (narrow ? 0.92 : 0.58), fitH = Hc * (narrow ? 0.56 : 0.76);
