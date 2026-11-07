@@ -1559,9 +1559,9 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero-icon{
   position: absolute; left: 0; top: 0; height: auto; max-width: none; pointer-events: auto;
   touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; cursor: grab;
-  /* depth: far icons are softer and darker; all get a warm glow underneath */
+  /* depth: far icons are smaller and darker (all stay sharp); all get a warm glow underneath */
   filter: drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
-          blur(calc(var(--z) * 1.4px)) brightness(calc(1 - var(--z) * 0.32));
+          brightness(calc(1 - var(--z) * 0.32));
 }
 .hero-icons.is-away .hero-icon{ pointer-events: none; }
 .hero-icons.is-holding .hero-icon{ cursor: grabbing; }

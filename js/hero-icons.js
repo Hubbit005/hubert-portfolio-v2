@@ -4,7 +4,7 @@
    small orbit around its home and sways a little. They can be grabbed, thrown, knocked into each other
    and they bounce off the hero's edges. The word, the role line, the lead, the buttons and the roulette
    button are walls, so the icons never cover them. About 5 s after the last touch the icons glide
-   back onto their orbits. Sizes 90–150 px (desktop); the small ones are softer and darker, as if
+   back onto their orbits. Sizes 90–150 px (desktop); the small ones are darker (never blurred), as if
    further back. A soft shadow in --glow-rgb.
    Roulette open: the icons drift to the sides and dim. Phones: 4 icons, smaller; a tap tosses one
    (no dragging, the page always scrolls). Loaded after the hero's 3D word has started (or after
