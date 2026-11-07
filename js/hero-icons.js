@@ -97,7 +97,8 @@ export function initHeroIcons({ reduced, gsap }) {
       walls.forEach((w) => world.add(w));
       world.bodies.sort((a, b) => (b.isStatic ? 1 : 0) - (a.isStatic ? 1 : 0));
       icons.forEach((ic) => {
-        const r = (ic.el.offsetWidth || ic.s) * 0.42;
+        // the circle covers the longer side, so tall icons (dollar, guitar) never reach the text
+        const r = Math.max(ic.el.offsetWidth || ic.s, ic.el.offsetHeight || ic.s) * 0.44;
         ic.home = { x: ic.x * W, y: ic.y * H };
         if (!ic.b) {
           ic.b = world.add(circle(ic.home.x, ic.home.y, r, { restitution: 0.6, friction: 0.1, linearDamping: 0.9, angularDamping: 1.2, data: ic }));
@@ -118,11 +119,13 @@ export function initHeroIcons({ reduced, gsap }) {
     // Where an icon wants to be now: its orbit, or the hero's sides while the roulette is open
     function target(ic) {
       if (roulette) {
-        // a column on each side, in the order of their homes (no two in one place)
-        const left = ic.home.x < W / 2;
-        const side = icons.filter((o) => (o.home.x < W / 2) === left).sort((a, b) => a.home.y - b.home.y);
+        // half on each side (alternating in the order of their homes), below the sound button
+        const order = icons.slice().sort((a, b) => a.home.x - b.home.x || a.home.y - b.home.y);
+        const left = order.indexOf(ic) < Math.ceil(icons.length / 2);
+        const side = order.filter((o, j) => (j < Math.ceil(icons.length / 2)) === left).sort((a, b) => a.home.y - b.home.y);
         const k = side.indexOf(ic), n = Math.max(1, side.length - 1);
-        return { x: left ? W * 0.06 : W * 0.94, y: H * (0.2 + 0.62 * (side.length > 1 ? k / n : 0.5)) };
+        const top = Math.max(150, H * 0.2), bottom = H * 0.88;
+        return { x: left ? W * 0.05 : W * 0.95, y: side.length > 1 ? top + (bottom - top) * (k / n) : (top + bottom) / 2 };
       }
       const a = (t / ic.per) * Math.PI * 2 + ic.phase;
       return { x: ic.home.x + Math.cos(a) * ic.orbit, y: ic.home.y + Math.sin(a * 1.3) * ic.orbit * 0.7 };
@@ -157,7 +160,11 @@ export function initHeroIcons({ reduced, gsap }) {
     Promise.all(icons.map((ic) => (ic.el.complete ? 1 : new Promise((r) => { ic.el.onload = ic.el.onerror = r; })))).then(() => {
       measure(); render();
       layer.classList.add('is-in');
-      if (reduced) return; // static: they stay at home
+      if (reduced) {
+        // static: they stay at home, and only dim while the roulette is open
+        new MutationObserver(() => layer.classList.toggle('is-away', hero.classList.contains('is-roulette'))).observe(hero, { attributes: true, attributeFilter: ['class'] });
+        return;
+      }
       const loop = run({ world, el: hero, gsap, render, before, busy: () => true, hz: phone ? 60 : 120, margin: '0px' });
       hand({
         world, el: layer,

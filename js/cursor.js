@@ -31,7 +31,7 @@ export function initCursor({ reduced, gsap }) {
     <svg class="cursor__arrows" viewBox="0 0 40 16" focusable="false"><path d="M7 3 2 8l5 5M2 8h9M33 3l5 5-5 5M38 8h-9"/></svg>
     <span class="cursor__big"><span class="cursor__label"></span></span>
     <svg class="cursor__grab" viewBox="0 0 40 40" focusable="false"><path d="M20 4l-4 4h8zM20 36l-4-4h8zM4 20l4-4v8zM36 20l-4-4v8z"/></svg>
-    <svg class="cursor__play" viewBox="0 0 24 24" focusable="false"><path d="M8 5.5v13l11-6.5z"/></svg>`;
+    <svg class="cursor__play" viewBox="0 0 24 24" focusable="false"><path class="cursor__tri" d="M8 5.5v13l11-6.5z"/><rect class="cursor__sq" x="7" y="7" width="10" height="10" rx="1.5"/></svg>`;
   const label = cursor.querySelector('.cursor__label');
   const dot = document.createElement('div');
   dot.className = 'cursor-dot';
@@ -60,7 +60,7 @@ export function initCursor({ reduced, gsap }) {
     if (!el || el.nodeType !== 1) return '';
     if (el.closest(OFF)) return 'off';
     if (el.closest(GRAB)) return 'grab';
-    if (el.closest(PLAY)) return 'play';
+    if (el.closest(PLAY)) { cursor.classList.toggle('is-stop', !!el.closest('.is-playing')); return 'play'; }
     const card = el.closest('[data-cursor]');
     if (card && !document.getElementById('arc-viewport')?.classList.contains('is-dragging')) {
       label.textContent = card.dataset.cursor;

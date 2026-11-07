@@ -49,7 +49,7 @@ export function initGuitar({ reduced, gsap }) {
       // standing wave: fundamental plus a little second harmonic; the phase flips fast (a blur of motion)
       const dx = x1 - x0, dy = BRIDGE_Y - NUT_Y, len = Math.hypot(dx, dy);
       const nx = -dy / len, ny = dx / len;
-      const A = e * (7 - i * 0.6);
+      const A = e * (20 - i * 1.6); // in viewBox units (the picture is 609 wide), visible at any size
       const ph = time * (22 + i * 3.1) * Math.PI * 2;
       let d = `M${x0} ${NUT_Y}`;
       for (let k = 1; k <= SEG; k++) {
@@ -58,7 +58,7 @@ export function initGuitar({ reduced, gsap }) {
         d += ` L${(x0 + dx * u + nx * off).toFixed(1)} ${(NUT_Y + dy * u + ny * off).toFixed(1)}`;
       }
       paths[i].setAttribute('d', d);
-      paths[i].style.opacity = String(Math.min(1, 0.35 + e));
+      paths[i].style.opacity = String(Math.min(1, 0.45 + e));
     }
   }
 

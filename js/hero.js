@@ -584,7 +584,7 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     const w = wheelPoint(e);
     if (!w || w.d > RW * 1.25) return;
     wheel.vel = 0; wheel.omega = 0;
-    wheel.drag = { id: e.pointerId, a: w.a, t: performance.now() };
+    wheel.drag = { id: e.pointerId, a: w.a, t: e.timeStamp || performance.now() };
     try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
     canvas.classList.add('is-grabbing');
     e.preventDefault();
@@ -594,10 +594,13 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     if (!d || e.pointerId !== d.id) return;
     const w = wheelPoint(e);
     if (!w) return;
-    const now = performance.now();
+    // event time, not handler time: with slow frames the handlers run late, the events do not
+    const now = e.timeStamp || performance.now();
     const da = wrapPi(w.a - d.a);
     const dt = Math.max(1, now - d.t) / 1000;
     d.a = w.a; d.t = now;
+    (d.samples ||= []).push([now, wheel.phi + da]);
+    while (d.samples.length > 2 && now - d.samples[0][0] > 200) d.samples.shift();
     wheel.phi += da;
     if (ball.phase === 'rest') ball.A += da;
     wheel.vel = wheel.vel * 0.5 + (da / dt) * 0.5;
@@ -607,7 +610,14 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     if (!d || (e && e.pointerId !== d.id)) return;
     wheel.drag = null;
     canvas.classList.remove('is-grabbing');
-    const v = performance.now() - d.t > 110 ? 0 : Math.max(-12, Math.min(12, wheel.vel));
+    // release speed from the last ~200 ms of the drag (works at low frame rates too); a hand that
+    // stopped before letting go gives no speed
+    const now = (e && e.timeStamp) || performance.now(), sm = d.samples || [];
+    let v = 0;
+    if (sm.length >= 2 && now - d.t < 260) {
+      const [ta, pa] = sm[0], [tb, pb] = sm[sm.length - 1];
+      v = Math.max(-12, Math.min(12, (pb - pa) / Math.max(0.016, (tb - ta) / 1000)));
+    }
     wheel.omega = v;
     // a real fling sends the ball round the rim; a slow release just lets the wheel coast
     if (Math.abs(v) > 1.6 && !spinning()) launch(Math.sign(v), Math.min(1.15, 0.8 + Math.abs(v) / 20));

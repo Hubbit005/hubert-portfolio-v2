@@ -1333,7 +1333,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   #basko-clean .ambient__video{ object-position: 72% 40%; }
   #ksk-pretor .ambient__video{ object-position: 62% 45%; }
   #livingroom .ambient__video{ object-position: 88% 45%; }
-  #psychologist-site .ambient__video{ object-position: 72% 50%; }
+  #psychologist-site .ambient__video{ object-position: 80% 50%; }
   #smaller-projects .ambient__video{ object-position: 58% 50%; }
 }
 
@@ -1610,17 +1610,19 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
    Chrome roulette (js/hero.js, js/roulette-sound.js): sound on/off toggle
    ========================================================================== */
 .roulette__sound{
-  position: absolute; z-index: 4; top: 84px; right: var(--gutter);
+  position: absolute; z-index: 4; pointer-events: auto; top: 84px; right: var(--gutter);
   display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px;
   border-radius: var(--r-pill); border: 1.5px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.88);
   color: var(--ink); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
   transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
 }
 .roulette__sound::before{
-  content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong);
+  content: ""; width: 10px; height: 10px; border-radius: 50%; box-sizing: border-box;
+  border: 1.5px solid var(--ink-2); background: linear-gradient(135deg, transparent 43%, var(--ink-2) 43%, var(--ink-2) 57%, transparent 57%);
   transition: background-color var(--t-2) var(--ease-out), box-shadow var(--t-2) var(--ease-out);
 }
-.roulette__sound[aria-pressed="true"]::before{ background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--glow-rgb) / 0.25); }
+.roulette__sound[aria-pressed="true"]::before{ border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--glow-rgb) / 0.25); }
+/* off: a struck-through outline (not only colour) */
 .roulette__sound:hover, .roulette__sound:focus-visible{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
 @media (max-width: 600px) { .roulette__sound{ top: 76px; right: 16px; } }
 
@@ -1705,3 +1707,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .guitar__float{ transform: rotate(var(--r0)); }
 }
 .motion-paused .guitar__float, .motion-paused .guitar__shadow{ animation-play-state: paused; }
+/* guitar cursor while the riff plays: a stop square instead of the play triangle */
+.cursor__sq{ display: none; }
+.cursor.is-stop .cursor__sq{ display: inline; }
+.cursor.is-stop .cursor__tri{ display: none; }
+.guitar.is-playing .guitar__string{ stroke-width: 3px; }
