@@ -51,7 +51,7 @@ Sekcja `#guitar` znika z miejsca po `#about` i staje się drugim panelem hero.
 ## 4. Kabel, kostka z przesterem i ruszający się piec
 
 **Kostka**
-- Obraz: https://ADRES_KOSTKI_UZUPELNI_CLAUDE_PO_GENERACJI.png
+- Obraz: https://d8j0ntlcm91z4.cloudfront.net/user_3E4wjlRzfbqMlZMAqIWN6GaWkvD/hf_20261107_092522_e7f3b7e6-deeb-428c-91d9-644a9517f2af.png (opłacona, 2,75 kredytu)
 - Pobierz do `assets/higgsfield/raw/` (nie commituj), przytnij, WebP z alfą: `assets/hf/pedal-400.webp` i `pedal-240.webp`, każdy ≤ 40 kB.
 - Stoi na „podłodze” między gitarą a piecem, ok. 110–140 px szerokości na desktopie, ok. 72 px na telefonie. Nie lewituje (stoi na ziemi), ma miękki cień.
 - W trakcie grania dioda na kostce świeci akcentem i lekko pulsuje z głośnością (element nałożony na obraz, skalibruj pozycję do diody).
