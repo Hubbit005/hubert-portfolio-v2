@@ -2,7 +2,9 @@
    This module owns the buttons, the result card and the announcements.
    The wheel itself lives in the hero's three.js scene (hero.js calls attach() with its controls).
    Without WebGL or with reduced motion the same button opens a simple panel that draws a project
-   at random, without the wheel animation, and shows the same result card. */
+   at random, without the wheel animation, and shows the same result card.
+   With the 3D wheel the result is the pocket where the chrome ball stopped (hero.js); a small
+   "Sound on/off" toggle (aria-pressed) mutes the ball's sound. */
 
 // Names, wheel labels and categories follow the page language (js/i18n.js, keys p.<id>.*).
 const tr = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -154,9 +156,26 @@ export function initRoulette() {
     }
   });
 
+  // Sound on/off (only with the 3D wheel, which makes the sound): a real toggle button
+  let soundBtn = null;
+  function soundButton(sound) {
+    soundBtn = document.createElement('button');
+    soundBtn.type = 'button';
+    soundBtn.className = 'roulette__sound mono';
+    const label = () => {
+      soundBtn.textContent = tr('roulette.sound');
+      soundBtn.setAttribute('aria-pressed', String(!sound.muted));
+    };
+    label();
+    soundBtn.addEventListener('click', () => { sound.muted = !sound.muted; if (!sound.muted) sound.wake(); label(); });
+    document.addEventListener('langchange', label);
+    ui.appendChild(soundBtn);
+  }
+
   return {
     attach(api) {
       wheel = api;
+      if (api.sound && !soundBtn) soundButton(api.sound);
       api.onSpinStart = () => { hideResult(); setSpinning(true); say(tr('roulette.spinning')); };
       api.onResult = (i) => { if (isOpen) showResult(i); };
     },

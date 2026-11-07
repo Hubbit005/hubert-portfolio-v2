@@ -1605,3 +1605,21 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .cursor.is-play .cursor__ring{ --rs: 1.1; border-color: var(--accent); background: var(--accent); }
 .cursor.is-play .cursor__play{ opacity: 1; transform: scale(var(--press, 1)); }
 .cursor-dot.is-grab, .cursor-dot.is-play{ opacity: 0; }
+
+/* ==========================================================================
+   Chrome roulette (js/hero.js, js/roulette-sound.js): sound on/off toggle
+   ========================================================================== */
+.roulette__sound{
+  position: absolute; z-index: 4; top: 84px; right: var(--gutter);
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px;
+  border-radius: var(--r-pill); border: 1.5px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.88);
+  color: var(--ink); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.roulette__sound::before{
+  content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong);
+  transition: background-color var(--t-2) var(--ease-out), box-shadow var(--t-2) var(--ease-out);
+}
+.roulette__sound[aria-pressed="true"]::before{ background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--glow-rgb) / 0.25); }
+.roulette__sound:hover, .roulette__sound:focus-visible{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
+@media (max-width: 600px) { .roulette__sound{ top: 76px; right: 16px; } }
