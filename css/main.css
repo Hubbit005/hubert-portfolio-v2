@@ -547,8 +547,6 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .wf__t{ font-family: var(--font-display); font-stretch: 118%; font-weight: 820; font-size: var(--fs-h3); line-height: 1.05; text-transform: uppercase; }
 .wf p{ color: var(--ink-2); }
 
-@media (min-width: 860px) { 
-
 /* ---------- About ---------- */
 .about__grid{ display: grid; gap: var(--s-7); }
 @media (min-width: 1000px) { .about__grid{ grid-template-columns: 1.3fr 0.7fr; gap: var(--s-9); } }
