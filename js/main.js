@@ -14,6 +14,7 @@ import { initLetters } from './letters.js?v=20261106';
 import { initPlanDemo } from './plan-demo.js?v=20261106';
 import { initStamp } from './stamp.js?v=20261106';
 import { initHeroIcons } from './hero-icons.js?v=20261106';
+import { initGuitar } from './guitar.js?v=20261106';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -229,6 +230,7 @@ async function boot() {
   initPlanDemo({ reduced, gsap });
   initStamp({ reduced });
   initHeroIcons({ reduced, gsap });
+  initGuitar({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
   initCursor({ reduced, gsap });

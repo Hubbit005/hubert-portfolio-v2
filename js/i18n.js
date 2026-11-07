@@ -274,6 +274,12 @@
     "about.2": "Najwięcej satysfakcji daje mi zbudowanie czegoś, co działa i dobrze wygląda. Na bieżąco śledzę nowe narzędzia AI i chcę coraz lepiej wykorzystywać je w projektowaniu.",
     // EN: I am looking for a team I can stay with for the long term and grow in. I am ready to put in long hours on work that shows results.
     "about.3": "Szukam zespołu, z którym zostanę na dłużej i w którym będę się rozwijać. Jestem gotów pracować bardzo dużo, jeśli praca daje efekt.",
+    // EN: Play something
+    "guitar.1": "Zagraj coś",
+    // EN: Electric guitar and amplifier. Press Play to hear a short riff.
+    "guitar.2": "Gitara elektryczna i wzmacniacz. Naciśnij »Zagraj«, żeby usłyszeć krótki riff.",
+    // EN: Play
+    "guitar.3": "Zagraj",
     // EN: Background
     "about.4": "Doświadczenie",
     // EN: <span class="mono">Now</span>Freelance web design, marketing and visual content for companies
@@ -434,6 +440,7 @@
       'roulette.opened': 'Project roulette. Press Spin or drag the wheel. Escape goes back.',
       'roulette.spinning': 'Spinning',
       'roulette.sound': 'Sound on/off',
+      'guitar.play': 'Play', 'guitar.stop': 'Stop',
       'roulette.result': 'Result: {name}. {cat}.',
       'roulette.typeCover': 'Book<br>a&nbsp;session',
       'p.basko.name': 'Basko Clean', 'p.basko.label': 'BASKO CLEAN', 'p.basko.cat': 'Website & marketing',
@@ -495,6 +502,7 @@
       'roulette.opened': 'Ruletka projektów. Naciśnij „Losuj” albo zakręć kołem. Escape wraca.',
       'roulette.spinning': 'Koło się kręci',
       'roulette.sound': 'Dźwięk wł./wył.',
+      'guitar.play': 'Zagraj', 'guitar.stop': 'Stop',
       'roulette.result': 'Wynik: {name}. {cat}.',
       'roulette.typeCover': 'Umów<br>wizytę',
       'p.basko.name': 'Basko Clean', 'p.basko.label': 'BASKO CLEAN', 'p.basko.cat': 'Strona i marketing',
