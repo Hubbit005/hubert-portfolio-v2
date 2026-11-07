@@ -9,7 +9,7 @@
 const NO = [
   'a', 'button', 'input', 'select', 'textarea', 'label', 'summary', 'img', 'picture', 'video', 'svg', 'canvas',
   'iframe', 'figure', 'table', '[role="button"]', '[contenteditable]', '[tabindex]:not([tabindex="-1"])',
-  '#home', '#work', '.nav', '.jar', '.pd', '.wordmark', '#model-embed', '.tool', '.cursor', '.pd__phone',
+  '#home', '#work', '.nav', '.jar', '.pd', '.wordmark', '#model-embed', '.tool', '.pd__phone',
 ].join(',');
 const MAX = 12;
 

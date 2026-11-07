@@ -604,7 +604,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 
 /* ---------- Print ---------- */
 @media print {
-  .nav, .cursor, .arc__controls, .model-embed__cta{ display: none !important; }
+  .nav, .arc__controls, .model-embed__cta{ display: none !important; }
   body::before, .glow{ display: none; }
   .case--dark{ background: none; color: #000; }
   details{ display: block; }
@@ -882,30 +882,18 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .roulette__card.is-in{ animation: rouletteIn var(--t-3) var(--ease-out) both; }
 @keyframes rouletteIn{ from{ opacity: 0; transform: translateY(calc(-50% + 18px)); } to{ opacity: 1; transform: translateY(-50%); } }
-.roulette__cover{ aspect-ratio: 16 / 9; background: #111; overflow: hidden; }
-.roulette__cover img{ width: 100%; height: 100%; object-fit: cover; }
-.roulette__cover.is-type{ display: grid; align-items: end; padding: 14px 16px; background: #dfe5dc; color: #0d0d0d; }
-.roulette__type{ font-family: var(--font-display); font-stretch: 125%; font-weight: 900; font-size: 1.5rem; line-height: 0.92; text-transform: uppercase; }
 .roulette__body{ display: grid; gap: 4px; padding: 16px 18px 18px; }
 .roulette__kicker{ color: var(--accent-ink); }
 .roulette__name{ font-family: var(--font-display); font-stretch: 118%; font-weight: 850; font-size: clamp(1.3rem, 1rem + 1vw, 1.7rem); line-height: 1.05; text-transform: uppercase; }
-.roulette__cat{ color: var(--ink-2); margin-bottom: 12px; }
 .roulette__card .roulette__actions{ justify-content: flex-start; }
 
 /* Simple panel without the wheel (reduced motion or no WebGL): the card sits in the middle */
 .roulette.is-fallback .roulette__card{ right: auto; left: 50%; transform: translate(-50%, -50%); animation: none; }
-.roulette.is-fallback .roulette__bar{ display: none; }
 
 @media (max-width: 700px) {
-  .roulette__card{ left: var(--gutter); right: var(--gutter); top: auto; bottom: 16px; width: auto; transform: none; grid-template-columns: 104px 1fr; }
-  .roulette__card.is-in{ animation-name: rouletteInUp; }
-  @keyframes rouletteInUp{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
-  .roulette__cover{ aspect-ratio: auto; height: 100%; }
-  .roulette__cover.is-type{ padding: 10px; }
-  .roulette__type{ font-size: 0.95rem; }
-  .roulette__body{ padding: 12px 14px 14px; }
-  .roulette__cat{ margin-bottom: 8px; }
-  .roulette__card .btn--sm{ min-height: 40px; padding: 0 14px; font-size: 0.74rem; }
+  .roulette__card{ left: var(--gutter); right: var(--gutter); top: auto; bottom: 16px; width: auto; transform: none; }
+        .roulette__body{ padding: 12px 14px 14px; }
+    .roulette__card .btn--sm{ min-height: 40px; padding: 0 14px; font-size: 0.74rem; }
   .roulette.is-fallback .roulette__card{ left: var(--gutter); right: var(--gutter); top: 50%; bottom: auto; transform: translateY(-50%); }
 }
 @media (prefers-reduced-motion: reduce) { .roulette__card.is-in{ animation: none; } }
@@ -992,73 +980,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .has-bg .bg-gl{ opacity: 1; }
 .has-bg .glow{ visibility: hidden; transition: visibility 0s linear 1s; }
 @media print { .bg-gl{ display: none; } }
-
-/* ==========================================================================
-   Cursor (js/cursor.js): dot + ring, fine pointer with hover only.
-   The system cursor is hidden only once the module has started (html.has-cursor).
-   Ring sizes come from one 56px circle scaled down (36px at rest), so every change is a transform.
-   ========================================================================== */
-.cursor, .cursor-dot{ display: none; }
-.has-cursor .cursor, .has-cursor .cursor-dot{
-  display: block; position: fixed; left: 0; top: 0; pointer-events: none;
-  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
-  transform: translate3d(-100px, -100px, 0);
-}
-.has-cursor .cursor{ z-index: var(--z-cursor); width: 0; height: 0; mix-blend-mode: difference; }
-.has-cursor .cursor-dot{
-  z-index: calc(var(--z-cursor) + 1);
-  width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
-  background: var(--ink); mix-blend-mode: difference;
-}
-.cursor.is-visible, .cursor-dot.is-visible{ opacity: 1; }
-.cursor-dot.is-link, .cursor-dot.is-big, .cursor-dot.is-drag, .cursor-dot.is-text, .cursor-dot.is-off{ opacity: 0; }
-.cursor.is-off{ opacity: 0; }
-/* Fill states read as colour, so they are not inverted */
-.cursor.is-link, .cursor.is-big{ mix-blend-mode: normal; }
-
-.cursor > *{ position: absolute; left: 0; top: 0; }
-.cursor__ring{
-  --rs: 0.643;
-  width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
-  border: 1.5px solid var(--ink); background: rgb(var(--glow-rgb) / 0);
-  transform: scale(calc(var(--rs) * var(--press, 1)));
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out),
-    background-color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
-}
-.cursor.is-down{ --press: 0.78; }
-.cursor.is-link .cursor__ring{ --rs: 1; border-color: var(--accent); background: rgb(var(--glow-rgb) / 0.06); }
-.cursor.is-drag .cursor__ring{ --rs: 0.86; }
-.cursor.is-text .cursor__ring, .cursor.is-big .cursor__ring{ --rs: 0.3; opacity: 0; }
-
-.cursor__bar{
-  width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 1px; background: var(--ink);
-  opacity: 0; transform: scaleY(0.3);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
-}
-.cursor.is-text .cursor__bar{ opacity: 1; transform: scaleY(var(--press, 1)); }
-
-.cursor__arrows{
-  width: 40px; height: 16px; max-width: none; margin: -8px 0 0 -20px;
-  fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
-  opacity: 0; transform: scale(0.6);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
-}
-.cursor.is-drag .cursor__arrows{ opacity: 1; transform: scale(var(--press, 1)); }
-
-.cursor__big{
-  width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--accent); color: var(--on-accent);
-  opacity: 0; transform: scale(0.3);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out);
-}
-.cursor.is-big .cursor__big{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor__label{ position: static; font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
-
-/* Hide the system cursor (it comes back over videos with controls and the loaded 3D model) */
-.has-cursor, .has-cursor *{ cursor: none !important; }
-.has-cursor video[controls], .has-cursor #model-embed.is-loaded, .has-cursor #model-embed.is-loaded *{ cursor: auto !important; }
-@media (hover: none), (pointer: coarse) { .cursor, .cursor-dot{ display: none !important; } }
 
 /* ==========================================================================
    Case studies motion (js/cases-motion.js)
@@ -1565,16 +1486,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .hero-icons.is-away .hero-icon{ pointer-events: none; }
 .hero-icons.is-holding .hero-icon{ cursor: grabbing; }
-/* cursor states for the icons and the guitar */
-.cursor__grab, .cursor__play{ width: 40px; height: 40px; margin: -20px 0 0 -20px; max-width: none; opacity: 0; transform: scale(0.6); transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out); }
-.cursor__grab{ fill: var(--ink); }
-.cursor.is-grab .cursor__ring{ --rs: 0.9; border-style: dashed; }
-.cursor.is-grab .cursor__grab{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor__play{ width: 24px; height: 24px; margin: -12px 0 0 -10px; fill: var(--on-accent); }
-.cursor.is-play{ mix-blend-mode: normal; }
-.cursor.is-play .cursor__ring{ --rs: 1.1; border-color: var(--accent); background: var(--accent); }
-.cursor.is-play .cursor__play{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor-dot.is-grab, .cursor-dot.is-play{ opacity: 0; }
 
 /* ==========================================================================
    Chrome roulette (js/hero.js, js/roulette-sound.js): sound on/off toggle
@@ -1677,72 +1588,80 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .guitar__float{ transform: rotate(var(--r0)); }
 }
 .motion-paused .guitar__float, .motion-paused .guitar__shadow{ animation-play-state: paused; }
-/* guitar cursor while the riff plays: a stop square instead of the play triangle */
-.cursor__sq{ display: none; }
-.cursor.is-stop .cursor__sq{ display: inline; }
-.cursor.is-stop .cursor__tri{ display: none; }
 .guitar.is-playing .guitar__string{ stroke-width: 3px; }
 /* Review round 2 (task 09) */
 /* the result card covers the right column of icons: hide the icons while it shows; phones: no room */
 .hero:has(#roulette-card:not([hidden])) .hero-icons{ opacity: 0; }
 @media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
-/* Play/Stop: a clear "on" state while the riff plays */
+/* Play/Stop: a clear "on" state while the song plays */
 .guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
 
 /* ==========================================================================
    Hero word as one twisted chrome solid (js/hero.js, task 10)
    --hero-side: room kept free on each side of the word (px, read by js/hero.js): on wider screens
-   the big "to the guitar" arrow stands at the hero's right edge.
+   the icons orbit there.
    ========================================================================== */
 .hero{ --hero-side: 24px; }
 @media (min-width: 701px) { .hero{ --hero-side: 196px; } }
 
 /* ==========================================================================
-   Hero with two panels (js/hero-panel.js, task 11): the hero and the guitar scene (#guitar)
-   Without JS (html.no-js) the guitar panel is a normal block under the hero and the arrows are hidden.
+   Hero and the guitar scene (js/hero-panel.js, tasks 11 and 12). Both panels share one grid cell.
+   A small lit guitar + amp (#guitar-mini, bottom right) zooms into the full scene (#guitar):
+   clip-path + transform from the small scene's box to the full hero (FLIP; js sets --gz-*), 0.9 s.
+   Without JS (html.no-js) the guitar panel is a normal block under the hero and the mini is hidden.
    ========================================================================== */
-.no-js .hero-arrow, .no-js .guitar-back{ display: none; }
-.js .hero__track{ display: flex; align-items: stretch; will-change: transform; transition: transform 0.85s var(--ease-out); }
-.js .hero__track > .hero__panel{ flex: 0 0 100%; min-width: 0; }
-.js .hero.is-guitar .hero__track{ transform: translateX(-100%); }
-.js .hero.is-instant .hero__track, .js .hero.is-instant .guitar__bg{ transition: none; }
+.no-js .guitar-mini, .no-js .guitar-back{ display: none; }
+.js .hero__track{ display: grid; }
+.js .hero__track > .hero__panel{ grid-area: 1 / 1; min-width: 0; }
+.js #hero-main{ transition: transform 0.9s var(--ease-out), opacity 0.6s var(--ease-out); }
+.js .hero.is-guitar #hero-main{ transform: scale(0.9); opacity: 0; }
+.js .hero #guitar{
+  z-index: 4; visibility: hidden; opacity: 0;
+  transform-origin: var(--gz-o, 100% 100%); transform: scale(var(--gz-s, 0.2));
+  clip-path: inset(var(--gz-clip, 0) round 24px);
+  transition: transform 0.9s var(--ease-out), clip-path 0.9s var(--ease-out), opacity 0.35s var(--ease-out), visibility 0s linear 0.9s;
+}
+.js .hero.is-guitar #guitar{ visibility: visible; opacity: 1; transform: none; clip-path: inset(0 round 0); transition-delay: 0s; }
+.js .hero.is-instant #hero-main, .js .hero.is-instant #guitar{ transition: none; }
 @media (prefers-reduced-motion: reduce) {
-  /* no sliding: a short cross-fade (the track jumps while both panels are faded) */
-  .js .hero__track{ transition: none; }
-  .js .hero__panel{ transition: opacity 0.26s ease; }
-  .js .hero.has-track .hero__panel[inert]{ opacity: 0; }
-  .js .hero .guitar__bg, .js .hero.is-guitar .guitar__bg{ transition: none; transform: none; left: 0; }
+  /* no zoom: a short cross-fade */
+  .js #hero-main, .js .hero #guitar{ transform: none !important; clip-path: none !important; transition: opacity 0.26s ease, visibility 0s linear 0.26s; }
+  .js .hero.is-guitar #guitar{ transition: opacity 0.26s ease, visibility 0s; }
 }
 
-/* The big arrow "to the guitar" (panel 1, right edge, vertically in the middle) */
-.hero-arrow{
-  position: absolute; z-index: 3; right: var(--gutter); top: 50%;
-  display: grid; justify-items: center; gap: 10px; padding: 0; border: 0; background: none;
-  color: var(--ink); cursor: pointer; transform: translateY(-50%);
-  transition: opacity var(--t-3) var(--ease-out), visibility var(--t-3), translate var(--t-2) var(--ease-out);
+/* The small scene: a guitar leaning on the amp, lit from below (bottom right of the hero, in .hero__foot) */
+.guitar-mini{
+  position: absolute; z-index: 3; right: 0; bottom: 0; /* inside .hero__foot: on the buttons' baseline */
+  display: grid; justify-items: center; gap: 8px; padding: 0; border: 0; background: none;
+  color: var(--ink-2); cursor: pointer; transition: opacity var(--t-3) var(--ease-out), visibility var(--t-3);
 }
-.hero-arrow__icon{
-  box-sizing: border-box; width: 96px; height: 96px; padding: 26px; border-radius: 50%;
-  fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-  border: 2px solid var(--accent); background: rgb(var(--bg-rgb) / 0.55);
-  box-shadow: 0 0 34px rgb(var(--glow-rgb) / 0.38), inset 0 0 18px rgb(var(--glow-rgb) / 0.16);
-  transition: background-color var(--t-2) var(--ease-out), stroke var(--t-2) var(--ease-out), box-shadow var(--t-3) var(--ease-out);
+.guitar-mini__scene{ position: relative; display: block; width: 190px; height: 200px; transition: transform var(--t-3) var(--ease-out); }
+.guitar-mini__scene::before{
+  content: ""; position: absolute; left: -20%; right: -20%; bottom: -24px; height: 70px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.55), rgb(var(--glow-rgb) / 0));
+  opacity: 0.7; transition: opacity var(--t-3) var(--ease-out);
 }
-.hero-arrow__label{ font-size: 0.7rem; color: var(--ink-2); white-space: nowrap; transition: color var(--t-2) var(--ease-out); }
-.hero-arrow:hover .hero-arrow__icon, .hero-arrow:focus-visible .hero-arrow__icon{ background: var(--accent); stroke: var(--on-accent); box-shadow: 0 0 48px rgb(var(--glow-rgb) / 0.6); }
-.hero-arrow:hover .hero-arrow__label, .hero-arrow:focus-visible .hero-arrow__label{ color: var(--ink); }
-.hero-arrow:focus-visible{ outline: none; }
-.hero-arrow:focus-visible .hero-arrow__icon{ outline: 3px solid var(--ink); outline-offset: 4px; }
-/* a nudge to the left every few seconds (transform of the icon only) */
-.motion-ok .hero-arrow__icon{ animation: arrow-nudge 4.2s var(--ease-out) 2.5s infinite; }
-@keyframes arrow-nudge{ 0%, 76%, 100%{ transform: none; } 82%{ transform: translateX(-12px); } 88%{ transform: translateX(2px); } 93%{ transform: translateX(-5px); } }
-.motion-paused .hero-arrow__icon, .hero-arrow:hover .hero-arrow__icon{ animation-play-state: paused; }
-.hero.is-roulette .hero-arrow{ opacity: 0; visibility: hidden; }
-@media (min-width: 1400px) { .hero-arrow__icon{ width: 104px; height: 104px; padding: 28px; } }
+.guitar-mini__float{ position: absolute; inset: 0; }
+.guitar-mini img{ position: absolute; bottom: 0; width: auto; filter: drop-shadow(0 5px 8px rgb(var(--glow-rgb) / 0.5)) drop-shadow(0 1px 1px rgb(var(--glow-rgb) / 0.7)); }
+.guitar-mini__amp{ right: 0; height: 140px; }
+.guitar-mini__guitar{ left: 14px; height: 190px; transform: rotate(-9deg); transform-origin: 50% 100%; }
+.guitar-mini__label{ font-size: 0.7rem; white-space: nowrap; transition: color var(--t-2) var(--ease-out); }
+.guitar-mini:hover .guitar-mini__scene, .guitar-mini:focus-visible .guitar-mini__scene{ transform: scale(1.06); }
+.guitar-mini:hover .guitar-mini__scene::before, .guitar-mini:focus-visible .guitar-mini__scene::before{ opacity: 1; }
+.guitar-mini:hover .guitar-mini__label, .guitar-mini:focus-visible .guitar-mini__label{ color: var(--ink); }
+.guitar-mini:focus-visible{ outline: 3px solid var(--ink); outline-offset: 6px; border-radius: var(--r-lg); }
+.motion-ok .guitar-mini__float{ animation: mini-float 5s ease-in-out infinite; }
+@keyframes mini-float{ 50%{ transform: translateY(-5px); } }
+.motion-paused .guitar-mini__float{ animation-play-state: paused; }
+.hero.is-roulette .guitar-mini{ opacity: 0; visibility: hidden; }
+@media (hover: none) { .guitar-mini:hover .guitar-mini__scene{ transform: none; } }
 @media (max-width: 700px) {
-  .hero-arrow{ right: 14px; top: 53%; gap: 6px; }
-  .hero-arrow__icon{ width: 60px; height: 60px; padding: 16px; }
-  .hero-arrow__label{ font-size: 0.62rem; }
+  /* above the text block, at the right edge */
+  .guitar-mini{ bottom: calc(100% + 8px); gap: 4px; }
+  .guitar-mini__scene{ width: 112px; height: 120px; }
+  .guitar-mini__amp{ height: 84px; }
+  .guitar-mini__guitar{ left: 8px; height: 116px; }
+  .guitar-mini__label{ font-size: 0.62rem; }
 }
 
 /* Panel 2: the guitar scene, as tall as the hero */
@@ -1757,9 +1676,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .js .hero .guitar .sec-head__title{ outline: none; }
 .js .hero .guitar .guitar__inner > .sec-head{ justify-self: center; }
 .guitar__inner{ position: relative; }
-/* the smoke moves a little slower than the guitar and the amp while the track slides */
-.js .hero .guitar__bg{ left: -32%; transform: translateX(32%); transition: transform 0.85s var(--ease-out); -webkit-mask-image: none; mask-image: none; }
-.js .hero.is-guitar .guitar__bg{ transform: none; }
+.js .hero .guitar__bg{ -webkit-mask-image: none; mask-image: none; }
 /* panel 2's pictures load only when it is prepared (js/hero-panel.js) */
 .js .hero .guitar:not(.is-prepared) .guitar__stage{ display: none; }
 
@@ -1815,3 +1732,102 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .amp__core{ position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(circle, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0) 70%); opacity: 0; }
 .js .hero .guitar__float, .js .hero .guitar__shadow{ animation: none; }
 .js .hero .guitar__tilt{ transition: none; }
+
+/* ==========================================================================
+   Task 12: hero layout. The role sits right above the lead, left-aligned; role, lead and
+   buttons form one block in the bottom-left corner. The icons live in an ellipse (js/hero-icons.js).
+   ========================================================================== */
+.hero__main{ grid-template-rows: 1fr auto; }
+.hero__foot{ gap: var(--s-4); }
+.hero__foot .hero__role{ justify-self: start; text-align: left; margin: 0 0 calc(var(--s-2) * -1); }
+
+/* Task 12: song progress, a thin bar along the bottom of the Play button (js/guitar.js) */
+.guitar__play{ position: relative; overflow: hidden; }
+.guitar__progress{ position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }
+
+/* ==========================================================================
+   Task 12: roulette as a casino game (js/roulette.js). Bet table (0 + 3×12 and red/black), stake,
+   coins and a small wins/losses chart. Desktop: coins and chart on the right, above the result card;
+   phones: everything under the wheel, the table scrolls sideways.
+   ========================================================================== */
+.roulette__bar{ gap: 10px; bottom: clamp(12px, 2vh, 24px); }
+.roulette__bet{ display: flex; flex-wrap: wrap; justify-content: center; align-items: end; gap: 10px 18px; max-width: 100%; }
+.roulette__bet fieldset{ border: 0; margin: 0; padding: 0; min-width: 0; max-width: 100%; }
+.roulette__bet legend{ padding: 0; margin-bottom: 4px; font-size: 0.68rem; color: var(--ink-2); }
+.roulette__table{ display: flex; gap: 6px; max-width: 100%; overflow-x: auto; padding: 2px; }
+.roulette__grid{ display: grid; grid-template-columns: repeat(13, 32px); grid-template-rows: repeat(3, 30px); gap: 2px; flex: none; }
+.roulette__cell{
+  position: relative; display: grid; place-items: center; min-width: 32px; min-height: 30px; padding: 0 8px;
+  border-radius: 4px; border: 1px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.85);
+  font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink); cursor: pointer; user-select: none;
+}
+.roulette__grid .roulette__cell{ padding: 0; }
+.roulette__cell input{ position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.roulette__cell.is-red{ background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.roulette__cell.is-black{ background: #1d1d21; color: #f2f2ee; }
+.roulette__cell.is-green{ background: #2e5b45; color: #f2f2ee; border-color: transparent; }
+.roulette__cell:has(input:checked){ box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); z-index: 1; }
+.roulette__cell:has(input:focus-visible){ outline: 3px solid var(--ink); outline-offset: 3px; z-index: 2; }
+.roulette__cell:has(input:disabled){ opacity: 0.35; cursor: not-allowed; }
+.roulette__colour{ min-width: 64px; align-self: stretch; text-transform: uppercase; }
+.roulette__stake{ display: flex; gap: 6px; }
+.roulette__stake legend{ float: left; width: 100%; }
+.roulette__stake .roulette__cell{ min-height: 36px; }
+.roulette__bet fieldset:disabled{ opacity: 0.6; }
+
+.roulette__stats{
+  position: absolute; right: var(--gutter); top: 84px; z-index: 1; pointer-events: auto;
+  display: grid; gap: 10px; justify-items: start; padding: 14px 16px; border-radius: var(--r-md);
+  border: 1px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.85);
+}
+.roulette:has(.roulette__sound) .roulette__stats{ top: 136px; }
+.roulette__coins{ display: grid; gap: 2px; }
+.roulette__coins .mono{ font-size: 0.68rem; color: var(--ink-2); }
+.roulette__coins strong{ font-family: var(--font-display); font-stretch: 118%; font-weight: 850; font-size: 1.8rem; line-height: 1; font-variant-numeric: tabular-nums; }
+.roulette__chart{ display: flex; gap: 14px; align-items: end; }
+.roulette__col{ position: relative; display: grid; justify-items: center; gap: 4px; min-width: 44px; padding: 0; border: 0; background: none; color: var(--ink-2); cursor: pointer; font-size: 0.62rem; }
+.roulette__col svg{ width: 20px; height: 60px; }
+.roulette__col rect{ fill: var(--ink); transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(var(--h, 0)); transition: transform 0.7s var(--ease-out); }
+#roulette-wins rect{ fill: var(--accent); }
+.roulette__tip{
+  position: absolute; bottom: calc(100% + 4px); left: 50%; translate: -50% 0; padding: 2px 8px; border-radius: var(--r-pill);
+  background: var(--ink); color: var(--bg); font-family: var(--font-mono); font-size: 0.72rem;
+  opacity: 0; transition: opacity var(--t-2) var(--ease-out); pointer-events: none;
+}
+.roulette__col:focus-visible{ outline: 3px solid var(--ink); outline-offset: 3px; }
+.roulette__col:hover .roulette__tip, .roulette__col:focus-visible .roulette__tip, .roulette__col.is-tip .roulette__tip{ opacity: 1; }
+@media (hover: none) { .roulette__col:hover .roulette__tip{ opacity: 0; } .roulette__col.is-tip .roulette__tip{ opacity: 1; } }
+.roulette__stats [hidden]{ display: none; }
+
+.roulette__card{ top: auto; bottom: clamp(20px, 5vh, 48px); transform: none; }
+.roulette__card.is-in{ animation-name: rouletteInUp; }
+@keyframes rouletteInUp{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
+.roulette__name{ display: flex; align-items: center; gap: 10px; }
+.roulette__dot{ width: 18px; height: 18px; border-radius: 50%; flex: none; border: 1px solid var(--line-strong); }
+.roulette__dot.is-red{ background: var(--accent); } .roulette__dot.is-black{ background: #1d1d21; } .roulette__dot.is-green{ background: #2e5b45; }
+.roulette__kicker{ margin-bottom: 10px; font-size: 0.9rem; color: var(--ink-2); }
+.roulette__card.is-win .roulette__kicker{ color: var(--accent-ink); }
+.roulette.is-fallback .roulette__card{ top: auto; left: 50%; right: auto; bottom: clamp(20px, 5vh, 48px); transform: translateX(-50%); }
+@media (prefers-reduced-motion: reduce) { .roulette__col rect{ transition: none; } }
+
+@media (max-width: 700px) {
+  .roulette__bar{ left: 12px; right: 12px; bottom: 12px; transform: none; width: auto; max-width: none; }
+  .roulette__grid{ grid-template-columns: repeat(13, 44px); grid-template-rows: repeat(3, 44px); }
+  .roulette__cell{ min-width: 44px; min-height: 44px; }
+  .roulette__stake .roulette__cell{ min-height: 44px; min-width: 52px; }
+  .roulette__hint{ display: none; }
+  .roulette__stats{ position: static; grid-auto-flow: column; align-items: end; justify-content: space-between; padding: 8px 12px; }
+  .roulette__coins strong{ font-size: 1.4rem; }
+  .roulette__col svg{ height: 36px; }
+  .roulette:not([hidden]){ display: flex; flex-direction: column; justify-content: flex-end; padding: 0 12px 12px; gap: 8px; }
+  .roulette__bar, .roulette__card, .roulette.is-fallback .roulette__card{ position: static; transform: none; }
+  /* table on its own row (scrolls sideways), then stake and the buttons side by side */
+  .roulette__bar{ display: grid; grid-template-columns: auto 1fr; align-items: end; justify-items: stretch; gap: 8px; }
+  .roulette__bet{ display: contents; }
+  .roulette__pick{ grid-column: 1 / -1; }
+  .roulette__actions{ justify-content: flex-end; flex-wrap: nowrap; gap: 6px; }
+  .roulette__actions .btn{ min-height: 44px; padding: 0 16px; font-size: 0.78rem; }
+  .roulette__stake .roulette__cell{ min-width: 44px; padding: 0 6px; }
+  .roulette__stats{ padding: 6px 12px; }
+  .roulette__col svg{ height: 28px; }
+}

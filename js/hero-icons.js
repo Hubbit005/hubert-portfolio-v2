@@ -2,7 +2,8 @@
    Eight chrome objects (Higgsfield renders) float around HUBERT: guitar, dumbbell, car, mustache,
    cards, dollar, diamond, galaxy. Physics from js/physics.js without gravity: each icon drifts on a
    small orbit around its home and sways a little. They can be grabbed, thrown, knocked into each other
-   and they bounce off the hero's edges. The word, the role line, the lead, the buttons and the roulette
+   and they bounce off an ellipse around the word (task 12: centre 50 % / 41 % of the hero, radii 47 % / 36 %;
+   on phones the ellipse sits between the nav and the text block) and never leave it. The word, the role line, the lead, the buttons and the roulette
    button are walls, so the icons never cover them. About 5 s after the last touch the icons glide
    back onto their orbits. Sizes 90–150 px (desktop); the small ones are darker (never blurred), as if
    further back. A soft shadow in --glow-rgb.
@@ -10,24 +11,25 @@
    (no dragging, the page always scrolls). Loaded after the hero's 3D word has started (or after
    the page load without WebGL), so they never slow the first view.
    Decorative (aria-hidden). Reduced motion or paused motion: the icons stand still at home. */
-import { World, circle, box, run, hand } from './physics.js?v=20261108';
+import { World, circle, box, run, hand } from './physics.js?v=20261109';
 
-// home: share of the hero's width / height; s: size in px (desktop); z: depth 0 (near) … 1 (far)
+// a: angle of the home on the ellipse (deg, 0 = right, 90 = down); k: share of the free radius;
+// s: size in px (desktop); z: depth 0 (near) … 1 (far)
 const DESK = [
-  { id: 'guitar', x: 0.08, y: 0.20, s: 150, z: 0 },
-  { id: 'dumbbell', x: 0.30, y: 0.13, s: 104, z: 0.7 },
-  { id: 'car', x: 0.72, y: 0.14, s: 128, z: 0.3 },
-  { id: 'mustache', x: 0.93, y: 0.24, s: 96, z: 0.9 },
-  { id: 'galaxy', x: 0.50, y: 0.84, s: 92, z: 1 },
-  { id: 'dollar', x: 0.80, y: 0.68, s: 112, z: 0.5 },
-  { id: 'cards', x: 0.94, y: 0.80, s: 132, z: 0.2 },
-  { id: 'diamond', x: 0.67, y: 0.88, s: 120, z: 0.4 },
+  { id: 'guitar', a: 188, k: 0.9, s: 150, z: 0 },
+  { id: 'dumbbell', a: 232, k: 0.85, s: 104, z: 0.7 },
+  { id: 'car', a: 292, k: 0.85, s: 128, z: 0.3 },
+  { id: 'mustache', a: 332, k: 0.9, s: 96, z: 0.9 },
+  { id: 'dollar', a: 18, k: 0.9, s: 112, z: 0.5 },
+  { id: 'diamond', a: 58, k: 0.85, s: 120, z: 0.4 },
+  { id: 'galaxy', a: 92, k: 0.8, s: 92, z: 1 },
+  { id: 'cards', a: 128, k: 0.8, s: 132, z: 0.2 },
 ];
 const PHONE = [
-  { id: 'guitar', x: 0.13, y: 0.20, s: 74, z: 0 },
-  { id: 'car', x: 0.86, y: 0.21, s: 70, z: 0.3 },
-  { id: 'diamond', x: 0.62, y: 0.47, s: 58, z: 0.5 },
-  { id: 'dollar', x: 0.10, y: 0.49, s: 56, z: 0.6 },
+  { id: 'guitar', a: 212, k: 0.85, s: 74, z: 0 },
+  { id: 'car', a: 328, k: 0.85, s: 70, z: 0.3 },
+  { id: 'diamond', a: 40, k: 0.85, s: 58, z: 0.5 },
+  { id: 'dollar', a: 140, k: 0.85, s: 56, z: 0.6 },
 ];
 const IDLE = 5; // s without touching before the icons go home
 
@@ -78,7 +80,7 @@ export function initHeroIcons({ reduced, gsap }) {
 
     const world = new World({ gravity: 0, iterations: 6 });
     let walls = [];
-    let W = 1, H = 1, t = 0, lastTouch = -1e9, roulette = hero.classList.contains('is-roulette');
+    let W = 1, H = 1, t = 0, E = { cx: 0, cy: 0, rx: 1, ry: 1 }, lastTouch = -1e9, roulette = hero.classList.contains('is-roulette');
 
     function measure() {
       const hr = host.getBoundingClientRect();
@@ -90,7 +92,7 @@ export function initHeroIcons({ reduced, gsap }) {
       walls.push(box(W / 2, navH - 40, W + 200, 80, st), box(W / 2, H + 40, W + 200, 80, st), box(-40, H / 2, 80, H + 200, st), box(W + 40, H / 2, 80, H + 200, st));
       // Things the icons must never cover: the word (the bar and the word's band), text and buttons
       const word = wordBox(hr);
-      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open', '#hero-arrow'].flatMap((s) => [...host.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
+      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open', '#guitar-mini'].flatMap((s) => [...host.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
       parts.forEach((r) => {
         if (!r || !r.width) return;
         const x = r.left - hr.left, y = r.top - hr.top;
@@ -98,11 +100,20 @@ export function initHeroIcons({ reduced, gsap }) {
         walls.push(box(x + r.width / 2, y + r.height / 2, r.width + 16, r.height + 16, { ...st, group: 2 }));
       });
       walls.forEach((w) => world.add(w));
+      E = { cx: W * 0.5, cy: H * 0.41, rx: W * 0.47, ry: H * 0.36 };
+      if (phone) {
+        // between the nav and the text block (role, lead, buttons)
+        const foot = host.querySelector('.hero__foot')?.getBoundingClientRect();
+        const mini = host.querySelector('#guitar-mini')?.getBoundingClientRect();
+        const bot = foot ? Math.min(foot.top, mini?.top || foot.top) - hr.top - 8 : H * 0.6;
+        E = { cx: W * 0.5, cy: (navH + bot) / 2, rx: W * 0.47, ry: Math.max(60, (bot - navH) / 2) };
+      }
       world.bodies.sort((a, b) => (b.isStatic ? 1 : 0) - (a.isStatic ? 1 : 0));
       icons.forEach((ic) => {
         // the circle covers the longer side, so tall icons (dollar, guitar) never reach the text
         const r = Math.max(ic.el.offsetWidth || ic.s, ic.el.offsetHeight || ic.s) * 0.44;
-        ic.home = { x: ic.x * W, y: ic.y * H };
+        const a = ic.a * Math.PI / 180;
+        ic.home = { x: E.cx + Math.cos(a) * (E.rx - r) * ic.k, y: E.cy + Math.sin(a) * (E.ry - r) * ic.k };
         if (!ic.b) {
           ic.b = world.add(circle(ic.home.x, ic.home.y, r, { restitution: 0.6, friction: 0.1, linearDamping: 0.9, angularDamping: 1.2, data: ic }));
         } else {
@@ -127,9 +138,8 @@ export function initHeroIcons({ reduced, gsap }) {
         const left = order.indexOf(ic) < Math.ceil(icons.length / 2);
         const side = order.filter((o, j) => (j < Math.ceil(icons.length / 2)) === left).sort((a, b) => a.home.y - b.home.y);
         const k = side.indexOf(ic), n = Math.max(1, side.length - 1);
-        const top = Math.max(150, H * 0.2), bottom = H * 0.88;
-        const m = Math.max(W * 0.05, ic.b.r + 8); // fully on screen
-        return { x: left ? m : W - m, y: side.length > 1 ? top + (bottom - top) * (k / n) : (top + bottom) / 2 };
+        const g = side.length > 1 ? (k / n - 0.5) * 1.4 : 0;
+        return { x: E.cx + (left ? -1 : 1) * Math.cos(g) * (E.rx - ic.b.r) * 0.96, y: E.cy + Math.sin(g) * (E.ry - ic.b.r) * 0.96 };
       }
       const a = (t / ic.per) * Math.PI * 2 + ic.phase;
       return { x: ic.home.x + Math.cos(a) * ic.orbit, y: ic.home.y + Math.sin(a * 1.3) * ic.orbit * 0.7 };
@@ -140,6 +150,7 @@ export function initHeroIcons({ reduced, gsap }) {
       const free = !roulette && (t - lastTouch < IDLE || world.hand);
       for (const ic of icons) {
         const b = ic.b;
+        keep(b);
         if (world.hand?.b === b) continue;
         if (free) continue; // thrown: free flight, slowed by damping, bouncing off walls
         const p = target(ic);
@@ -151,10 +162,21 @@ export function initHeroIcons({ reduced, gsap }) {
         b.sleeping = false; b.still = 0;
       }
     }
+    // keep the icon's circle inside the ellipse; bounce off its edge
+    function keep(b) {
+      const ex = Math.max(1, E.rx - b.r), ey = Math.max(1, E.ry - b.r);
+      const dx = (b.x - E.cx) / ex, dy = (b.y - E.cy) / ey, d = Math.hypot(dx, dy);
+      if (d <= 1) return;
+      b.x = E.cx + (dx / d) * ex; b.y = E.cy + (dy / d) * ey;
+      const nx = dx / ex, ny = dy / ey, nl = Math.hypot(nx, ny), ux = nx / nl, uy = ny / nl;
+      const vn = b.vx * ux + b.vy * uy;
+      if (vn > 0) { b.vx -= 1.6 * vn * ux; b.vy -= 1.6 * vn * uy; }
+    }
     const wrapA = (a) => Math.atan2(Math.sin(a), Math.cos(a));
     function render() {
       for (const ic of icons) {
         const b = ic.b;
+        keep(b);
         const w = ic.el.offsetWidth || ic.s, hh = ic.el.offsetHeight || ic.s;
         ic.el.style.transform = `translate3d(${(b.x - w / 2).toFixed(1)}px, ${(b.y - hh / 2).toFixed(1)}px, 0) rotate(${b.a.toFixed(3)}rad)`;
       }

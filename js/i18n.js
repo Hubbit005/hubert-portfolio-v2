@@ -1,7 +1,7 @@
 /* Language switch EN / PL.
    English lives in index.html (it is the default and what search engines and no-JS visitors get).
    Polish lives in the dictionary below. Elements carry data-i18n="key" (their content) and
-   data-i18n-attr="attr:key;attr:key" (alt, aria-label, data-cursor). Scripts use i18n.t('key').
+   data-i18n-attr="attr:key;attr:key" (alt, aria-label). Scripts use i18n.t('key').
    The choice is kept in localStorage; #pl and #en in the address open that language at once.
    Loaded as a classic script at the end of <body>, so Polish is in place before the first paint
    and before the modules (carousel, roulette) read the text. */
@@ -22,16 +22,30 @@
     "nav-list.4": "O mnie",
     // EN: <span class="nav__num">06</span>Contact
     "nav-list.6": "Kontakt",
-    // EN: Spin my work
-    "roulette-open.1": "Wylosuj projekt",
+    // EN: Play roulette
+    "roulette-open.1": "Zagraj w ruletkę",
     // EN: Spin
     "roulette-spin.1": "Losuj",
     // EN: Back
     "roulette-back.1": "Wróć",
-    // EN: You landed on
-    "roulette-card.1": "Wylosowany projekt",
-    // EN: Open project
-    "roulette-go.1": "Otwórz projekt",
+    // EN: Place your bet and press Spin
+    "roulette-hint.1": "Postaw zakład i naciśnij Spin",
+    // EN: Number
+    "roulette-number.1": "Numer",
+    // EN: Red
+    "roulette-red.1": "Czerwone",
+    // EN: Black
+    "roulette-black.1": "Czarne",
+    // EN: Stake
+    "roulette-stake.1": "Stawka",
+    // EN: Coins
+    "roulette-coins.1": "Monety",
+    // EN: Wins
+    "roulette-wins.1": "Wygrane",
+    // EN: Losses
+    "roulette-losses.1": "Przegrane",
+    // EN: Get 1000 coins
+    "roulette-reset.1": "Weź 1000 monet",
     // EN: Spin again
     "roulette-again.1": "Losuj jeszcze raz",
     // EN: I design and build websites and clickable prototypes. I work with AI tools and make the design decisions myself.
@@ -252,8 +266,8 @@
     "about.3": "Szukam zespołu, z którym zostanę na dłużej i w którym będę się rozwijać. Jestem gotów pracować bardzo dużo, jeśli praca daje efekt.",
     // EN: Play something
     "guitar.1": "Zagraj coś",
-    // EN: Electric guitar and amplifier. Press Play to hear a short riff.
-    "guitar.2": "Gitara elektryczna i wzmacniacz. Naciśnij »Zagraj«, żeby usłyszeć krótki riff.",
+    // EN: Electric guitar and amplifier. Press Play to hear a song I recorded on guitar.
+    "guitar.2": "Gitara elektryczna i wzmacniacz. Naciśnij »Zagraj«, żeby usłyszeć utwór, który nagrałem na gitarze.",
     // EN: Play
     "guitar.3": "Zagraj",
     // EN: Background
@@ -314,12 +328,11 @@
     "contact.13": "Na górę ↑",
     // EN: Sections
     "a-nav.1": "Sekcje",
-    // EN: Project roulette
-    "a-roulette.1": "Ruletka projektów",
+    // EN: Roulette
+    "a-roulette.1": "Ruletka",
     // EN: Projects
     "a-arc-viewport.1": "Projekty",
     // EN: Open
-    "a-arc-track.1": "Otwórz",
     // EN: Previous project
     "a-arc-prev.1": "Poprzedni projekt",
     // EN: Next project
@@ -411,20 +424,12 @@
       'jar.playwright': 'I render animations to MP4 with Playwright.',
       'jar.three': 'I build 3D in three.js.',
       'model.title': 'Interactive 3D model of an AK-47 for KSK Pretor. Drag to rotate. Keys: S trigger, Z charging handle, P selector.',
-      'roulette.hintWheel': 'Drag the wheel or press Spin',
-      'roulette.hintRandom': 'A random pick from my projects',
-      'roulette.opened': 'Project roulette. Press Spin or drag the wheel. Escape goes back.',
+      'roulette.hint': 'Place your bet and press Spin',
+      'roulette.red': 'Red', 'roulette.black': 'Black',
+      'roulette.win': 'You win', 'roulette.lose': 'You lose',
       'roulette.spinning': 'Spinning',
       'roulette.sound': 'Sound on/off',
       'guitar.play': 'Play', 'guitar.stop': 'Stop',
-      'roulette.result': 'Result: {name}. {cat}.',
-      'roulette.typeCover': 'Book<br>a&nbsp;session',
-      'p.basko.name': 'Basko Clean', 'p.basko.label': 'BASKO CLEAN', 'p.basko.cat': 'Website & marketing',
-      'p.ksk.name': 'KSK Pretor', 'p.ksk.label': 'KSK PRETOR', 'p.ksk.cat': 'Marketing & video',
-      'p.ak.name': '3D Model', 'p.ak.label': '3D MODEL', 'p.ak.cat': 'Interactive 3D',
-      'p.living.name': 'Livingroom', 'p.living.label': 'LIVINGROOM', 'p.living.cat': 'Restaurant',
-      'p.psy.name': 'Agata Patelka', 'p.psy.label': 'AGATA PATELKA', 'p.psy.cat': 'Psychologist · in progress',
-      'p.training.name': 'Training plans', 'p.training.label': 'TRAINING PLANS', 'p.training.cat': 'A page per client',
     },
     pl: {
       'meta.title': 'Hubert · Junior UX/UI Designer, AI-native · Portfolio',
@@ -473,20 +478,12 @@
       'jar.playwright': 'Animacje renderuję do MP4 w Playwright.',
       'jar.three': '3D buduję w three.js.',
       'model.title': 'Interaktywny model 3D karabinka AK-47 dla KSK Pretor. Przeciągnij, żeby obrócić. Klawisze: S spust, Z rączka zamka, P przełącznik trybów.',
-      'roulette.hintWheel': 'Zakręć kołem albo naciśnij „Losuj”',
-      'roulette.hintRandom': 'Losowy projekt z mojego portfolio',
-      'roulette.opened': 'Ruletka projektów. Naciśnij „Losuj” albo zakręć kołem. Escape wraca.',
+      'roulette.hint': 'Postaw zakład i naciśnij Spin',
+      'roulette.red': 'Czerwone', 'roulette.black': 'Czarne',
+      'roulette.win': 'Wygrywasz', 'roulette.lose': 'Przegrywasz',
       'roulette.spinning': 'Koło się kręci',
       'roulette.sound': 'Dźwięk wł./wył.',
       'guitar.play': 'Zagraj', 'guitar.stop': 'Stop',
-      'roulette.result': 'Wynik: {name}. {cat}.',
-      'roulette.typeCover': 'Umów<br>wizytę',
-      'p.basko.name': 'Basko Clean', 'p.basko.label': 'BASKO CLEAN', 'p.basko.cat': 'Strona i marketing',
-      'p.ksk.name': 'KSK Pretor', 'p.ksk.label': 'KSK PRETOR', 'p.ksk.cat': 'Marketing i wideo',
-      'p.ak.name': 'Model 3D', 'p.ak.label': 'MODEL 3D', 'p.ak.cat': 'Interaktywne 3D',
-      'p.living.name': 'Livingroom', 'p.living.label': 'LIVINGROOM', 'p.living.cat': 'Restauracja',
-      'p.psy.name': 'Agata Patelka', 'p.psy.label': 'AGATA PATELKA', 'p.psy.cat': 'Psycholożka · w budowie',
-      'p.training.name': 'Plany treningowe', 'p.training.label': 'PLANY TRENINGOWE', 'p.training.cat': 'Strona dla każdego klienta',
     },
   };
 

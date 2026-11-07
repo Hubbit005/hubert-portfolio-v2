@@ -42,8 +42,8 @@
       if (l === 'pl') { d.lang = 'pl'; d.classList.add('lang-pending'); }
     })();
   </script>
-  <link rel="stylesheet" href="css/tokens.css?v=20261108">
-  <link rel="stylesheet" href="css/main.css?v=20261108">
+  <link rel="stylesheet" href="css/tokens.css?v=20261109">
+  <link rel="stylesheet" href="css/main.css?v=20261109">
 </head>
 <body>
   <div class="glow" aria-hidden="true"><i class="glow__hero"></i><i class="glow__low"></i></div>
@@ -87,13 +87,13 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero" id="home" aria-labelledby="hero-title">
-      <!-- Two panels (task 11): the hero and the guitar scene (#guitar). js/hero-panel.js slides the track;
+      <!-- Two panels (tasks 11, 12): the hero and the guitar scene (#guitar). js/hero-panel.js zooms between them;
            without JS the guitar is a normal block under the hero. -->
       <div class="hero__track" id="hero-track">
         <div class="hero__main hero__panel" id="hero-main">
           <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
             <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
-            <span data-i18n="roulette-open.1">Spin my work</span>
+            <span data-i18n="roulette-open.1">Play roulette</span>
           </button>
           <div class="hero__stage" id="hero-stage">
             <h1 class="hero__title" id="hero-title">
@@ -104,32 +104,52 @@
               </span>
             </h1>
           </div>
-          <div class="roulette" id="roulette" role="region" aria-label="Project roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
+          <div class="roulette" id="roulette" role="region" aria-label="Roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
             <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>
+            <div class="roulette__stats">
+              <p class="roulette__coins"><span class="mono" data-i18n="roulette-coins.1">Coins</span> <strong id="roulette-coins">1000</strong></p>
+              <div class="roulette__chart">
+                <button class="roulette__col" id="roulette-wins" type="button"><svg viewBox="0 0 20 60" aria-hidden="true" focusable="false"><rect width="20" height="60"/></svg><span class="mono" data-i18n="roulette-wins.1">Wins</span> <span class="roulette__tip">0</span></button>
+                <button class="roulette__col" id="roulette-losses" type="button"><svg viewBox="0 0 20 60" aria-hidden="true" focusable="false"><rect width="20" height="60"/></svg><span class="mono" data-i18n="roulette-losses.1">Losses</span> <span class="roulette__tip">0</span></button>
+              </div>
+              <button class="btn btn--primary btn--sm" id="roulette-reset" type="button" hidden><span data-i18n="roulette-reset.1">Get 1000 coins</span></button>
+            </div>
             <div class="roulette__bar" id="roulette-bar">
-              <p class="roulette__hint mono">Drag the wheel or press Spin</p>
+              <p class="roulette__hint mono" data-i18n="roulette-hint.1">Place your bet and press Spin</p>
+              <form class="roulette__bet" id="roulette-bet" onsubmit="return false">
+                <fieldset class="roulette__pick">
+                  <legend class="mono" data-i18n="roulette-number.1">Number</legend>
+                  <div class="roulette__table">
+                    <div class="roulette__grid" id="roulette-grid"></div>
+                    <label class="roulette__cell roulette__colour is-red"><input type="radio" name="pick" value="red" checked><span data-i18n="roulette-red.1">Red</span></label>
+                    <label class="roulette__cell roulette__colour is-black"><input type="radio" name="pick" value="black"><span data-i18n="roulette-black.1">Black</span></label>
+                  </div>
+                </fieldset>
+                <fieldset class="roulette__stake">
+                  <legend class="mono" data-i18n="roulette-stake.1">Stake</legend>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="10" checked><span>10</span></label>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="50"><span>50</span></label>
+                  <label class="roulette__cell"><input type="radio" name="stake" value="100"><span>100</span></label>
+                </fieldset>
+              </form>
               <div class="roulette__actions">
                 <button class="btn btn--primary" id="roulette-spin" type="button"><span data-i18n="roulette-spin.1">Spin</span></button>
                 <button class="btn btn--ghost" id="roulette-back" type="button"><span data-i18n="roulette-back.1">Back</span></button>
               </div>
             </div>
-            <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-name" hidden>
-              <div class="roulette__cover" id="roulette-cover"></div>
+            <article class="roulette__card" id="roulette-card" aria-labelledby="roulette-num" hidden>
               <div class="roulette__body">
-                <p class="roulette__kicker mono" data-i18n="roulette-card.1">You landed on</p>
-                <p class="roulette__name" id="roulette-name"></p>
-                <p class="roulette__cat mono" id="roulette-cat"></p>
+                <p class="roulette__name" id="roulette-num"></p>
+                <p class="roulette__kicker mono" id="roulette-outcome"></p>
                 <div class="roulette__actions">
-                  <a class="btn btn--primary btn--sm" id="roulette-go" href="#work"><span data-i18n="roulette-go.1">Open project</span></a>
-                  <button class="btn btn--ghost btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
+                  <button class="btn btn--primary btn--sm" id="roulette-again" type="button"><span data-i18n="roulette-again.1">Spin again</span></button>
                   <button class="btn btn--ghost btn--sm" id="roulette-back2" type="button"><span data-i18n="roulette-back.1">Back</span></button>
                 </div>
               </div>
             </article>
           </div>
-          <p class="hero__role">Junior UX/UI Designer <span aria-hidden="true">·</span> AI-native</p>
-
           <div class="hero__foot">
+            <p class="hero__role">Junior UX/UI Designer <span aria-hidden="true">·</span> AI-native</p>
             <p class="hero__lead" data-i18n="home.2">I design and build websites and clickable prototypes. I work with AI tools and make the design decisions myself.</p>
             <div class="hero__cta">
               <a class="btn btn--primary" href="#work" data-magnetic>
@@ -138,11 +158,14 @@
               </a>
               <a class="btn btn--ghost" href="#contact" data-magnetic><span data-i18n="home.4">Contact</span></a>
             </div>
+            <button class="guitar-mini" id="guitar-mini" type="button" aria-controls="guitar" aria-expanded="false">
+              <span class="guitar-mini__scene" aria-hidden="true"><span class="guitar-mini__float">
+                <img class="guitar-mini__amp" src="assets/hf/amp-700.webp" width="700" height="744" alt="" loading="lazy" decoding="async" fetchpriority="low">
+                <img class="guitar-mini__guitar" src="assets/hf/guitar-900.webp" width="343" height="900" alt="" loading="lazy" decoding="async" fetchpriority="low">
+              </span></span>
+              <span class="guitar-mini__label mono" data-i18n="guitar.1">Play something</span>
+            </button>
           </div>
-          <button class="hero-arrow" id="hero-arrow" type="button" aria-controls="guitar" aria-expanded="false" data-magnetic>
-            <svg class="hero-arrow__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
-            <span class="hero-arrow__label mono" data-i18n="guitar.1">Play something</span>
-          </button>
         </div>
       <section class="section guitar hero__panel" id="guitar" aria-labelledby="guitar-title">
         <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-film="assets/hf/smoke"></video></div>
@@ -151,10 +174,10 @@
             <h2 class="sec-head__title" id="guitar-title" tabindex="-1"><span class="mask"><span data-i18n="guitar.1">Play something</span></span></h2>
           </header>
           <button class="guitar-back" id="guitar-back" type="button" data-magnetic><svg class="guitar-back__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="guitar-back__label mono" data-i18n="roulette-back.1">Back</span></button>
-          <p class="sr-only" id="guitar-desc" data-i18n="guitar.2">Electric guitar and amplifier. Press Play to hear a short riff.</p>
+          <p class="sr-only" id="guitar-desc" data-i18n="guitar.2">Electric guitar and amplifier. Press Play to hear a song I recorded on guitar.</p>
           <div class="guitar__stage">
             <span class="guitar__glow" aria-hidden="true"></span>
-            <div class="guitar__item guitar__item--guitar" aria-hidden="true" data-cursor-play>
+            <div class="guitar__item guitar__item--guitar" aria-hidden="true">
               <div class="guitar__float">
                 <div class="guitar__tilt">
                   <img class="guitar__img" src="assets/hf/guitar-900.webp" srcset="assets/hf/guitar-900.webp 343w, assets/hf/guitar-1600.webp 609w" sizes="(min-width: 900px) 210px, 36vw" width="609" height="1600" alt="" loading="lazy" decoding="async">
@@ -179,7 +202,7 @@
             </div>
             <svg class="cable" aria-hidden="true" focusable="false"></svg>
           </div>
-          <button class="btn btn--primary guitar__play" id="guitar-play" type="button" aria-pressed="false" aria-describedby="guitar-desc"><span class="guitar__play-icon" aria-hidden="true">▶</span><span class="guitar__play-label" data-i18n="guitar.3">Play</span></button>
+          <button class="btn btn--primary guitar__play" id="guitar-play" type="button" aria-pressed="false" aria-describedby="guitar-desc"><span class="guitar__play-icon" aria-hidden="true">▶</span><span class="guitar__play-label" data-i18n="guitar.3">Play</span><span class="guitar__progress" aria-hidden="true"></span></button>
         </div>
       </section>
       </div>
@@ -198,31 +221,31 @@
         <div class="arc__viewport" id="arc-viewport" role="region" aria-roledescription="carousel" aria-label="Projects" tabindex="0" data-i18n-attr="aria-label:a-arc-viewport.1">
           <ul class="arc__track" id="arc-track">
             <li class="arc__item">
-              <a class="card card--basko" href="#basko-clean" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--basko" href="#basko-clean">
                 <span class="card__media"><picture><source type="image/webp" srcset="assets/cards/basko.webp"><img src="assets/cards/basko.jpg" alt="" width="600" height="800" loading="lazy" decoding="async" draggable="false"></picture></span>
                 <span class="card__meta"><span class="card__title">Basko Clean</span><span class="card__tag mono" data-i18n="arc-track.2">Website &amp; marketing</span></span>
               </a>
             </li>
             <li class="arc__item">
-              <a class="card card--ksk" href="#ksk-pretor" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--ksk" href="#ksk-pretor">
                 <span class="card__media"><picture><source type="image/webp" srcset="assets/cards/ksk.webp"><img src="assets/cards/ksk.jpg" alt="" width="600" height="800" loading="lazy" decoding="async" draggable="false"></picture></span>
                 <span class="card__meta"><span class="card__title">KSK Pretor</span><span class="card__tag mono" data-i18n="arc-track.5">Marketing &amp; video</span></span>
               </a>
             </li>
             <li class="arc__item">
-              <a class="card card--ak" href="#ksk-3d-model" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--ak" href="#ksk-3d-model">
                 <span class="card__media"><picture><source type="image/webp" srcset="assets/cards/ak.webp"><img src="assets/cards/ak.jpg" alt="" width="600" height="800" loading="lazy" decoding="async" draggable="false"></picture></span>
                 <span class="card__meta"><span class="card__title" data-i18n="arc-track.7">3D Model</span><span class="card__tag mono" data-i18n="arc-track.8">Interactive 3D</span></span>
               </a>
             </li>
             <li class="arc__item">
-              <a class="card card--living" href="#livingroom" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--living" href="#livingroom">
                 <span class="card__media"><picture><source type="image/webp" srcset="assets/cards/living.webp"><img src="assets/cards/living.jpg" alt="" width="600" height="800" loading="lazy" decoding="async" draggable="false"></picture></span>
                 <span class="card__meta"><span class="card__title">Livingroom</span><span class="card__tag mono" data-i18n="arc-track.11">Restaurant</span></span>
               </a>
             </li>
             <li class="arc__item">
-              <a class="card card--psy" href="#psychologist-site" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--psy" href="#psychologist-site">
                 <span class="card__media card__media--type" aria-hidden="true">
                   <span class="type-cover type-cover--psy">
                     <span class="type-cover__path"><i></i><i></i><i></i><i></i></span>
@@ -234,7 +257,7 @@
               </a>
             </li>
             <li class="arc__item">
-              <a class="card card--training" href="#training-plans" data-cursor="Open" data-i18n-attr="data-cursor:a-arc-track.1">
+              <a class="card card--training" href="#training-plans">
                 <span class="card__media"><picture><source type="image/webp" srcset="assets/cards/training.webp"><img src="assets/cards/training.jpg" alt="" width="600" height="800" loading="lazy" decoding="async" draggable="false"></picture></span>
                 <span class="card__meta"><span class="card__title" data-i18n="arc-track.18">Training plans</span><span class="card__tag mono" data-i18n="arc-track.19">A page per client</span></span>
               </a>
@@ -828,8 +851,7 @@
     </div>
   </main>
 
-  <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label">Open</span></div>
-  <script src="js/i18n.js?v=20261108"></script>
+  <script src="js/i18n.js?v=20261109"></script>
   <script>
     /* Scripts start after the first paint (task 09, phone performance): the text is already on screen,
        so the libraries and the modules never hold the first view back. Order: GSAP, ScrollTrigger and
@@ -845,7 +867,7 @@
       }
       function boot() {
         var left = 3;
-        var next = function () { if (--left === 0) add('js/main.js?v=20261108', true); };
+        var next = function () { if (--left === 0) add('js/main.js?v=20261109', true); };
         add('vendor/js/gsap.min.js', false, next);
         add('vendor/js/ScrollTrigger.min.js', false, next);
         add('vendor/js/lenis.min.js', false, next);
