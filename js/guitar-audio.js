@@ -4,7 +4,8 @@
    Strings: Karplus-Strong (a short noise burst in a feedback delay line with a low-pass average),
    computed once per note into an AudioBuffer → overdrive (WaveShaper) → cabinet filter → chorus
    (modulated delay) → simple reverb (delays with feedback) → compressor → about −12 dB.
-   The visuals read stringEnergy (6 strings, low E = 0) and level() (RMS of the output). */
+   The visuals read stringEnergy (6 strings, low E = 0), level() (RMS of the output) and bass()
+   (the analyser's spectrum around 60–250 Hz, for the amp's speakers). */
 
 const BPM = 120;
 const E8 = 60 / BPM / 2; // one eighth note, s
@@ -93,6 +94,8 @@ export function createGuitar() {
   bus.connect(comp); verbOut.connect(comp);
   comp.connect(master).connect(analyser).connect(ctx.destination);
   const tdata = new Float32Array(analyser.fftSize);
+  const fdata = new Uint8Array(analyser.frequencyBinCount);
+  const hz = sr / analyser.fftSize; // width of one frequency bin
 
   /* ---------- Karplus-Strong ---------- */
   const cache = new Map();
@@ -187,5 +190,13 @@ export function createGuitar() {
     for (let i = 0; i < tdata.length; i++) sum += tdata[i] * tdata[i];
     return Math.min(1, Math.sqrt(sum / tdata.length) * 3.2);
   }
-  return { play, stop, update, level, get playing() { return playing; }, duration: TOTAL, ctx };
+  // bass for the amp's speakers: the spectrum from about 60 to 250 Hz (0 … 1)
+  function bass() {
+    analyser.getByteFrequencyData(fdata);
+    const a = Math.max(1, Math.floor(60 / hz)), b = Math.max(a + 1, Math.ceil(250 / hz));
+    let sum = 0;
+    for (let i = a; i <= b; i++) sum += fdata[i];
+    return Math.min(1, Math.max(0, (sum / (b - a + 1) / 255 - 0.25) * 1.6));
+  }
+  return { play, stop, update, level, bass, get playing() { return playing; }, duration: TOTAL, ctx };
 }
