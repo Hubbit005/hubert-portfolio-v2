@@ -4,15 +4,16 @@
    the whole hero (FLIP: transform from its centre + clip-path, 0.9 s, --ease-out; the values are set
    here as --gz-*), while panel 1 shrinks a little and fades. Back ("Back" button or Esc) zooms back.
    While panel 2 shows, the 3D word, the icons and the roulette stop rendering (hero.dataset.panel =
-   'guitar', read in their GSAP ticker callbacks). Going back stops the guitar.
+   'guitar', read in their GSAP ticker callbacks). The song keeps playing after going back (task 13).
    The hidden panel is inert; focus goes to panel 2's heading and back to the small scene. #guitar in
    the address opens panel 2 at once. The button has aria-controls and aria-expanded.
+   Task 13: while panel 2 shows, the page is locked (see lock()) and scrolling in it plays the song.
    Nothing of panel 2 loads at start: its pictures, the smoke film, js/guitar.js and js/guitar-audio.js
    are loaded on the first hover, focus, touch or click of the small scene (or #guitar).
    No JS: panel 2 is a normal block under the hero and the small scene is hidden (CSS).
    Reduced motion: the panels swap without zooming (a short cross-fade). */
 
-const V = '?v=20261109';
+const V = '?v=20261110';
 
 export function initHeroPanel({ reduced, gsap }) {
   const hero = document.getElementById('home');
@@ -82,8 +83,8 @@ export function initHeroPanel({ reduced, gsap }) {
     delete hero.dataset.panel; // both panels render while the track moves
     main.inert = on;
     panel.inert = !on;
+    lock(on);
     arrow.setAttribute('aria-expanded', String(on));
-    if (!on) guitar?.stop?.();
     playFilm(on);
     try { history.replaceState(null, '', on ? '#guitar' : location.pathname + location.search); } catch (e) { /* ignore */ }
     clearTimeout(timer);
@@ -103,6 +104,29 @@ export function initHeroPanel({ reduced, gsap }) {
     hero.style.setProperty('--gz-o', `${cx.toFixed(1)}px ${cy.toFixed(1)}px`);
     hero.style.setProperty('--gz-clip', `${Math.max(0, cy - hh).toFixed(1)}px ${Math.max(0, h.width - cx - hw).toFixed(1)}px ${Math.max(0, h.height - cy - hh).toFixed(1)}px ${Math.max(0, cx - hw).toFixed(1)}px`);
   }
+  // Task 13: a closed card. The page does not scroll and everything outside the scene is inert;
+  // scrolling inside the scene starts the song and plucks the strings; Tab stays on Back and Play.
+  let locked = [];
+  function lock(on) {
+    document.documentElement.style.overflow = on ? 'hidden' : '';
+    window.__lenis?.[on ? 'stop' : 'start']();
+    locked.forEach((el) => { el.inert = false; });
+    locked = [];
+    if (!on) return;
+    for (let n = hero; n.parentElement && n !== document.body; n = n.parentElement) {
+      for (const el of n.parentElement.children) if (el !== n && !el.inert && el.tagName !== 'SCRIPT') { el.inert = true; locked.push(el); }
+    }
+  }
+  const nudge = (e) => { if (!open) return; e.preventDefault(); ready?.then((g) => g?.nudge?.()); };
+  panel.addEventListener('wheel', nudge, { passive: false });
+  panel.addEventListener('touchmove', nudge, { passive: false });
+  panel.addEventListener('keydown', (e) => {
+    if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)) nudge(e);
+    const play = document.getElementById('guitar-play');
+    if (e.key === 'Tab' && (e.shiftKey ? document.activeElement !== play : document.activeElement === play)) {
+      e.preventDefault(); (e.shiftKey ? play : back).focus();
+    }
+  });
   arrow.addEventListener('click', () => show(true));
   back.addEventListener('click', () => show(false));
   document.addEventListener('keydown', (e) => {

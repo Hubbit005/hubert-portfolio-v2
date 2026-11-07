@@ -8,7 +8,7 @@
    no JS and reduced motion (then there is no jar at all). The jar is decoration (aria-hidden).
    Touch: only a finger that lands on a ball moves it (balls have touch-action: none, the rest of
    the jar lets the page scroll). Physics: js/physics.js, in the GSAP ticker, only while on screen. */
-import { World, circle, box, run, hand } from './physics.js?v=20261109';
+import { World, circle, box, run, hand } from './physics.js?v=20261110';
 
 const SENTENCE = [
   ['claude', 'jar.claude'], ['chatgpt', 'jar.chatgpt'], ['gemini', 'jar.gemini'], ['perplexity', 'jar.perplexity'],

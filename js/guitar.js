@@ -15,7 +15,7 @@
      pedal's LED glows in the accent and pulses with the volume; the whole amp shakes (±1–2 px, ±0.4°,
      stronger on hard chords) and its speakers pulse with the bass (scale up to about 1.05, the centre
      darkens on a hit); the amp's lamp pulses. On stop everything eases back to rest.
-     It stops when the panel leaves the screen, when the tab is hidden, on "Stop" and on going back.
+     Task 13: "Pause" pauses (Play resumes), the song keeps playing after Back and pauses when the tab is hidden.
    Accessibility: a real <button> with aria-pressed and a visible focus; the pictures are aria-hidden.
    Reduced motion: no floating, shaking, pulsing or vibrating; the LED simply lights; the sound plays. */
 
@@ -69,7 +69,7 @@ export function initGuitar({ reduced, gsap }) {
   const SEG = 28;
   function drawStrings(energy, time) {
     for (let i = 0; i < 6; i++) {
-      const e = reduced ? 0 : energy[i];
+      const e = reduced ? 0 : Math.max(energy[i], kick * (1 - i * 0.08));
       const x0 = NUT_X[i], x1 = BRIDGE_X[i];
       if (e < 0.004) { paths[i].setAttribute('d', `M${x0} ${NUT_Y} L${x1} ${BRIDGE_Y}`); paths[i].style.opacity = '0.0'; continue; }
       // standing wave: fundamental plus a little second harmonic; the phase flips fast (a blur of motion)
@@ -161,34 +161,49 @@ export function initGuitar({ reduced, gsap }) {
   let guitar = null, loading = null, playing = false;
   async function engine() {
     if (guitar) return guitar;
-    if (!loading) loading = import('./guitar-audio.js?v=20261109').then((m) => { guitar = m.createGuitar(); return guitar; });
+    if (!loading) loading = import('./guitar-audio.js?v=20261110').then((m) => { guitar = m.createGuitar(); return guitar; });
     return loading;
   }
+  // Task 13: the song keeps playing after Back; the scene button and the small pause button by the
+  // small scene (#guitar-mini-pause, shown after the first Play) pause and resume it
+  const miniBtn = document.getElementById('guitar-mini-pause');
+  const mini = document.querySelector('.guitar-mini');
+  const miniGuitar = mini?.querySelector('.guitar-mini__guitar');
   function setUI(on) {
     playing = on;
     btn.setAttribute('aria-pressed', String(on));
-    label.textContent = t(on ? 'guitar.stop' : 'guitar.play');
-    icon.textContent = on ? '■' : '▶';
+    label.textContent = t(on ? 'guitar.pause' : 'guitar.play');
+    icon.textContent = on ? '❚❚' : '▶';
     sec.classList.toggle('is-playing', on);
-    if (!on && bar) bar.style.transform = 'scaleX(0)';
+    if (miniBtn) {
+      if (on) miniBtn.hidden = false;
+      miniBtn.setAttribute('aria-label', t(on ? 'guitar.pauseMusic' : 'guitar.playMusic'));
+      miniBtn.firstChild.textContent = on ? '❚❚' : '▶';
+    }
+    mini?.classList.toggle('is-playing', on);
+    if (!on && miniGuitar) { miniGuitar.style.transform = ''; mini.style.removeProperty('--mlvl'); }
     sec.dispatchEvent(new CustomEvent('guitarstate'));
   }
   async function start() {
     const g = await engine();
     if (!g) return;
-    g.play(() => { setUI(false); });
-    setUI(true);
-    wake();
+    if (!g.bound) {
+      g.bound = true;
+      g.audio.addEventListener('play', () => { setUI(true); wake(); });
+      g.audio.addEventListener('pause', () => setUI(false));
+    }
+    g.play();
   }
-  function stop() { if (guitar && guitar.playing) guitar.stop(); if (playing) setUI(false); }
+  function stop() { guitar?.pause(); }
   const toggle = () => (playing ? stop() : start());
   btn.addEventListener('click', toggle);
   guitarItem.addEventListener('click', toggle);
-  document.addEventListener('langchange', () => { label.textContent = t(playing ? 'guitar.stop' : 'guitar.play'); });
+  miniBtn?.addEventListener('click', toggle);
+  document.addEventListener('langchange', () => setUI(playing));
 
   /* ---------- One frame: floating, cable, and the playing visuals (GSAP ticker) ---------- */
   let ticking = false, onScreen = false, time = 0;
-  let tilt = 0, tiltT = 0;
+  let tilt = 0, tiltT = 0, kick = 0; // kick: a pluck from scrolling in the scene (task 13)
   let lvlS = 0, hit = 0, bassS = 0; // smoothed level, hit envelope, smoothed bass
   const zero = new Float32Array(6);
   const TAU = Math.PI * 2;
@@ -200,19 +215,25 @@ export function initGuitar({ reduced, gsap }) {
   function frame(_, deltaMs) {
     const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
     if (!window.__motionPaused) time += dt;
+    kick *= Math.exp(-dt * 4);
     if (!L) measure();
     const g = guitar;
     const energy = g ? g.update() : zero;
     const lvl = g && playing ? g.level() : 0;
     const bass = g && playing && g.bass ? g.bass() : 0;
     if (playing && bar) bar.style.transform = `scaleX(${g.progress().toFixed(4)})`;
+    // the small guitar in the hero sways with the bass while the song plays; its glow pulses
+    if (playing && miniGuitar && !reduced) {
+      miniGuitar.style.transform = `translateY(${(-4 * bassS).toFixed(2)}px) rotate(${(-9 + 2.5 * Math.sin(time * 2.2)).toFixed(2)}deg)`;
+      mini.style.setProperty('--mlvl', Math.min(1, lvlS * 1.5 + hit).toFixed(3));
+    }
     // a hit: the level jumps above its own recent average
     hit = Math.max(hit * Math.exp(-dt * 9), Math.max(0, lvl - lvlS) * 2.6);
     lvlS += (lvl - lvlS) * (1 - Math.exp(-dt * 5));
     bassS += (bass - bassS) * (1 - Math.exp(-dt * (bass > bassS ? 30 : 8)));
     const live = !reduced && !window.__motionPaused;
     // paused motion and silence: the scene stands still, nothing to write (the cable is already drawn)
-    if (!live && !playing && L.drawn && lvlS < 0.004 && hit < 0.01 && energy.every((e) => e < 0.004)) {
+    if (!live && !playing && kick < 0.01 && L.drawn && lvlS < 0.004 && hit < 0.01 && energy.every((e) => e < 0.004)) {
       if (!onScreen) { gsap.ticker.remove(frame); ticking = false; }
       return;
     }
@@ -261,7 +282,7 @@ export function initGuitar({ reduced, gsap }) {
     sec.style.setProperty('--lvl', lvl.toFixed(3));
 
     // rest: off screen and silent (or reduced motion and silent) → stop the loop
-    const quiet = !playing && energy.every((e) => e < 0.004) && lvlS < 0.004 && hit < 0.01;
+    const quiet = !playing && kick < 0.01 && energy.every((e) => e < 0.004) && lvlS < 0.004 && hit < 0.01;
     if (quiet && (!onScreen || reduced)) {
       drawStrings(zero, 0);
       lamp.style.opacity = ''; led.style.opacity = ''; led.style.transform = '';
@@ -274,8 +295,9 @@ export function initGuitar({ reduced, gsap }) {
   // Runs while the panel is on screen; stops the song when it leaves or the tab is hidden
   new IntersectionObserver(([en]) => {
     onScreen = en.isIntersecting;
-    if (onScreen) { L = null; wake(); } else if (playing) stop();
+    if (onScreen) { L = null; wake(); }
   }, { threshold: 0 }).observe(sec);
+  // hidden tab: pause; it does not resume by itself
   document.addEventListener('visibilitychange', () => { if (document.hidden && playing) stop(); });
   let rt = 0;
   window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { L = null; if (reduced) wake(); }, 120); });
@@ -289,7 +311,7 @@ export function initGuitar({ reduced, gsap }) {
     pill.className = 'guitar__pill mono';
     pill.setAttribute('aria-hidden', 'true');
     sec.appendChild(pill);
-    const pillText = () => { pill.textContent = playing ? `■ ${t('guitar.stop')}` : `▶ ${t('guitar.play')}`; };
+    const pillText = () => { pill.textContent = playing ? `❚❚ ${t('guitar.pause')}` : `▶ ${t('guitar.play')}`; };
     pillText();
     document.addEventListener('langchange', pillText);
     sec.addEventListener('guitarstate', pillText);
@@ -304,5 +326,6 @@ export function initGuitar({ reduced, gsap }) {
   }
 
   wake();
-  return { stop };
+  function nudge() { kick = 1; if (!playing) start(); wake(); }
+  return { nudge };
 }

@@ -11,7 +11,7 @@
    (no dragging, the page always scrolls). Loaded after the hero's 3D word has started (or after
    the page load without WebGL), so they never slow the first view.
    Decorative (aria-hidden). Reduced motion or paused motion: the icons stand still at home. */
-import { World, circle, box, run, hand } from './physics.js?v=20261109';
+import { World, circle, box, run, hand } from './physics.js?v=20261110';
 
 // a: angle of the home on the ellipse (deg, 0 = right, 90 = down); k: share of the free radius;
 // s: size in px (desktop); z: depth 0 (near) … 1 (far)
