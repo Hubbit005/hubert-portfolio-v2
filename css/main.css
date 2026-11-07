@@ -547,12 +547,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .wf__t{ font-family: var(--font-display); font-stretch: 118%; font-weight: 820; font-size: var(--fs-h3); line-height: 1.05; text-transform: uppercase; }
 .wf p{ color: var(--ink-2); }
 
-.split-panel{ display: grid; gap: 0; margin-block: clamp(3rem, 2rem + 3vw, 5rem); border-radius: var(--r-lg); overflow: hidden; border: 1.5px solid var(--ink); }
-@media (min-width: 860px) { .split-panel{ grid-template-columns: 1fr 1fr; } }
-.split-panel__col{ padding: clamp(1.5rem, 1rem + 2vw, 2.75rem); background: var(--surface); }
-.split-panel__col + .split-panel__col{ background: var(--ink); color: var(--bg); }
-.split-panel__col + .split-panel__col .list li::before{ background: var(--accent); }
-
+@media (min-width: 860px) { 
 
 /* ---------- About ---------- */
 .about__grid{ display: grid; gap: var(--s-7); }
