@@ -1605,7 +1605,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* the result card covers the right column of icons: hide the icons while it shows; phones: no room */
 .hero:has(#roulette-card:not([hidden])) .hero-icons{ opacity: 0; }
 @media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
-/* Play/Stop: a clear "on" state while the riff plays */
+/* Play/Stop: a clear "on" state while the song plays */
 .guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
 
 /* ==========================================================================
@@ -1752,3 +1752,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero__main{ grid-template-rows: 1fr auto; }
 .hero__foot{ gap: var(--s-4); }
 .hero__foot .hero__role{ justify-self: start; text-align: left; margin: 0 0 calc(var(--s-2) * -1); }
+
+/* Task 12: song progress, a thin bar along the bottom of the Play button (js/guitar.js) */
+.guitar__play{ position: relative; overflow: hidden; }
+.guitar__progress{ position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: 0 50%; pointer-events: none; }

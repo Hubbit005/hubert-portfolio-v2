@@ -6,11 +6,12 @@
      on the floor between them.
      Cable: SVG drawn in code, two runs: guitar jack → pedal input, pedal output → amp input. It hangs
      in an arc (cubic Bézier sagging down) with small jack plugs at the ends; recomputed every frame
-     while the panel is on screen. While the riff plays it shakes a little on the chord hits.
+     while the panel is on screen. While the song plays it shakes a little on loud hits.
      Hover (fine pointer): the glow gets stronger, the guitar leans towards the pointer and a "▶ Play"
      pill follows the pointer.
-     Click on the guitar or the button: it plays an original riff (js/guitar-audio.js). While it plays,
-     six SVG lines lie exactly on the strings (nut to bridge) and vibrate when their string sounds; the
+     Click on the guitar or the button: it plays Hubert's song from the start (js/guitar-audio.js, task 12);
+     a thin bar on the button shows the progress. While it plays, six SVG lines lie exactly on the strings
+     (nut to bridge) and vibrate with their frequency band (low E = bass … high E = treble); the
      pedal's LED glows in the accent and pulses with the volume; the whole amp shakes (±1–2 px, ±0.4°,
      stronger on hard chords) and its speakers pulse with the bass (scale up to about 1.05, the centre
      darkens on a hit); the amp's lamp pulses. On stop everything eases back to rest.
@@ -37,6 +38,7 @@ export function initGuitar({ reduced, gsap }) {
   const btn = sec.querySelector('#guitar-play');
   const label = btn.querySelector('.guitar__play-label');
   const icon = btn.querySelector('.guitar__play-icon');
+  const bar = btn.querySelector('.guitar__progress');
   const guitarItem = sec.querySelector('.guitar__item--guitar');
   const ampItem = sec.querySelector('.guitar__item--amp');
   const gFloat = guitarItem.querySelector('.guitar__float');
@@ -168,6 +170,7 @@ export function initGuitar({ reduced, gsap }) {
     label.textContent = t(on ? 'guitar.stop' : 'guitar.play');
     icon.textContent = on ? '■' : '▶';
     sec.classList.toggle('is-playing', on);
+    if (!on && bar) bar.style.transform = 'scaleX(0)';
     sec.dispatchEvent(new CustomEvent('guitarstate'));
   }
   async function start() {
@@ -202,6 +205,7 @@ export function initGuitar({ reduced, gsap }) {
     const energy = g ? g.update() : zero;
     const lvl = g && playing ? g.level() : 0;
     const bass = g && playing && g.bass ? g.bass() : 0;
+    if (playing && bar) bar.style.transform = `scaleX(${g.progress().toFixed(4)})`;
     // a hit: the level jumps above its own recent average
     hit = Math.max(hit * Math.exp(-dt * 9), Math.max(0, lvl - lvlS) * 2.6);
     lvlS += (lvl - lvlS) * (1 - Math.exp(-dt * 5));
@@ -267,7 +271,7 @@ export function initGuitar({ reduced, gsap }) {
   }
   function wake() { if (!ticking) { ticking = true; gsap.ticker.add(frame); } }
 
-  // Runs while the panel is on screen; stops the riff when it leaves or the tab is hidden
+  // Runs while the panel is on screen; stops the song when it leaves or the tab is hidden
   new IntersectionObserver(([en]) => {
     onScreen = en.isIntersecting;
     if (onScreen) { L = null; wake(); } else if (playing) stop();

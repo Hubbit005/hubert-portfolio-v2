@@ -252,8 +252,8 @@
     "about.3": "Szukam zespołu, z którym zostanę na dłużej i w którym będę się rozwijać. Jestem gotów pracować bardzo dużo, jeśli praca daje efekt.",
     // EN: Play something
     "guitar.1": "Zagraj coś",
-    // EN: Electric guitar and amplifier. Press Play to hear a short riff.
-    "guitar.2": "Gitara elektryczna i wzmacniacz. Naciśnij »Zagraj«, żeby usłyszeć krótki riff.",
+    // EN: Electric guitar and amplifier. Press Play to hear a song I recorded on guitar.
+    "guitar.2": "Gitara elektryczna i wzmacniacz. Naciśnij »Zagraj«, żeby usłyszeć utwór, który nagrałem na gitarze.",
     // EN: Play
     "guitar.3": "Zagraj",
     // EN: Background
