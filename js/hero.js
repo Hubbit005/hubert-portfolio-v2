@@ -20,7 +20,8 @@
    only after the first touch, scroll or key (or after a while), so it never slows the first view.
    Reduced motion: the solid stands still with a fixed twist (one frame, redrawn on resize); the
    roulette uses the simple panel (js/roulette.js). No WebGL or a load error: the static word stays.
-   One loop: the GSAP ticker, only while the hero is on screen and the tab is visible. */
+   One loop: the GSAP ticker, only while the hero is on screen, the tab is visible and the guitar panel
+   (js/hero-panel.js, hero.dataset.panel) does not cover it. */
 import { PROJECTS } from './roulette.js?v=20261107';
 import { createRouletteSound } from './roulette-sound.js?v=20261107';
 
@@ -86,6 +87,8 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
   const upm = fontJson.resolution;
   const capH = (fontJson.capHeight || 686) / upm;
   const title = stage.querySelector('.hero__title');
+  // The canvas lives in panel 1 (it slides away with it); classes stay on the hero (#home).
+  const host = stage.closest('.hero__panel') || hero;
 
   /* ---------- Renderer and canvas ---------- */
   const small = Math.min(window.innerWidth, window.innerHeight) < 700 || matchMedia('(pointer: coarse)').matches;
@@ -99,7 +102,7 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
   const canvas = renderer.domElement;
   canvas.className = 'hero__gl';
   canvas.setAttribute('aria-hidden', 'true');
-  hero.appendChild(canvas);
+  host.appendChild(canvas);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 100);
@@ -306,8 +309,8 @@ mat3 twistAt(float x) {
   let rT = 0, rE = 0, rEase = 0;      // roulette: target 0/1, linear progress, eased progress
   function resize() {
     fsPx = parseFloat(getComputedStyle(title).fontSize) || 100;
-    W = Math.max(1, Math.round(hero.clientWidth));
-    Hc = Math.max(1, Math.round(hero.clientHeight));
+    W = Math.max(1, Math.round(host.clientWidth));
+    Hc = Math.max(1, Math.round(host.clientHeight));
     Hv = Hc * 2;
     const pr = Math.min(window.devicePixelRatio || 1, PR_MAX, Math.sqrt(4.2e6 / (W * Hc)));
     renderer.setPixelRatio(Math.max(1, pr));
@@ -651,7 +654,8 @@ mat3 twistAt(float x) {
   io.observe(stage);
   const enterStart = performance.now();
   function tick(_, deltaMs) {
-    if (!visible || document.hidden) return;
+    // off screen, hidden tab, or the guitar panel shows (js/hero-panel.js): no rendering
+    if (!visible || document.hidden || hero.dataset.panel === 'guitar') return;
     const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
     if (!window.__motionPaused) time += dt;
     const k = 1 - Math.exp(-dt * 3);

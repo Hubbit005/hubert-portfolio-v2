@@ -26,7 +26,7 @@ const DESK = [
 const PHONE = [
   { id: 'guitar', x: 0.13, y: 0.20, s: 74, z: 0 },
   { id: 'car', x: 0.86, y: 0.21, s: 70, z: 0.3 },
-  { id: 'diamond', x: 0.88, y: 0.49, s: 58, z: 0.5 },
+  { id: 'diamond', x: 0.62, y: 0.47, s: 58, z: 0.5 },
   { id: 'dollar', x: 0.10, y: 0.49, s: 56, z: 0.6 },
 ];
 const IDLE = 5; // s without touching before the icons go home
@@ -35,6 +35,8 @@ export function initHeroIcons({ reduced, gsap }) {
   const hero = document.getElementById('home');
   const stage = document.getElementById('hero-stage');
   if (!hero || !stage || !gsap) return;
+  // the layer lives in panel 1 (it slides away with it, task 11); classes stay on the hero (#home)
+  const host = stage.closest('.hero__panel') || hero;
   const phone = matchMedia('(max-width: 700px), (pointer: coarse)').matches;
   const LIST = phone ? PHONE : DESK;
 
@@ -72,14 +74,14 @@ export function initHeroIcons({ reduced, gsap }) {
       layer.appendChild(el);
       return { ...d, el, i, b: null, home: { x: 0, y: 0 }, phase: Math.random() * Math.PI * 2, per: 7 + Math.random() * 6, orbit: 10 + Math.random() * 12 };
     });
-    hero.appendChild(layer);
+    host.appendChild(layer);
 
     const world = new World({ gravity: 0, iterations: 6 });
     let walls = [];
     let W = 1, H = 1, t = 0, lastTouch = -1e9, roulette = hero.classList.contains('is-roulette');
 
     function measure() {
-      const hr = hero.getBoundingClientRect();
+      const hr = host.getBoundingClientRect();
       W = hr.width; H = hr.height;
       walls.forEach((w) => world.remove(w)); walls = [];
       const st = { isStatic: true, restitution: 0.5, friction: 0.2 };
@@ -88,7 +90,7 @@ export function initHeroIcons({ reduced, gsap }) {
       walls.push(box(W / 2, navH - 40, W + 200, 80, st), box(W / 2, H + 40, W + 200, 80, st), box(-40, H / 2, 80, H + 200, st), box(W + 40, H / 2, 80, H + 200, st));
       // Things the icons must never cover: the word (the bar and the word's band), text and buttons
       const word = wordBox(hr);
-      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open'].flatMap((s) => [...hero.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
+      const parts = [word, ...['.hero__role', '.hero__lead', '.hero__cta .btn', '#roulette-open', '#hero-arrow'].flatMap((s) => [...host.querySelectorAll(s)]).map((el) => el.getBoundingClientRect())];
       parts.forEach((r) => {
         if (!r || !r.width) return;
         const x = r.left - hr.left, y = r.top - hr.top;
@@ -167,10 +169,10 @@ export function initHeroIcons({ reduced, gsap }) {
         new MutationObserver(() => layer.classList.toggle('is-away', hero.classList.contains('is-roulette'))).observe(hero, { attributes: true, attributeFilter: ['class'] });
         return;
       }
-      const loop = run({ world, el: hero, gsap, render, before, busy: () => true, hz: phone ? 60 : 120, margin: '0px' });
+      const loop = run({ world, el: host, gsap, render, before, busy: () => true, hold: () => hero.dataset.panel === 'guitar', hz: phone ? 60 : 120, margin: '0px' });
       hand({
         world, el: layer,
-        toWorld: (cx, cy) => { const r = hero.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },
+        toWorld: (cx, cy) => { const r = host.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },
         pick: (x, y, e) => (e.target.classList?.contains('hero-icon') && !roulette ? world.pick(x, y, (b) => !!b.data?.el, e.pointerType === 'touch' ? 8 : 4) : null),
         canDrag: (e) => e.pointerType !== 'touch',
         onGrab: () => { lastTouch = t; layer.classList.add('is-holding'); },

@@ -292,13 +292,13 @@ export class World {
 }
 
 /* ---------- Loop: the world steps in the GSAP ticker only while it is useful ---------- */
-export function run({ world, el, gsap, render, before, busy, hz = 240, margin = '120px' }) {
+export function run({ world, el, gsap, render, before, busy, hold, hz = 240, margin = '120px' }) {
   const h = 1 / hz;
   let visible = false, acc = 0, kick = 0;
   const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; }, { rootMargin: margin });
   io.observe(el);
   const tick = (_, deltaMs) => {
-    if (!visible || document.hidden || window.__motionPaused) { acc = 0; return; }
+    if (!visible || document.hidden || window.__motionPaused || hold?.()) { acc = 0; return; }
     if (world.asleep && kick <= 0 && !busy?.()) { acc = 0; return; }
     acc += Math.min(deltaMs || 16.7, 50) / 1000;
     let n = 0;
