@@ -8,7 +8,7 @@
    After about 6 s without touching, the letters glide back into the word; the small "Reset" button
    does it at once. Both lines of the word (outline and fill) move together. Decorative: aria-hidden.
    Reduced motion: never starts. Paused motion: the word goes back and stays still. */
-import { World, box, run, hand } from './physics.js?v=20261107';
+import { World, box, run, hand } from './physics.js?v=20261108';
 
 const t = (k) => (window.i18n ? window.i18n.t(k) : k);
 const IDLE = 6;

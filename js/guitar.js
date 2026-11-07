@@ -159,7 +159,7 @@ export function initGuitar({ reduced, gsap }) {
   let guitar = null, loading = null, playing = false;
   async function engine() {
     if (guitar) return guitar;
-    if (!loading) loading = import('./guitar-audio.js?v=20261107').then((m) => { guitar = m.createGuitar(); return guitar; });
+    if (!loading) loading = import('./guitar-audio.js?v=20261108').then((m) => { guitar = m.createGuitar(); return guitar; });
     return loading;
   }
   function setUI(on) {

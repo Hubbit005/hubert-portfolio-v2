@@ -13,7 +13,7 @@
    No JS: panel 2 is a normal block under the hero and the arrows are hidden (CSS).
    Reduced motion: the panels swap without sliding (a short cross-fade). */
 
-const V = '?v=20261107';
+const V = '?v=20261108';
 
 export function initHeroPanel({ reduced, gsap }) {
   const hero = document.getElementById('home');

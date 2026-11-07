@@ -22,8 +22,8 @@
    roulette uses the simple panel (js/roulette.js). No WebGL or a load error: the static word stays.
    One loop: the GSAP ticker, only while the hero is on screen, the tab is visible and the guitar panel
    (js/hero-panel.js, hero.dataset.panel) does not cover it. */
-import { PROJECTS } from './roulette.js?v=20261107';
-import { createRouletteSound } from './roulette-sound.js?v=20261107';
+import { PROJECTS } from './roulette.js?v=20261108';
+import { createRouletteSound } from './roulette-sound.js?v=20261108';
 
 const WORD = 'HUBERT';
 const TRACK = 0.06;       // gap between glyphs, in em
