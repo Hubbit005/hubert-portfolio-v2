@@ -1807,7 +1807,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .roulette__dot.is-red{ background: var(--accent); } .roulette__dot.is-black{ background: #1d1d21; } .roulette__dot.is-green{ background: #2e5b45; }
 .roulette__kicker{ margin-bottom: 10px; font-size: 0.9rem; color: var(--ink-2); }
 .roulette__card.is-win .roulette__kicker{ color: var(--accent-ink); }
-.roulette.is-fallback .roulette__card{ top: auto; bottom: clamp(20px, 5vh, 48px); transform: translateX(-50%); }
+.roulette.is-fallback .roulette__card{ top: auto; left: 50%; right: auto; bottom: clamp(20px, 5vh, 48px); transform: translateX(-50%); }
 @media (prefers-reduced-motion: reduce) { .roulette__col rect{ transition: none; } }
 
 @media (max-width: 700px) {
