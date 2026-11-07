@@ -7,9 +7,14 @@
    On touch only horizontal drags spin; vertical swipes scroll the page (touch-action: pan-y).
    Roulette: inside the cylinder stands a wheel with the projects. Opening it moves the camera up and
    tilts it down onto the wheel; the word stays around it as a ring. Same scene, same renderer.
+   Since task 09 the wheel is chrome (standard materials with a studio reflection map, assets/hf/
+   env-studio.jpg through PMREMGenerator) and a real chrome ball decides the result: it runs along
+   the rim against the wheel's turn, slows down, spirals in, bounces off the frets between the fields
+   and stops in a pocket. That pocket is the result (card and aria-live). Sound: js/roulette-sound.js.
    The canvas covers the whole hero; a camera view offset keeps the word centred on the stage.
    No WebGL, reduced motion or a load error: the static word stays (facing front). */
-import { PROJECTS } from './roulette.js?v=20261106';
+import { PROJECTS } from './roulette.js?v=20261107';
+import { createRouletteSound } from './roulette-sound.js?v=20261107';
 
 const WORD = 'HUBERT';
 const SEP = '+';
@@ -40,9 +45,25 @@ export function initHero({ reduced, lenis, onRoulette }) {
   if (reduced || !hasWebGL()) return { destroy() {} }; // static word stays
 
   const ctl = { destroy() {} };
-  start({ stage, hero, lenis, ctl, onRoulette }).catch(() => {
+  const run = () => start({ stage, hero, lenis, ctl, onRoulette }).catch(() => {
     stage.classList.remove('is-3d'); // keep the static word
   });
+  // Phones: the static word shows first; the 3D word (and with it the icons and the roulette wheel)
+  // starts on the first touch, scroll or key, or after a while, so it never slows the first view.
+  const phone = Math.min(window.innerWidth, window.innerHeight) < 700 || matchMedia('(pointer: coarse)').matches;
+  if (!phone) run();
+  else {
+    const EV = ['pointerdown', 'touchstart', 'wheel', 'scroll', 'keydown'];
+    let done = false, timer = 0;
+    const go = () => {
+      if (done) return; done = true;
+      clearTimeout(timer);
+      EV.forEach((ev) => window.removeEventListener(ev, go, true));
+      (window.requestIdleCallback || ((cb) => setTimeout(cb, 60)))(run, { timeout: 600 });
+    };
+    EV.forEach((ev) => window.addEventListener(ev, go, { capture: true, passive: true }));
+    timer = setTimeout(go, 12000);
+  }
   return { destroy() { ctl.destroy(); } };
 }
 
@@ -199,28 +220,60 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
   });
   faceTex.colorSpace = THREE.SRGBColorSpace;
   faceTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  const face = new THREE.Mesh(new THREE.CircleGeometry(RW, 128).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: faceTex }));
+  // Chrome: standard materials; the reflection map is loaded when the roulette first opens (envReady).
+  const chrome = (color, rough, extra = {}) => new THREE.MeshStandardMaterial({ color, metalness: 1, roughness: rough, ...extra });
+  const faceMat = new THREE.MeshStandardMaterial({
+    map: faceTex, emissiveMap: faceTex, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 0.5,
+    metalness: 0.6, roughness: 0.24,
+  });
+  const face = new THREE.Mesh(new THREE.CircleGeometry(RW, 128).rotateX(-Math.PI / 2), faceMat);
   face.position.y = WY;
-  const wheelBase = new THREE.Mesh(new THREE.CylinderGeometry(RW * 1.04, RW * 1.07, 0.16, 96), new THREE.MeshLambertMaterial({ color: '#1b1b1c' }));
+  const baseMat = chrome('#cfd0d6', 0.16);
+  const wheelBase = new THREE.Mesh(new THREE.CylinderGeometry(RW * 1.04, RW * 1.07, 0.16, 96), baseMat);
   wheelBase.position.y = WY - 0.085;
-  const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(RW * 1.005, 0.05, 10, 128).rotateX(Math.PI / 2), new THREE.MeshLambertMaterial({ color: '#0d0d0d' }));
+  const rimMat = chrome('#e6e6ea', 0.08);
+  const wheelRim = new THREE.Mesh(new THREE.TorusGeometry(RW * 1.005, 0.05, 12, 128).rotateX(Math.PI / 2), rimMat);
   wheelRim.position.y = WY + 0.012;
   wheelGroup.add(face, wheelBase, wheelRim);
-  const pegGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.09, 12);
-  const pegMat = new THREE.MeshLambertMaterial({ color: '#ff5a1f' });
+  // Frets: chrome bars on the borders between the fields, around the pocket ring
+  const FRET_IN = 0.8, FRET_OUT = 0.985;
+  const fretMat = chrome('#f0f0f4', 0.1);
+  const fretGeo = new THREE.BoxGeometry(0.03, 0.08, RW * (FRET_OUT - FRET_IN));
   for (let i = 0; i < N; i++) {
-    const a2 = i * SECTOR + SECTOR / 2; // pegs sit on the borders between fields
-    const peg = new THREE.Mesh(pegGeo, pegMat);
-    peg.position.set(Math.sin(a2) * RW * 0.955, WY + 0.045, Math.cos(a2) * RW * 0.955);
-    wheelGroup.add(peg);
+    const a2 = i * SECTOR + SECTOR / 2;
+    const fret = new THREE.Mesh(fretGeo, fretMat);
+    const rm = RW * (FRET_IN + FRET_OUT) / 2;
+    fret.position.set(Math.sin(a2) * rm, WY + 0.04, Math.cos(a2) * rm);
+    fret.rotation.y = a2;
+    wheelGroup.add(fret);
   }
-  // fixed pointer on the far edge, pointing at the centre
+  // chrome hub dome over the H mark's ring
+  const hub = new THREE.Mesh(new THREE.TorusGeometry(RW * 0.17, 0.022, 10, 64).rotateX(Math.PI / 2), rimMat);
+  hub.position.y = WY + 0.012;
+  wheelGroup.add(hub);
+  // the old pointer: the ball decides now, so there is no pointer
   const pointer = new THREE.Group();
-  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.34, 4).rotateX(Math.PI / 2).translate(0, 0, 0.17), new THREE.MeshLambertMaterial({ color: '#ff4f12', emissive: '#5a1600' }));
-  const knob = new THREE.Mesh(new THREE.SphereGeometry(0.075, 16, 12), new THREE.MeshLambertMaterial({ color: '#0d0d0d' }));
-  pointer.add(tip, knob);
-  pointer.position.set(0, WY + 0.13, -(RW + 0.1));
+  pointer.visible = false;
   rou.add(pointer);
+  // The ball (in the wheel's frame of reference: rou, not wheelGroup)
+  const RB = RW * 0.064;
+  const ballMesh = new THREE.Mesh(new THREE.SphereGeometry(RB, 32, 24), chrome('#f4f4f6', 0.06));
+  rou.add(ballMesh);
+  const envMats = [faceMat, baseMat, rimMat, fretMat, ballMesh.material];
+  let envState = 0; // 0 none, 1 loading, 2 ready
+  function loadEnv() {
+    if (envState) return;
+    envState = 1;
+    new THREE.TextureLoader().load(new URL('../assets/hf/env-studio.jpg', import.meta.url).href, (tex) => {
+      tex.mapping = THREE.EquirectangularReflectionMapping;
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const pm = new THREE.PMREMGenerator(renderer);
+      const env = pm.fromEquirectangular(tex).texture;
+      tex.dispose(); pm.dispose();
+      envMats.forEach((m) => { m.envMap = env; m.needsUpdate = true; });
+      envState = 2;
+    }, undefined, () => { envState = 0; });
+  }
   rou.traverse((o) => o.layers.set(1));
 
   function wheelCanvas(size) {
@@ -229,12 +282,12 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     const g = c.getContext('2d');
     const r = size / 2;
     const k = size / 1024;
-    const fills = [['#ff4f12', '#0d0d0d'], ['#161617', '#f2f2ee'], ['#ecece9', '#0d0d0d']];
+    const fills = [['#ff4f12', '#0d0d0d'], ['#1d1d21', '#f2f2ee']]; // accent and dark chrome
     g.translate(r, r);
     // Canvas direction (sin a, cos a) is local wheel angle a (see the texture mapping of the face).
     const th = (a) => Math.PI / 2 - a;
     for (let i = 0; i < N; i++) {
-      const [bg, fg] = fills[i % 3];
+      const [bg, fg] = fills[i % 2];
       const a0 = i * SECTOR - SECTOR / 2, a1 = i * SECTOR + SECTOR / 2;
       g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, r, th(a1), th(a0)); g.closePath();
       g.fillStyle = bg; g.fill();
@@ -246,10 +299,10 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
       if ('fontStretch' in g) g.fontStretch = 'expanded';
       let fs = 46 * k;
       g.font = `800 ${fs}px Archivo, "Arial Black", sans-serif`;
-      const room = 300 * k;
+      const room = 222 * k; // the pocket ring (outer 20%) stays free for the ball
       const w = g.measureText(PROJECTS[i].label).width;
       if (w > room) { fs *= room / w; g.font = `800 ${fs}px Archivo, "Arial Black", sans-serif`; }
-      g.fillText(PROJECTS[i].label, 168 * k, 0);
+      g.fillText(PROJECTS[i].label, 172 * k, 0);
       g.restore();
     }
     // separators
@@ -258,6 +311,9 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
       const a = i * SECTOR + SECTOR / 2;
       g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.sin(a) * r, Math.cos(a) * r); g.stroke();
     }
+    // the pocket ring: a thin dark line where the frets start
+    g.lineWidth = 3 * k; g.strokeStyle = 'rgba(0,0,0,0.55)';
+    g.beginPath(); g.arc(0, 0, r * 0.8, 0, TAU); g.stroke();
     // outer band and hub with the H mark
     g.lineWidth = 22 * k; g.strokeStyle = '#0d0d0d';
     g.beginPath(); g.arc(0, 0, r - 11 * k, 0, TAU); g.stroke();
@@ -409,24 +465,32 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     }
   }
 
-  /* ---------- Roulette: wheel state, spin physics, pointer drag ---------- */
-  const wheel = { phi: 0, vel: 0, anim: null, drag: null };
+  /* ---------- Roulette: wheel, ball physics, pointer drag ---------- */
+  // Wheel: angle phi, angular speed omega (rad/s), slowed by friction. Ball: polar coordinates in the
+  // rou frame (world angle A, radius r), on the rim track first, then in the pocket ring, where it
+  // moves with the wheel plus its own local speed (wl). The pocket it stops in is the result.
+  const wheel = { phi: 0, vel: 0, omega: 0, drag: null };
   const wrapPi = (x) => ((((x + Math.PI) % TAU) + TAU) % TAU) - Math.PI;
-  const sectorAt = (ph) => Math.round((((Math.PI - ph) % TAU + TAU) % TAU) / SECTOR) % N; // pointer at the far edge
-  const api = { onResult: null, onSpinStart: null };
+  const api = { onResult: null, onSpinStart: null, sound: createRouletteSound() };
+  const R_TRACK = RW * 0.955, R_POCKET = RW * 0.89, R_IN = RW * 0.82, R_OUT = RW * 0.955;
+  const ball = { phase: 'rest', A: Math.PI, r: R_POCKET, w: 0, vr: 0, wl: 0, y: 0, vy: 0, still: 0, reported: true, lastFret: 0 };
+  const local = () => ((((ball.A - wheel.phi) % TAU) + TAU) % TAU);      // ball angle on the wheel
+  const pocketAt = (al) => Math.round(al / SECTOR) % N;                  // fields centred at i·SECTOR
+  ball.A = wheel.phi + Math.floor(Math.random() * N) * SECTOR;           // starts resting in a pocket
 
-  function startSpin(delta, dur) {
-    const from = wheel.phi;
-    // land inside a field, never on a peg
-    const fa = Math.PI - (from + delta);
-    const target = Math.round(fa / SECTOR) * SECTOR + (Math.random() - 0.5) * 0.56 * SECTOR;
-    wheel.anim = { from, delta: delta + (fa - target), t0: performance.now(), dur };
+  function launch(dir, strength = 1) {
+    // ball onto the rim track, against the wheel's turn
+    ball.phase = 'track'; ball.r = R_TRACK; ball.vr = 0; ball.y = 0; ball.vy = 0; ball.still = 0;
+    ball.w = -dir * (13 + Math.random() * 3.5) * strength;
+    ball.reported = false;
+    api.sound.wake();
     api.onSpinStart?.();
   }
-  function settle() {
-    const fa = Math.PI - wheel.phi;
-    wheel.anim = { from: wheel.phi, delta: fa - Math.round(fa / SECTOR) * SECTOR, t0: performance.now(), dur: 650 };
+  function startSpin(dir = Math.random() < 0.5 ? -1 : 1, speed = 5.5 + Math.random() * 1.6) {
+    wheel.omega = dir * speed;
+    launch(Math.sign(wheel.omega) || 1);
   }
+  const spinning = () => ball.phase !== 'rest' || !ball.reported;
   api.open = () => {
     rT = 1; entered = true; bo = 1;
     setFull(true);
@@ -434,18 +498,74 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     spr.tiltT = 0; spr.yT = 0;
     stage.classList.add('is-locked');
     hero.classList.add('is-wheel');
+    loadEnv();
     resume();
   };
   api.close = () => {
-    rT = 0; wheel.anim = null; wheel.drag = null;
+    rT = 0; wheel.drag = null;
+    if (ball.phase !== 'rest') { ball.phase = 'rest'; ball.r = R_POCKET; }
+    ball.reported = true;
+    api.sound.silence();
     hero.classList.remove('is-wheel');
     canvas.classList.remove('is-grabbing');
     resume();
   };
   api.spin = () => {
-    if (rT !== 1 || wheel.anim || wheel.drag) return;
-    startSpin(TAU * (4 + Math.random() * 2), 5200);
+    if (rT !== 1 || wheel.drag || spinning()) return;
+    startSpin();
   };
+
+  // One physics step for the wheel and the ball
+  function stepWheel(h) {
+    if (!wheel.drag) {
+      const w0 = wheel.omega;
+      wheel.omega -= (0.42 * w0 + 0.32 * Math.sign(w0)) * h;
+      if (Math.sign(wheel.omega) !== Math.sign(w0) || Math.abs(wheel.omega) < 0.01) wheel.omega = 0;
+      wheel.phi += wheel.omega * h;
+    } else wheel.omega = wheel.vel;
+    if (ball.phase === 'track') {
+      // rolling on the rim: drag slows it; below a speed it leaves the rim and falls inwards
+      ball.w -= (0.36 * ball.w + 1.5 * Math.sign(ball.w)) * h;
+      ball.A += ball.w * h;
+      if (Math.abs(ball.w) < 4.6) { ball.phase = 'fall'; ball.vr = -0.15 * RW; ball.wl = ball.w - wheel.omega; }
+    } else if (ball.phase === 'fall' || ball.phase === 'pocket') {
+      // in the ring: its own speed on the wheel (wl) dies down, the bowl pulls it to the pocket radius
+      ball.wl -= (1.6 * ball.wl + 0.8 * Math.sign(ball.wl)) * h;
+      if (Math.abs(ball.wl) < 0.02) ball.wl = 0;
+      ball.vr += (-(ball.r - R_POCKET) * 60 - ball.vr * 5) * h;
+      if (ball.phase === 'fall') ball.vr -= RW * 1.6 * h;
+      ball.r += ball.vr * h;
+      if (ball.r < R_IN) { ball.r = R_IN; ball.vr = Math.abs(ball.vr) * 0.35; }
+      if (ball.r > R_OUT) { ball.r = R_OUT; ball.vr = -Math.abs(ball.vr) * 0.35; }
+      if (ball.phase === 'fall' && ball.r < R_TRACK - RB) ball.phase = 'pocket';
+      const before = local();
+      ball.A += (wheel.omega + ball.wl) * h;
+      // frets on the field borders: bounce back with a small random kick
+      if (ball.phase === 'pocket') {
+        const after = local();
+        const fb = Math.floor((before + SECTOR / 2) / SECTOR), fa = Math.floor((after + SECTOR / 2) / SECTOR);
+        const crossed = fb !== fa && Math.abs(after - before) < Math.PI;
+        if (crossed && Math.abs(ball.wl) > 0.35) {
+          const k = Math.min(1, Math.abs(ball.wl) / 6);
+          ball.A -= (ball.wl) * h * 1.5;                       // back out of the fret
+          ball.wl = -ball.wl * (0.32 + Math.random() * 0.12) + (Math.random() - 0.5) * 0.6;
+          ball.vr += (Math.random() - 0.5) * RW * 0.6 * k;
+          ball.vy = 0.9 * k; ball.lastFret = performance.now();
+          api.sound.tick(k);
+        } else if (crossed) {
+          // too slow to jump the fret: it rolls back into the pocket it came from
+          ball.A -= ball.wl * h * 1.5; ball.wl = -ball.wl * 0.2;
+        }
+      }
+      // settled?
+      if (ball.phase === 'pocket' && Math.abs(ball.wl) < 0.05 && Math.abs(ball.vr) < RW * 0.02) ball.still += h; else ball.still = 0;
+      if (ball.still > 0.35) { ball.phase = 'rest'; ball.wl = 0; ball.vr = 0; api.sound.click(); }
+    } else {
+      ball.A += wheel.omega * h; // resting: turns with the wheel
+    }
+    // a little hop after a fret hit
+    ball.vy -= 9 * h; ball.y += ball.vy * h; if (ball.y < 0) { ball.y = 0; ball.vy = 0; }
+  }
 
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
@@ -463,11 +583,10 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     if (rT !== 1 || rE < 0.9 || e.button !== 0) return;
     const w = wheelPoint(e);
     if (!w || w.d > RW * 1.25) return;
-    wheel.anim = null; wheel.vel = 0;
-    wheel.drag = { id: e.pointerId, a: w.a, t: performance.now() };
+    wheel.vel = 0; wheel.omega = 0;
+    wheel.drag = { id: e.pointerId, a: w.a, t: e.timeStamp || performance.now() };
     try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
     canvas.classList.add('is-grabbing');
-    api.onSpinStart?.();
     e.preventDefault();
   });
   canvas.addEventListener('pointermove', (e) => {
@@ -475,11 +594,15 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     if (!d || e.pointerId !== d.id) return;
     const w = wheelPoint(e);
     if (!w) return;
-    const now = performance.now();
+    // event time, not handler time: with slow frames the handlers run late, the events do not
+    const now = e.timeStamp || performance.now();
     const da = wrapPi(w.a - d.a);
     const dt = Math.max(1, now - d.t) / 1000;
     d.a = w.a; d.t = now;
+    (d.samples ||= []).push([now, wheel.phi + da]);
+    while (d.samples.length > 2 && now - d.samples[0][0] > 200) d.samples.shift();
     wheel.phi += da;
+    if (ball.phase === 'rest') ball.A += da;
     wheel.vel = wheel.vel * 0.5 + (da / dt) * 0.5;
   });
   const endWheelDrag = (e) => {
@@ -487,11 +610,17 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     if (!d || (e && e.pointerId !== d.id)) return;
     wheel.drag = null;
     canvas.classList.remove('is-grabbing');
-    const v = performance.now() - d.t > 110 ? 0 : Math.max(-30, Math.min(30, wheel.vel));
-    if (Math.abs(v) < 0.8) { settle(); return; }
-    // ease-out cubic starts at 3·delta/T, so delta = v·T/3 keeps the release speed
-    const T = Math.max(1.8, Math.min(6, 1.4 + Math.abs(v) * 0.3));
-    startSpin((v * T) / 3, T * 1000);
+    // release speed from the last ~200 ms of the drag (works at low frame rates too); a hand that
+    // stopped before letting go gives no speed
+    const now = (e && e.timeStamp) || performance.now(), sm = d.samples || [];
+    let v = 0;
+    if (sm.length >= 2 && now - d.t < 260) {
+      const [ta, pa] = sm[0], [tb, pb] = sm[sm.length - 1];
+      v = Math.max(-12, Math.min(12, (pb - pa) / Math.max(0.016, (tb - ta) / 1000)));
+    }
+    wheel.omega = v;
+    // a real fling sends the ball round the rim; a slow release just lets the wheel coast
+    if (Math.abs(v) > 1.6 && !spinning()) launch(Math.sign(v), Math.min(1.15, 0.8 + Math.abs(v) / 20));
   };
   canvas.addEventListener('pointerup', endWheelDrag);
   canvas.addEventListener('pointercancel', endWheelDrag);
@@ -505,21 +634,22 @@ async function start({ stage, hero, lenis, ctl, onRoulette }) {
     rou.visible = rEase > 0.004;
     if (!rou.visible) return;
     rou.scale.setScalar(0.8 + 0.2 * rEase);
-    if (wheel.anim) {
-      const a = wheel.anim;
-      const t = Math.min(1, (now - a.t0) / a.dur);
-      const ph = a.from + a.delta * (1 - Math.pow(1 - t, 3));
-      wheel.vel = (ph - wheel.phi) / Math.max(dt, 1e-3);
-      wheel.phi = ph;
-      if (t >= 1) { wheel.anim = null; wheel.vel = 0; if (rT === 1) api.onResult?.(sectorAt(wheel.phi)); }
-    } else if (!wheel.drag) {
-      wheel.vel *= Math.exp(-dt * 8);
-    }
+    // physics in small fixed steps
+    let left = Math.min(dt, 0.05);
+    while (left > 1e-5) { const h = Math.min(left, 1 / 240); stepWheel(h); left -= h; }
     wheelGroup.rotation.y = wheel.phi;
-    // the pointer flicks as each peg passes under it
-    const fr = ((((Math.PI - wheel.phi + SECTOR / 2) / SECTOR) % 1) + 1) % 1;
-    const near = Math.min(fr, 1 - fr);
-    pointer.rotation.y = Math.exp(-near * 14) * Math.min(1, Math.abs(wheel.vel) / 5) * 0.55 * Math.sign(wheel.vel || 1);
+    const lift = ball.phase === 'track' ? 0.04 : 0;
+    ballMesh.position.set(Math.sin(ball.A) * ball.r, WY + RB + 0.012 + lift + ball.y * 0.12, Math.cos(ball.A) * ball.r);
+    // sound: rolling speed relative to the surface under the ball
+    const rel = ball.phase === 'track' ? Math.abs(ball.w) / 16 : ball.phase === 'rest' ? 0 : Math.abs(ball.wl) / 6 + Math.abs(ball.vr) / (RW * 2);
+    api.sound.roll(rT === 1 ? rel : 0);
+    // result: once the ball rests in a pocket and the wheel has nearly stopped
+    if (!ball.reported && ball.phase === 'rest' && Math.abs(wheel.omega) < 0.4) {
+      ball.reported = true;
+      const i = pocketAt(local());
+      hero.dataset.ballPocket = String(i);
+      if (rT === 1) api.onResult?.(i);
+    }
   }
 
   const enterStart = performance.now();

@@ -1,13 +1,21 @@
 /* Ambient film shots (Higgsfield) behind the case study headers and the footer wordmark.
-   Decoration only: aria-hidden, muted, no controls, no facts. The HTML holds just the poster, so
-   without JS (and with reduced motion or Save-Data) only the still frame shows. Otherwise the video
+   Decoration only: aria-hidden, muted, no controls, no facts. The HTML holds just the poster's
+   address (data-poster): it is set when the film comes near the screen, so the first view never
+   downloads stills from far down the page (task 09, phone performance). With reduced motion or
+   Save-Data only the still frame shows; without JS the decorative band stays empty. Otherwise the video
    file is attached when it comes near the screen, plays only while it is on screen and pauses
    outside it. Phones get the 640 px file. A slight parallax (yPercent ±6) follows the scroll. */
 
 export function initAmbient({ reduced, gsap, ScrollTrigger }) {
   const vids = [...document.querySelectorAll('video[data-ambient]')];
   if (!vids.length) return;
-  if (reduced || navigator.connection?.saveData) return; // posters only
+  const poster = (v) => { if (v.dataset.poster && !v.getAttribute('poster')) v.setAttribute('poster', v.dataset.poster); };
+  if (reduced || navigator.connection?.saveData) {
+    // posters only, set near the screen
+    const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { poster(en.target); io.unobserve(en.target); } }), { rootMargin: '100% 0px' });
+    vids.forEach((v) => io.observe(v));
+    return;
+  }
 
   const small = matchMedia('(max-width: 700px)').matches || matchMedia('(pointer: coarse)').matches;
   const canWebm = !!document.createElement('video').canPlayType('video/webm; codecs="vp9"');
@@ -15,6 +23,7 @@ export function initAmbient({ reduced, gsap, ScrollTrigger }) {
   function attach(v) {
     if (v.dataset.loaded) return;
     v.dataset.loaded = '1';
+    poster(v);
     const base = v.dataset.ambient;
     const list = small ? [[`${base}-640.mp4`, 'video/mp4']] : [...(canWebm ? [[`${base}-1280.webm`, 'video/webm']] : []), [`${base}-1280.mp4`, 'video/mp4']];
     list.forEach(([src, type]) => { const s = document.createElement('source'); s.src = src; s.type = type; v.appendChild(s); });

@@ -962,7 +962,10 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Entrance: the lead and the whole button row fade up as CSS animations. Both buttons share one
    animation, so they are level on every frame. fill-mode: backwards leaves no transform behind. */
 @keyframes heroFootIn{ from{ opacity: 0; transform: translateY(24px); } }
-.motion-ok .hero__lead{ animation: heroFootIn 1s var(--ease-out) 0.25s backwards; }
+/* The lead is the page's largest text (LCP): it is visible from the first paint and only slides up
+   (no fade), so the largest paint never waits for the scripts (task 09, phone performance). */
+@keyframes heroLeadIn{ from{ transform: translateY(24px); } }
+.motion-ok .hero__lead{ animation: heroLeadIn 1s var(--ease-out) 0.1s backwards; }
 .motion-ok .hero__cta{ animation: heroFootIn 1s var(--ease-out) 0.33s backwards; }
 /* Magnetic hover moves `translate` (separate from transform), and glides back on leave. */
 [data-magnetic]{ transition: transform var(--t-2) var(--ease-out), translate 0.45s var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out); }
@@ -1123,7 +1126,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Floating cover next to the pointer (fine pointer only, built by JS) */
 .case-cover{
   position: fixed; left: 0; top: 0; z-index: 40; pointer-events: none;
-  width: clamp(180px, 15vw, 250px); aspect-ratio: 3 / 4; margin: calc(clamp(180px, 15vw, 250px) * -0.66) 0 0 28px;
+  width: clamp(280px, 21vw, 320px); aspect-ratio: 3 / 4; margin: 0;
   opacity: 0; transition: opacity var(--t-2) var(--ease-out);
 }
 .case-cover.is-on{ opacity: 1; }
@@ -1181,50 +1184,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .flow__step.is-lit .flow__n{ background: var(--accent); color: var(--on-accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.22); }
 .flow__step.is-lit{ border-color: var(--accent-ink); }
 @media (max-width: 700px) { .case-dim{ left: 0; right: 0; } }
-
-/* ==========================================================================
-   Work-area map (js/chart.js): a real table with dots, no numbers.
-   ========================================================================== */
-.matrix{ margin-top: clamp(2.5rem, 2rem + 2.5vw, 4.5rem); }
-.matrix__table{ width: 100%; table-layout: fixed; }
-.matrix__title{
-  caption-side: top; text-align: left; padding-bottom: var(--s-4);
-  font-family: var(--font-display); font-stretch: 104%; font-weight: 780; font-size: 1.15rem; letter-spacing: -0.005em;
-}
-.matrix__corner{ width: 34%; }
-.matrix th, .matrix td{ padding: 14px 6px; border-bottom: 1px solid var(--line); transition: opacity var(--t-2) var(--ease-out); }
-.matrix thead th{
-  font-family: var(--font-mono); font-size: var(--fs-mono); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--ink-2); text-align: center; vertical-align: bottom; border-bottom: 1.5px solid var(--ink);
-}
-.matrix thead td{ border-bottom: 1.5px solid var(--ink); }
-.matrix tbody th{ text-align: left; font-weight: 600; font-size: 1rem; line-height: 1.3; padding-left: 0; }
-.matrix tbody th a{ text-decoration: none; background: linear-gradient(var(--accent), var(--accent)) 0 100% / 0% 1.5px no-repeat; transition: background-size var(--t-3) var(--ease-out); }
-.matrix tbody th a:hover, .matrix tbody th a:focus-visible{ background-size: 100% 1.5px; }
-.matrix td{ text-align: center; }
-.matrix__dot{
-  display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: middle;
-  border: 1.5px solid var(--line-strong);
-}
-.matrix td.is-yes .matrix__dot{ border: 0; background: var(--accent); box-shadow: 0 0 0 4px rgb(var(--glow-rgb) / 0.16); }
-/* Hover a row or a column: it stays, everything else dims */
-.matrix__table[data-row] tbody tr > *{ opacity: 0.5; }
-.matrix__table[data-row="1"] tbody tr[data-r="1"] > *, .matrix__table[data-row="2"] tbody tr[data-r="2"] > *,
-.matrix__table[data-row="3"] tbody tr[data-r="3"] > *, .matrix__table[data-row="4"] tbody tr[data-r="4"] > *,
-.matrix__table[data-row="5"] tbody tr[data-r="5"] > *{ opacity: 1; }
-.matrix__table[data-col] [data-col]{ opacity: 0.5; }
-.matrix__table[data-col="1"] [data-col="1"], .matrix__table[data-col="2"] [data-col="2"], .matrix__table[data-col="3"] [data-col="3"],
-.matrix__table[data-col="4"] [data-col="4"], .matrix__table[data-col="5"] [data-col="5"], .matrix__table[data-col="6"] [data-col="6"]{ opacity: 1; }
-.matrix__table[data-col] tbody th{ opacity: 0.6; }
-/* Phones: the whole table fits, column labels turn upright */
-@media (max-width: 640px) {
-  .matrix__corner{ width: 40%; }
-  .matrix th, .matrix td{ padding: 12px 2px; }
-  .matrix thead th{ height: 104px; padding-bottom: 10px; }
-  .matrix thead th span{ display: inline-block; writing-mode: vertical-rl; transform: rotate(180deg); text-align: left; white-space: nowrap; }
-  .matrix tbody th{ font-size: 0.92rem; padding-right: 8px; }
-  .matrix__dot{ width: 12px; height: 12px; }
-}
 
 /* ==========================================================================
    Footer (js/footer.js): curtain, wordmark, back-to-top ring
@@ -1370,11 +1329,12 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .motion-paused .film-strip__track{ animation-play-state: paused !important; }
 /* Phones: the film band is narrow, so each shot is framed on its subject */
 @media (max-width: 700px) {
-  #basko-clean .ambient__video{ object-position: 96% 30%; }
-  #ksk-pretor .ambient__video{ object-position: 32% 72%; }
-  #livingroom .ambient__video{ object-position: 18% 50%; }
-  #psychologist-site .ambient__video{ object-position: 6% 50%; }
-  #smaller-projects .ambient__video{ object-position: 62% 50%; }
+  /* task 09: the chrome objects sit in the right part of each shot */
+  #basko-clean .ambient__video{ object-position: 72% 40%; }
+  #ksk-pretor .ambient__video{ object-position: 62% 45%; }
+  #livingroom .ambient__video{ object-position: 88% 45%; }
+  #psychologist-site .ambient__video{ object-position: 80% 50%; }
+  #smaller-projects .ambient__video{ object-position: 58% 50%; }
 }
 
 /* ---------- Review round 2 ---------- */
@@ -1390,11 +1350,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .motion-skip:focus{ transform: translateY(0); }
 .motion-skip[hidden]{ display: none; }
-/* Phones: the KSK shot is mostly mist, so its band is lower */
-@media (max-width: 700px) {
-  #ksk-pretor > .ambient{ height: 34svh; }
-  #ksk-pretor > .container{ padding-top: 16svh; }
-}
+/* (task 09: the KSK shot is chrome casings now, so it uses the normal band on phones) */
 
 /* ==========================================================================
    AI tools jar (js/jar.js, physics in js/physics.js)
@@ -1623,3 +1579,142 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .jar__shake:hover:not(:focus-visible)::before, .letters-reset:hover:not(:focus-visible)::before{ transform: translateY(102%); }
   .jar__shake:hover:not(:focus-visible), .letters-reset:hover:not(:focus-visible){ color: var(--btn-fg); border-color: var(--btn-bd); }
 }
+
+/* ==========================================================================
+   Hero chrome icons (js/hero-icons.js): above the 3D canvas, below text and buttons
+   ========================================================================== */
+.hero-icons{ position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: 0; transition: opacity var(--t-4) var(--ease-out); }
+.hero-icons.is-in{ opacity: 1; }
+.hero-icons.is-away{ opacity: 0.32; }
+.hero-icon{
+  position: absolute; left: 0; top: 0; height: auto; max-width: none; pointer-events: auto;
+  touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; cursor: grab;
+  /* depth: far icons are softer and darker; all get a warm glow underneath */
+  filter: drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
+          blur(calc(var(--z) * 1.4px)) brightness(calc(1 - var(--z) * 0.32));
+}
+.hero-icons.is-away .hero-icon{ pointer-events: none; }
+.hero-icons.is-holding .hero-icon{ cursor: grabbing; }
+/* cursor states for the icons and the guitar */
+.cursor__grab, .cursor__play{ width: 40px; height: 40px; margin: -20px 0 0 -20px; max-width: none; opacity: 0; transform: scale(0.6); transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out); }
+.cursor__grab{ fill: var(--ink); }
+.cursor.is-grab .cursor__ring{ --rs: 0.9; border-style: dashed; }
+.cursor.is-grab .cursor__grab{ opacity: 1; transform: scale(var(--press, 1)); }
+.cursor__play{ width: 24px; height: 24px; margin: -12px 0 0 -10px; fill: var(--on-accent); }
+.cursor.is-play{ mix-blend-mode: normal; }
+.cursor.is-play .cursor__ring{ --rs: 1.1; border-color: var(--accent); background: var(--accent); }
+.cursor.is-play .cursor__play{ opacity: 1; transform: scale(var(--press, 1)); }
+.cursor-dot.is-grab, .cursor-dot.is-play{ opacity: 0; }
+
+/* ==========================================================================
+   Chrome roulette (js/hero.js, js/roulette-sound.js): sound on/off toggle
+   ========================================================================== */
+.roulette__sound{
+  position: absolute; z-index: 4; pointer-events: auto; top: 84px; right: var(--gutter);
+  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px;
+  border-radius: var(--r-pill); border: 1.5px solid var(--line-strong); background: rgb(var(--bg-rgb) / 0.88);
+  color: var(--ink); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  transition: background-color var(--t-2) var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
+}
+.roulette__sound::before{
+  content: ""; width: 10px; height: 10px; border-radius: 50%; box-sizing: border-box;
+  border: 1.5px solid var(--ink-2); background: linear-gradient(135deg, transparent 43%, var(--ink-2) 43%, var(--ink-2) 57%, transparent 57%);
+  transition: background-color var(--t-2) var(--ease-out), box-shadow var(--t-2) var(--ease-out);
+}
+.roulette__sound[aria-pressed="true"]::before{ border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 3px rgb(var(--glow-rgb) / 0.25); }
+/* off: a struck-through outline (not only colour) */
+.roulette__sound:hover, .roulette__sound:focus-visible{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
+@media (max-width: 600px) { .roulette__sound{ top: 76px; right: 16px; } }
+
+/* ==========================================================================
+   Guitar section (js/guitar.js, js/guitar-audio.js): guitar and amp floating over smoke
+   ========================================================================== */
+.guitar{ position: relative; overflow: clip; isolation: isolate; }
+.guitar__bg{
+  position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 82%, transparent);
+}
+.guitar__bg .ambient__video{ opacity: 0.75; }
+.guitar__bg::after{ content: ""; position: absolute; inset: 0; background: linear-gradient(to right, rgb(var(--bg-rgb) / 0.75), rgb(var(--bg-rgb) / 0.2) 45%, rgb(var(--bg-rgb) / 0.35)); }
+.guitar__inner{ position: relative; display: grid; justify-items: center; }
+.guitar__inner > .sec-head{ justify-self: stretch; }
+.guitar__stage{
+  position: relative; width: 100%; max-width: 1100px; height: clamp(420px, 38vw, 520px);
+  display: grid; grid-template-columns: 1fr 1fr; align-items: center; justify-items: center;
+}
+.guitar__glow{
+  position: absolute; left: 50%; top: 50%; width: 90%; height: 80%; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.42), rgb(var(--glow-rgb) / 0.12) 55%, transparent);
+  opacity: calc(0.7 + var(--lvl, 0) * 0.3); transition: opacity var(--t-3) var(--ease-out); pointer-events: none;
+}
+.guitar.is-hover .guitar__glow{ opacity: 1; }
+.guitar__item{ position: relative; display: grid; justify-items: center; }
+.guitar__item--guitar{ --r0: -14deg; --per: 5.4s; width: clamp(140px, 15vw, 210px); cursor: pointer; z-index: 1; }
+.guitar__item--amp{ --r0: 0deg; --per: 6.8s; width: clamp(230px, 27vw, 380px); }
+.guitar__float{ position: relative; animation: g-float var(--per) ease-in-out infinite; will-change: transform; }
+.guitar__item--amp .guitar__float{ animation-delay: -2.1s; }
+@keyframes g-float{
+  0%, 100%{ transform: translateY(10px) rotate(calc(var(--r0) - 1.6deg)); }
+  50%{ transform: translateY(-12px) rotate(calc(var(--r0) + 2deg)); }
+}
+.guitar__tilt{ position: relative; transition: transform var(--t-3) var(--ease-out); transform-origin: 50% 60%; }
+.guitar__img, .amp__img{ display: block; width: 100%; height: auto; max-width: none; user-select: none; -webkit-user-drag: none; }
+.guitar__img{ filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.55)) drop-shadow(0 0 0 rgb(var(--glow-rgb) / 0)); transition: filter var(--t-3) var(--ease-out); }
+.guitar.is-hover .guitar__img, .guitar.is-playing .guitar__img{ filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.55)) drop-shadow(0 0 26px rgb(var(--glow-rgb) / 0.75)); }
+.amp__img{ filter: drop-shadow(0 22px 34px rgb(0 0 0 / 0.6)); }
+.guitar__strings{ position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.guitar__string{ fill: none; stroke: #fff4ea; stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 3px rgb(var(--glow-rgb) / 0.9)); }
+/* the floor shadow: smaller and lighter while the object is up (same period as the float) */
+.guitar__shadow{
+  width: 70%; height: 22px; margin-top: 26px; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.6), transparent);
+  animation: g-shadow var(--per) ease-in-out infinite;
+}
+.guitar__item--amp .guitar__shadow{ animation-delay: -2.1s; }
+@keyframes g-shadow{ 0%, 100%{ transform: scale(1); opacity: 1; } 50%{ transform: scale(0.78); opacity: 0.6; } }
+/* amp: the pilot lamp and the two speakers (transforms and opacity only) */
+.amp__lamp{
+  position: absolute; left: 79.2%; top: 26.2%; width: 5%; aspect-ratio: 1; margin: -2.5% 0 0 -2.5%; border-radius: 50%;
+  background: radial-gradient(circle, #fff3d6 0%, var(--accent) 45%, rgb(var(--glow-rgb) / 0) 72%);
+  opacity: 0.35; mix-blend-mode: screen; pointer-events: none;
+}
+.amp__cone{
+  position: absolute; top: 65.4%; width: 34%; aspect-ratio: 1; margin: -17% 0 0 -17%; border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 255 255 / 0.10) 0%, rgb(0 0 0 / 0) 38%, rgb(0 0 0 / 0.18) 62%, transparent 70%);
+  pointer-events: none; will-change: transform;
+}
+.amp__cone--l{ left: 25%; }
+.amp__cone--r{ left: 67.5%; }
+.guitar__play{ position: relative; z-index: 2; margin-top: calc(var(--s-5) * -1); min-width: 168px; justify-content: center; }
+.guitar .sec-head{ margin-bottom: var(--s-4); }
+@media (max-width: 700px) { .guitar__play{ margin-top: var(--s-5); } }
+.guitar__play-icon{ display: inline-block; width: 1em; text-align: center; }
+.no-js .guitar__play{ display: none; }
+.guitar__pill{
+  position: absolute; left: 0; top: 0; z-index: 3; padding: 6px 12px; border-radius: var(--r-pill);
+  background: var(--accent); color: var(--on-accent); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+  pointer-events: none; opacity: 0; transition: opacity var(--t-2) var(--ease-out);
+}
+.guitar.is-hover .guitar__pill{ opacity: 1; }
+@media (max-width: 700px) {
+  .guitar__stage{ height: auto; padding-block: var(--s-6) 0; grid-template-columns: 0.8fr 1.2fr; gap: 8px; align-items: end; }
+  .guitar__item--guitar{ width: 100%; max-width: 150px; }
+  .guitar__item--amp{ width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .guitar__float, .guitar__shadow{ animation: none; }
+  .guitar__float{ transform: rotate(var(--r0)); }
+}
+.motion-paused .guitar__float, .motion-paused .guitar__shadow{ animation-play-state: paused; }
+/* guitar cursor while the riff plays: a stop square instead of the play triangle */
+.cursor__sq{ display: none; }
+.cursor.is-stop .cursor__sq{ display: inline; }
+.cursor.is-stop .cursor__tri{ display: none; }
+.guitar.is-playing .guitar__string{ stroke-width: 3px; }
+/* Review round 2 (task 09) */
+/* the result card covers the right column of icons: hide the icons while it shows; phones: no room */
+.hero:has(#roulette-card:not([hidden])) .hero-icons{ opacity: 0; }
+@media (max-width: 700px) { .hero-icons.is-away{ opacity: 0; } }
+/* Play/Stop: a clear "on" state while the riff plays */
+.guitar__play[aria-pressed="true"]{ --btn-bg: var(--accent); --btn-fg: var(--on-accent); --btn-bd: var(--accent); }
