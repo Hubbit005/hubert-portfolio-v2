@@ -1734,3 +1734,11 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .amp__core{ position: absolute; inset: 22%; border-radius: 50%; background: radial-gradient(circle, rgb(0 0 0 / 0.55), rgb(0 0 0 / 0) 70%); opacity: 0; }
 .js .hero .guitar__float, .js .hero .guitar__shadow{ animation: none; }
 .js .hero .guitar__tilt{ transition: none; }
+
+/* ==========================================================================
+   Task 12: hero layout. The role sits right above the lead, left-aligned; role, lead and
+   buttons form one block in the bottom-left corner. The icons live in an ellipse (js/hero-icons.js).
+   ========================================================================== */
+.hero__main{ grid-template-rows: 1fr auto; }
+.hero__foot{ gap: var(--s-4); }
+.hero__foot .hero__role{ justify-self: start; text-align: left; margin: 0 0 calc(var(--s-2) * -1); }
