@@ -8,7 +8,7 @@
      in an arc (cubic Bézier sagging down) with small jack plugs at the ends; recomputed every frame
      while the panel is on screen. While the riff plays it shakes a little on the chord hits.
      Hover (fine pointer): the glow gets stronger, the guitar leans towards the pointer and a "▶ Play"
-     pill follows the pointer; the cursor ring shows a play icon (cursor.js, [data-cursor-play]).
+     pill follows the pointer.
      Click on the guitar or the button: it plays an original riff (js/guitar-audio.js). While it plays,
      six SVG lines lie exactly on the strings (nut to bridge) and vibrate when their string sounds; the
      pedal's LED glows in the accent and pulses with the volume; the whole amp shakes (±1–2 px, ±0.4°,
@@ -168,7 +168,6 @@ export function initGuitar({ reduced, gsap }) {
     label.textContent = t(on ? 'guitar.stop' : 'guitar.play');
     icon.textContent = on ? '■' : '▶';
     sec.classList.toggle('is-playing', on);
-    document.getElementById('cursor')?.classList.toggle('is-stop', on); // the play cursor shows stop at once
     sec.dispatchEvent(new CustomEvent('guitarstate'));
   }
   async function start() {

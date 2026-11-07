@@ -4,7 +4,6 @@ import { initArc } from './carousel.js?v=20261108';
 import { initMotion } from './motion.js?v=20261108';
 import { initRoulette } from './roulette.js?v=20261108';
 import { initBackground } from './background.js?v=20261108';
-import { initCursor } from './cursor.js?v=20261108';
 import { initCasesMotion } from './cases-motion.js?v=20261108';
 import { initFooter } from './footer.js?v=20261108';
 import { initAmbient } from './ambient.js?v=20261108';
@@ -233,7 +232,6 @@ async function boot() {
   initHeroPanel({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, ScrollTrigger, lenis });
-  initCursor({ reduced, gsap });
   initMagnetic();
 
   measurePage();

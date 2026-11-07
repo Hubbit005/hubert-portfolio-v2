@@ -604,7 +604,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 
 /* ---------- Print ---------- */
 @media print {
-  .nav, .cursor, .arc__controls, .model-embed__cta{ display: none !important; }
+  .nav, .arc__controls, .model-embed__cta{ display: none !important; }
   body::before, .glow{ display: none; }
   .case--dark{ background: none; color: #000; }
   details{ display: block; }
@@ -992,73 +992,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .has-bg .bg-gl{ opacity: 1; }
 .has-bg .glow{ visibility: hidden; transition: visibility 0s linear 1s; }
 @media print { .bg-gl{ display: none; } }
-
-/* ==========================================================================
-   Cursor (js/cursor.js): dot + ring, fine pointer with hover only.
-   The system cursor is hidden only once the module has started (html.has-cursor).
-   Ring sizes come from one 56px circle scaled down (36px at rest), so every change is a transform.
-   ========================================================================== */
-.cursor, .cursor-dot{ display: none; }
-.has-cursor .cursor, .has-cursor .cursor-dot{
-  display: block; position: fixed; left: 0; top: 0; pointer-events: none;
-  opacity: 0; transition: opacity var(--t-2) var(--ease-out);
-  transform: translate3d(-100px, -100px, 0);
-}
-.has-cursor .cursor{ z-index: var(--z-cursor); width: 0; height: 0; mix-blend-mode: difference; }
-.has-cursor .cursor-dot{
-  z-index: calc(var(--z-cursor) + 1);
-  width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%;
-  background: var(--ink); mix-blend-mode: difference;
-}
-.cursor.is-visible, .cursor-dot.is-visible{ opacity: 1; }
-.cursor-dot.is-link, .cursor-dot.is-big, .cursor-dot.is-drag, .cursor-dot.is-text, .cursor-dot.is-off{ opacity: 0; }
-.cursor.is-off{ opacity: 0; }
-/* Fill states read as colour, so they are not inverted */
-.cursor.is-link, .cursor.is-big{ mix-blend-mode: normal; }
-
-.cursor > *{ position: absolute; left: 0; top: 0; }
-.cursor__ring{
-  --rs: 0.643;
-  width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%;
-  border: 1.5px solid var(--ink); background: rgb(var(--glow-rgb) / 0);
-  transform: scale(calc(var(--rs) * var(--press, 1)));
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out),
-    background-color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out);
-}
-.cursor.is-down{ --press: 0.78; }
-.cursor.is-link .cursor__ring{ --rs: 1; border-color: var(--accent); background: rgb(var(--glow-rgb) / 0.06); }
-.cursor.is-drag .cursor__ring{ --rs: 0.86; }
-.cursor.is-text .cursor__ring, .cursor.is-big .cursor__ring{ --rs: 0.3; opacity: 0; }
-
-.cursor__bar{
-  width: 2px; height: 26px; margin: -13px 0 0 -1px; border-radius: 1px; background: var(--ink);
-  opacity: 0; transform: scaleY(0.3);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
-}
-.cursor.is-text .cursor__bar{ opacity: 1; transform: scaleY(var(--press, 1)); }
-
-.cursor__arrows{
-  width: 40px; height: 16px; max-width: none; margin: -8px 0 0 -20px;
-  fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round;
-  opacity: 0; transform: scale(0.6);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out);
-}
-.cursor.is-drag .cursor__arrows{ opacity: 1; transform: scale(var(--press, 1)); }
-
-.cursor__big{
-  width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%;
-  display: grid; place-items: center;
-  background: var(--accent); color: var(--on-accent);
-  opacity: 0; transform: scale(0.3);
-  transition: transform var(--t-2) var(--ease-out), opacity var(--t-2) var(--ease-out);
-}
-.cursor.is-big .cursor__big{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor__label{ position: static; font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
-
-/* Hide the system cursor (it comes back over videos with controls and the loaded 3D model) */
-.has-cursor, .has-cursor *{ cursor: none !important; }
-.has-cursor video[controls], .has-cursor #model-embed.is-loaded, .has-cursor #model-embed.is-loaded *{ cursor: auto !important; }
-@media (hover: none), (pointer: coarse) { .cursor, .cursor-dot{ display: none !important; } }
 
 /* ==========================================================================
    Case studies motion (js/cases-motion.js)
@@ -1565,16 +1498,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .hero-icons.is-away .hero-icon{ pointer-events: none; }
 .hero-icons.is-holding .hero-icon{ cursor: grabbing; }
-/* cursor states for the icons and the guitar */
-.cursor__grab, .cursor__play{ width: 40px; height: 40px; margin: -20px 0 0 -20px; max-width: none; opacity: 0; transform: scale(0.6); transition: transform var(--t-2) var(--ease-out), opacity var(--t-1) var(--ease-out); }
-.cursor__grab{ fill: var(--ink); }
-.cursor.is-grab .cursor__ring{ --rs: 0.9; border-style: dashed; }
-.cursor.is-grab .cursor__grab{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor__play{ width: 24px; height: 24px; margin: -12px 0 0 -10px; fill: var(--on-accent); }
-.cursor.is-play{ mix-blend-mode: normal; }
-.cursor.is-play .cursor__ring{ --rs: 1.1; border-color: var(--accent); background: var(--accent); }
-.cursor.is-play .cursor__play{ opacity: 1; transform: scale(var(--press, 1)); }
-.cursor-dot.is-grab, .cursor-dot.is-play{ opacity: 0; }
 
 /* ==========================================================================
    Chrome roulette (js/hero.js, js/roulette-sound.js): sound on/off toggle
@@ -1677,10 +1600,6 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .guitar__float{ transform: rotate(var(--r0)); }
 }
 .motion-paused .guitar__float, .motion-paused .guitar__shadow{ animation-play-state: paused; }
-/* guitar cursor while the riff plays: a stop square instead of the play triangle */
-.cursor__sq{ display: none; }
-.cursor.is-stop .cursor__sq{ display: inline; }
-.cursor.is-stop .cursor__tri{ display: none; }
 .guitar.is-playing .guitar__string{ stroke-width: 3px; }
 /* Review round 2 (task 09) */
 /* the result card covers the right column of icons: hide the icons while it shows; phones: no room */

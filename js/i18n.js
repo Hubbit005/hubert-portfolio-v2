@@ -1,7 +1,7 @@
 /* Language switch EN / PL.
    English lives in index.html (it is the default and what search engines and no-JS visitors get).
    Polish lives in the dictionary below. Elements carry data-i18n="key" (their content) and
-   data-i18n-attr="attr:key;attr:key" (alt, aria-label, data-cursor). Scripts use i18n.t('key').
+   data-i18n-attr="attr:key;attr:key" (alt, aria-label). Scripts use i18n.t('key').
    The choice is kept in localStorage; #pl and #en in the address open that language at once.
    Loaded as a classic script at the end of <body>, so Polish is in place before the first paint
    and before the modules (carousel, roulette) read the text. */
@@ -319,7 +319,6 @@
     // EN: Projects
     "a-arc-viewport.1": "Projekty",
     // EN: Open
-    "a-arc-track.1": "Otwórz",
     // EN: Previous project
     "a-arc-prev.1": "Poprzedni projekt",
     // EN: Next project
