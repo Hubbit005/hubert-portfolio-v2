@@ -25,11 +25,13 @@ export function initRoulette({ gsap } = {}) {
   const form = $('roulette-bet'), grid = $('roulette-grid'), coinsEl = $('roulette-coins'), resetBtn = $('roulette-reset');
   const bars = { wins: $('roulette-wins'), losses: $('roulette-losses') };
 
-  // the table: 0 on the left over three rows, then 12 columns (3 on top … 1 at the bottom)
+  // the table: 0 on the left over three rows, then 12 columns (3 on top … 1 at the bottom);
+  // --t: the same table standing upright (0 on top, 1 2 3 in the first row), for the side of wide screens
   for (let n = 0; n <= 36; n++) {
     const l = document.createElement('label');
     l.className = `roulette__cell is-${colour(n)}`;
-    l.style.gridArea = n ? `${3 - ((n - 1) % 3)} / ${Math.ceil(n / 3) + 1}` : '1 / 1 / 4 / 2';
+    l.style.setProperty('--a', n ? `${3 - ((n - 1) % 3)} / ${Math.ceil(n / 3) + 1}` : '1 / 1 / 4 / 2');
+    l.style.setProperty('--t', n ? `${Math.ceil(n / 3) + 1} / ${((n - 1) % 3) + 1}` : '1 / 1 / 2 / 4');
     l.innerHTML = `<input type="radio" name="pick" value="${n}"><span>${n}</span>`;
     grid.appendChild(l);
   }
@@ -103,9 +105,11 @@ export function initRoulette({ gsap } = {}) {
     card.hidden = true; bar.hidden = false;
   }
 
+  let closeT = 0;
   function open() {
     if (isOpen) return;
     isOpen = true;
+    clearTimeout(closeT); hero.classList.remove('is-closing'); ui.inert = false;
     fallback = !wheel;
     ui.hidden = false;
     ui.classList.toggle('is-fallback', fallback);
@@ -122,11 +126,16 @@ export function initRoulette({ gsap } = {}) {
     isOpen = false;
     bet = null;
     setSpinning(false);
-    hero.classList.remove('is-roulette', 'is-roulette-fb');
     trigger.setAttribute('aria-expanded', 'false');
-    ui.hidden = true; card.hidden = true;
-    if (wheel && !fallback) wheel.close();
-    trigger.focus({ preventScroll: true });
+    // task 13: the roulette fades out (css .is-closing, 0.5 s), then the word and the icons fade in
+    ui.inert = true;
+    hero.classList.add('is-closing');
+    closeT = setTimeout(() => {
+      hero.classList.remove('is-roulette', 'is-roulette-fb', 'is-closing');
+      ui.hidden = true; card.hidden = true;
+      if (wheel && !fallback) wheel.close();
+      trigger.focus({ preventScroll: true });
+    }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500);
   }
   function spin() {
     if (spinning || s.coins <= 0) return;

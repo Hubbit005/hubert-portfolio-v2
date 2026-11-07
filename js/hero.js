@@ -295,7 +295,7 @@ mat3 twistAt(float x) {
   // stage centre, so the word looks exactly as on a stage-sized canvas. In the normal view the canvas
   // is only the band around the word; it grows to the whole hero only while the roulette is open.
   // (A full-hero canvas is composited in every frame even where nothing is drawn.)
-  let W = 1, Hc = 1, Hv = 2, fsPx = 100, yOffN = 0, yOffR = 0, xShiftR = 0, rD = PERSP;
+  let W = 1, Hc = 1, Hv = 2, fsPx = 100, yOffN = 0, yOffR = 0, rD = PERSP;
   let bandY = 0, bandH = 1;          // band in hero pixels, measured from the bottom (GL convention)
   let full = false, cTop = 0, cH = 1; // canvas mode, its top in the hero and its height
   let rT = 0, rE = 0, rEase = 0;      // roulette: target 0/1, linear progress, eased progress
@@ -324,10 +324,10 @@ mat3 twistAt(float x) {
     bandH = Math.min(Hc - bandY, Math.ceil(half * 2));
     // Roulette view: wheel centre on screen and camera distance so the wheel fits.
     const narrow = W < 700;
-    yOffR = Hv / 2 - Hc * (narrow ? 0.3 : 0.45); // phones: the bet table sits under the wheel
-    xShiftR = W >= 1100 ? W * 0.11 : 0; // wide screens: wheel left of centre, result card on the right
+    const wide = W >= 1100; // task 13: the wheel stays centred; wide screens: table and coins on its sides
+    yOffR = Hv / 2 - Hc * (narrow ? 0.3 : wide ? 0.5 : 0.45); // phones: the bet table sits under the wheel
     const rho = WHEEL_R * 1.25 * sc;
-    const fitW = W * (narrow ? 0.92 : 0.58), fitH = Hc * (narrow ? 0.56 : 0.76);
+    const fitW = narrow ? W * 0.92 : wide ? W - 640 : W * 0.58, fitH = Hc * (narrow ? 0.56 : 0.76);
     rD = Math.max(PERSP * 0.7, (2 * rho * fsPx * PERSP) / fitW, (1.8 * rho * fsPx * PERSP) / fitH);
     applySize();
   }
@@ -348,7 +348,7 @@ mat3 twistAt(float x) {
     const wy = WY * tilt.scale.y * e;
     camera.position.set(0, wy + dist * Math.sin(el), dist * Math.cos(el));
     camera.lookAt(0, wy, 0);
-    camera.setViewOffset(W * 3, Hv, W + xShiftR * e, yOffN + (yOffR - yOffN) * e + cTop, W, cH);
+    camera.setViewOffset(W * 3, Hv, W, yOffN + (yOffR - yOffN) * e + cTop, W, cH);
   }
 
   const render = () => renderer.render(scene, camera);
@@ -537,7 +537,7 @@ mat3 twistAt(float x) {
 
   function updateRoulette(dt, now) {
     const prev = rE;
-    rE += Math.sign(rT - rE) * Math.min(Math.abs(rT - rE), (dt * 1000) / TURN_MS);
+    rE += Math.sign(rT - rE) * Math.min(Math.abs(rT - rE), rT ? (dt * 1000) / TURN_MS : 1); // closing: a jump, hidden by the fade
     rEase = rE < 0.5 ? 4 * rE * rE * rE : 1 - Math.pow(-2 * rE + 2, 3) / 2;
     if (rE !== prev) setCamera(rEase);
     if (prev > 0 && rE === 0) { stage.classList.remove('is-locked'); setFull(false); }
