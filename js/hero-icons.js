@@ -45,7 +45,13 @@ export function initHeroIcons({ reduced, gsap }) {
   else {
     const mo = new MutationObserver(() => { if (stage.classList.contains('is-3d')) { mo.disconnect(); go(); } });
     mo.observe(stage, { attributes: true, attributeFilter: ['class'] });
-    const later = () => setTimeout(go, phone ? 2500 : 1200);
+    // without the 3D word (no WebGL): after load on desktop; on phones only after a first touch/scroll
+    const later = () => {
+      if (!phone) { setTimeout(go, 1200); return; }
+      const ev = ['pointerdown', 'touchstart', 'wheel', 'scroll', 'keydown'];
+      const once = () => { ev.forEach((e) => window.removeEventListener(e, once, true)); setTimeout(go, 400); };
+      ev.forEach((e) => window.addEventListener(e, once, { capture: true, passive: true }));
+    };
     if (document.readyState === 'complete') later(); else window.addEventListener('load', later, { once: true });
   }
 
@@ -152,7 +158,7 @@ export function initHeroIcons({ reduced, gsap }) {
       measure(); render();
       layer.classList.add('is-in');
       if (reduced) return; // static: they stay at home
-      const loop = run({ world, el: hero, gsap, render, before, busy: () => true, hz: 120, margin: '0px' });
+      const loop = run({ world, el: hero, gsap, render, before, busy: () => true, hz: phone ? 60 : 120, margin: '0px' });
       hand({
         world, el: layer,
         toWorld: (cx, cy) => { const r = hero.getBoundingClientRect(); return { x: cx - r.left, y: cy - r.top }; },

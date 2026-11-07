@@ -45,9 +45,25 @@ export function initHero({ reduced, lenis, onRoulette }) {
   if (reduced || !hasWebGL()) return { destroy() {} }; // static word stays
 
   const ctl = { destroy() {} };
-  start({ stage, hero, lenis, ctl, onRoulette }).catch(() => {
+  const run = () => start({ stage, hero, lenis, ctl, onRoulette }).catch(() => {
     stage.classList.remove('is-3d'); // keep the static word
   });
+  // Phones: the static word shows first; the 3D word (and with it the icons and the roulette wheel)
+  // starts on the first touch, scroll or key, or after a while, so it never slows the first view.
+  const phone = Math.min(window.innerWidth, window.innerHeight) < 700 || matchMedia('(pointer: coarse)').matches;
+  if (!phone) run();
+  else {
+    const EV = ['pointerdown', 'touchstart', 'wheel', 'scroll', 'keydown'];
+    let done = false, timer = 0;
+    const go = () => {
+      if (done) return; done = true;
+      clearTimeout(timer);
+      EV.forEach((ev) => window.removeEventListener(ev, go, true));
+      (window.requestIdleCallback || ((cb) => setTimeout(cb, 60)))(run, { timeout: 600 });
+    };
+    EV.forEach((ev) => window.addEventListener(ev, go, { capture: true, passive: true }));
+    timer = setTimeout(go, 12000);
+  }
   return { destroy() { ctl.destroy(); } };
 }
 

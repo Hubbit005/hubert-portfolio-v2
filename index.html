@@ -32,6 +32,9 @@
     (function () {
       var d = document.documentElement;
       d.classList.remove('no-js'); d.classList.add('js');
+      /* Motion flag here, not in js/main.js: added late, it would restart the hero entrance and
+         repaint the lead text seconds after the first paint (a late LCP on phones). */
+      try { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('motion-ok'); } catch (e) {}
       /* Language: #pl / #en first, then the saved choice. Polish text is swapped in by js/i18n.js
          at the end of <body>; until then the page stays hidden (with a time-out failsafe in CSS). */
       var h = (location.hash || '').toLowerCase(), l = h === '#pl' || h === '#en' ? h.slice(1) : null;
@@ -41,10 +44,6 @@
   </script>
   <link rel="stylesheet" href="css/tokens.css?v=20261107">
   <link rel="stylesheet" href="css/main.css?v=20261107">
-  <script src="vendor/js/gsap.min.js" defer></script>
-  <script src="vendor/js/ScrollTrigger.min.js" defer></script>
-  <script src="vendor/js/lenis.min.js" defer></script>
-  <script type="module" src="js/main.js?v=20261107"></script>
 </head>
 <body>
   <div class="glow" aria-hidden="true"><i class="glow__hero"></i><i class="glow__low"></i></div>
@@ -229,7 +228,7 @@
 
       <!-- ---------- CASE 01 BASKO CLEAN ---------- -->
       <article class="case" id="basko-clean" aria-labelledby="basko-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/bg-basko-poster.webp" data-ambient="assets/hf/bg-basko"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-basko-poster.webp" data-ambient="assets/hf/bg-basko"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="basko-title"><span class="mask"><span>Basko Clean</span></span></h3>
@@ -295,7 +294,7 @@
 
       <!-- ---------- CASE 02 KSK PRETOR ---------- -->
       <article class="case case--dark" id="ksk-pretor" aria-labelledby="ksk-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/bg-ksk-poster.webp" data-ambient="assets/hf/bg-ksk"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-ksk-poster.webp" data-ambient="assets/hf/bg-ksk"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="ksk-title"><span class="mask"><span>KSK Pretor</span></span></h3>
@@ -394,7 +393,7 @@
 
       <!-- ---------- CASE 03 LIVINGROOM ---------- -->
       <article class="case" id="livingroom" aria-labelledby="living-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/bg-living-poster.webp" data-ambient="assets/hf/bg-living"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-living-poster.webp" data-ambient="assets/hf/bg-living"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="living-title"><span class="mask"><span>Livingroom</span></span></h3>
@@ -449,7 +448,7 @@
 
       <!-- ---------- CASE 04 PSYCHOLOGIST ---------- -->
       <article class="case case--minor" id="psychologist-site" aria-labelledby="psy-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/bg-psy-poster.webp" data-ambient="assets/hf/bg-psy"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-psy-poster.webp" data-ambient="assets/hf/bg-psy"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="psy-title"><span class="mask"><span data-i18n="arc-track.15">Website for Agata Patelka</span></span> <span class="tag-progress mono" data-i18n="arc-track.13">In progress</span></h3>
@@ -490,7 +489,7 @@
 
       <!-- ---------- CASE 05 SMALLER PROJECTS ---------- -->
       <article class="case case--minor" id="smaller-projects" aria-labelledby="smaller-title">
-        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/bg-gym-poster.webp" data-ambient="assets/hf/bg-gym"></video></div>
+        <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/bg-gym-poster.webp" data-ambient="assets/hf/bg-gym"></video></div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="smaller-title"><span class="mask"><span data-i18n="smaller-title.1">Smaller projects</span></span></h3>
@@ -722,7 +721,7 @@
 
     <!-- ============ GUITAR (task 09): no menu item. js/guitar.js + js/guitar-audio.js ============ -->
     <section class="section guitar" id="guitar" aria-labelledby="guitar-title">
-      <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/hf/smoke-poster.webp" data-ambient="assets/hf/smoke"></video></div>
+      <div class="guitar__bg" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/hf/smoke-poster.webp" data-ambient="assets/hf/smoke"></video></div>
       <div class="container guitar__inner">
         <header class="sec-head">
           <h2 class="sec-head__title" id="guitar-title"><span class="mask"><span data-i18n="guitar.1">Play something</span></span></h2>
@@ -819,7 +818,7 @@
         </div>
       </div>
       <footer class="footer">
-        <div class="ambient ambient--footer" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" poster="assets/higgsfield/ink-poster.webp" data-ambient="assets/higgsfield/ink"></video></div>
+        <div class="ambient ambient--footer" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/ink-poster.webp" data-ambient="assets/higgsfield/ink"></video></div>
         <div class="wordmark" aria-hidden="true">
           <span class="wordmark__line wordmark__line--stroke"><span>H</span><span>U</span><span>B</span><span>E</span><span>R</span><span>T</span></span>
           <span class="wordmark__line wordmark__line--fill"><span>H</span><span>U</span><span>B</span><span>E</span><span>R</span><span>T</span></span>
@@ -840,5 +839,28 @@
 
   <div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label">Open</span></div>
   <script src="js/i18n.js?v=20261107"></script>
+  <script>
+    /* Scripts start after the first paint (task 09, phone performance): the text is already on screen,
+       so the libraries and the modules never hold the first view back. Order: GSAP, ScrollTrigger and
+       Lenis (in order), then js/main.js. Inserted before the load event, so 'load' still fires after. */
+    (function () {
+      var d = document;
+      function add(src, mod, cb) {
+        var s = d.createElement('script');
+        if (mod) s.type = 'module'; else s.async = false;
+        s.src = src;
+        if (cb) s.onload = s.onerror = cb;
+        d.body.appendChild(s);
+      }
+      function boot() {
+        var left = 3;
+        var next = function () { if (--left === 0) add('js/main.js?v=20261107', true); };
+        add('vendor/js/gsap.min.js', false, next);
+        add('vendor/js/ScrollTrigger.min.js', false, next);
+        add('vendor/js/lenis.min.js', false, next);
+      }
+      requestAnimationFrame(function () { setTimeout(boot, 0); });
+    })();
+  </script>
 </body>
 </html>

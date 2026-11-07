@@ -962,7 +962,10 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* Entrance: the lead and the whole button row fade up as CSS animations. Both buttons share one
    animation, so they are level on every frame. fill-mode: backwards leaves no transform behind. */
 @keyframes heroFootIn{ from{ opacity: 0; transform: translateY(24px); } }
-.motion-ok .hero__lead{ animation: heroFootIn 1s var(--ease-out) 0.25s backwards; }
+/* The lead is the page's largest text (LCP): it is visible from the first paint and only slides up
+   (no fade), so the largest paint never waits for the scripts (task 09, phone performance). */
+@keyframes heroLeadIn{ from{ transform: translateY(24px); } }
+.motion-ok .hero__lead{ animation: heroLeadIn 1s var(--ease-out) 0.1s backwards; }
 .motion-ok .hero__cta{ animation: heroFootIn 1s var(--ease-out) 0.33s backwards; }
 /* Magnetic hover moves `translate` (separate from transform), and glides back on leave. */
 [data-magnetic]{ transition: transform var(--t-2) var(--ease-out), translate 0.45s var(--ease-out), color var(--t-2) var(--ease-out), border-color var(--t-2) var(--ease-out); }
