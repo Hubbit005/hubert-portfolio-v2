@@ -17,10 +17,10 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Czego nie zmieniać (zamrożone)
 
-1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): napis HUBERT w 3D, jego kolory i pomarańczowo-różowa poświata zostają bez zmian. Hubert to lubi. Od 7.11.2026 (decyzja Huberta, zadanie 09) hero jest odblokowane dla chromowanych ikon wokół napisu i dla wyglądu oraz fizyki ruletki (chrom, kulka, dźwięk). Logika wyboru projektu i karta wyniku zostają.
+1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): pomarańczowo-różowa poświata zostaje. Od 7.11.2026 (decyzje Huberta) hero jest odblokowane dla: chromowanych ikon i ruletki (zadanie 09), napisu HUBERT jako chromowanej skręconej bryły 3D (zadanie 10) oraz strzałki i drugiego panelu z gitarą (zadanie 11). Ikony są ostre, bez rozmycia; głębię dają tylko wielkość i jasność. Logika wyboru projektu i karta wyniku ruletki zostają.
 2. **Karuzela projektów** (`#work`, `js/carousel.js`): zostaje jak jest.
-3. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też.
-4. **Kotwice** (`#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
+3. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też. Wyjątki tylko według promptów (np. zadanie 11 usuwa blok „Where AI speeds me up” / „What I decide” i przenosi `#guitar` do hero).
+4. **Kotwice** (`#guitar`, `#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
 5. **Paleta.** Ciemny motyw jest domyślny. Akcent `--accent`, poświata `--glow-rgb`. Bez nowych kolorów marki.
 
 ## Twarde zasady treści
@@ -39,7 +39,8 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Wydajność (budżet)
 
-- Lighthouse mobile: Performance ≥ 90, CLS < 0,1. Zmierz przed i po każdym zadaniu.
+- Lighthouse mobile: cel Performance ≥ 90, CLS < 0,1. Stan na 7.11.2026: 75–81. Żadna zmiana nie może obniżyć wyniku. Zmierz przed i po każdym zadaniu.
+- Rzeczy spoza pierwszego ekranu (np. panel z gitarą) ładuj dopiero po interakcji albo przy zbliżaniu się do ekranu, nigdy przy starcie.
 - Animuj tylko `transform`, `opacity`, `clip-path` i uniformy shaderów.
 - WebGL: `devicePixelRatio` maks. 1,5, tło renderowane w obniżonej rozdzielczości, pauza, gdy karta jest ukryta.
 - Słabe urządzenie albo brak WebGL: zostaje obecne tło CSS (`.glow`).
@@ -47,16 +48,18 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Sposób pracy
 
-- Jedno zadanie z `prompts/` = jeden commit z opisem po polsku. Po każdym commicie push.
+- Nowa sesja Claude Code na każde zadanie (albo na parę zadań, jeśli prompt tak mówi).
+- Jedno zadanie z `prompts/` = jeden commit z opisem po polsku (albo commit na punkt, jeśli prompt tak mówi). Po każdym commicie push. Na końcu pull request do `main`.
 - Przy każdej zmianie JS lub CSS podbij wersję `?v=RRRRMMDD` (jedna wartość w `index.html` i we wszystkich importach w `js/`; `vendor/` bez wersji).
 - Przed pierwszym zadaniem zrób zrzuty ekranu obecnej strony (stan wyjściowy) Playwrightem i trzymaj je poza repo.
-- Po każdym zadaniu sprawdź Playwrightem: 1440×900 i 390×844, EN i PL (`#pl`), z i bez reduced motion. Konsola bez błędów.
+- Po każdym zadaniu sprawdź Playwrightem tylko 1440×900 i 390×844, po angielsku. Polski: tylko sprawdzenie kluczy w `js/i18n.js` (bez zrzutów). Reduced motion: sprawdzenie w kodzie. Konsola bez błędów.
+- Recenzja: jedna runda niezależnej recenzji i jedna runda poprawek, bez kolejnych.
 - Nie pytaj Huberta o rzeczy opisane w tym pliku albo w promptach. Pytaj tylko, gdy coś wymagałoby zmiany treści, dodania faktu albo wydania pieniędzy.
 
 ## Nigdy
 
 - Nie wrzucaj do repo prywatnych materiałów Huberta (CV, przygotowania do rozmów, notatki, dane osobowe). Repo jest publiczne.
-- Płatne generacje (Higgsfield) tylko w zadaniu `prompts/06-higgsfield.md` i tylko według jego listy. Najpierw wycena wszystkich generacji, potem jedna zgoda Huberta, dopiero potem generowanie. Twardy limit na cały projekt: 1000 kredytów Higgsfield. Inne płatne narzędzia: nie używaj.
+- W sesji Claude Code nie generuj niczego w Higgsfieldzie. Assety dostajesz jako gotowe, opłacone adresy w promptach. Nowe generacje zleca Hubert w osobnej rozmowie: najpierw wycena, potem jego zgoda. Twardy limit na cały projekt: 1000 kredytów Higgsfield. Inne płatne narzędzia: nie używaj.
 - Nie commituj surowych plików z generatorów (`assets/higgsfield/raw/`), tylko skompresowane wersje na stronę.
 - Bez `git push --force` i bez przepisywania historii.
 - Nie zmieniaj repo `Hubbit005/hubert-portfolio`.

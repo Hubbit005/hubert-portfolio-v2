@@ -2,6 +2,8 @@
 
 Robisz to po zadaniu 09, w tym samym stylu chromu co ikony i ruletka. Decyzja Huberta z 7.11.
 
+Po tym zadaniu w tej samej sesji robisz zadanie 11 (strzałka po prawej stronie hero i panel z gitarą). Zostaw po prawej stronie hero miejsce na dużą strzałkę: napis nie może jej zasłaniać.
+
 ## Co usunąć
 
 - Pomarańczowy prostokąt za literą B (`.hero__bar`) i pomarańczowe „kołki” po bokach napisu.
