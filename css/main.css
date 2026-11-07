@@ -1326,11 +1326,12 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .motion-paused .film-strip__track{ animation-play-state: paused !important; }
 /* Phones: the film band is narrow, so each shot is framed on its subject */
 @media (max-width: 700px) {
-  #basko-clean .ambient__video{ object-position: 96% 30%; }
-  #ksk-pretor .ambient__video{ object-position: 32% 72%; }
-  #livingroom .ambient__video{ object-position: 18% 50%; }
-  #psychologist-site .ambient__video{ object-position: 6% 50%; }
-  #smaller-projects .ambient__video{ object-position: 62% 50%; }
+  /* task 09: the chrome objects sit in the right part of each shot */
+  #basko-clean .ambient__video{ object-position: 72% 40%; }
+  #ksk-pretor .ambient__video{ object-position: 62% 45%; }
+  #livingroom .ambient__video{ object-position: 88% 45%; }
+  #psychologist-site .ambient__video{ object-position: 72% 50%; }
+  #smaller-projects .ambient__video{ object-position: 58% 50%; }
 }
 
 /* ---------- Review round 2 ---------- */
@@ -1346,11 +1347,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .motion-skip:focus{ transform: translateY(0); }
 .motion-skip[hidden]{ display: none; }
-/* Phones: the KSK shot is mostly mist, so its band is lower */
-@media (max-width: 700px) {
-  #ksk-pretor > .ambient{ height: 34svh; }
-  #ksk-pretor > .container{ padding-top: 16svh; }
-}
+/* (task 09: the KSK shot is chrome casings now, so it uses the normal band on phones) */
 
 /* ==========================================================================
    AI tools jar (js/jar.js, physics in js/physics.js)
