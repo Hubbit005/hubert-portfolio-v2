@@ -6,7 +6,7 @@ Zadanie wykonawcze jest w `prompts/15-kosmos-budowa.md`.
 
 ## 1. Klimat
 
-Kosmos i galaktyka, chrome drip, „aura”. Ciemna przestrzeń, galaktyczny fiolet, chromowane obiekty, w których odbija się światło. Do tego odrobina zabawy: moneta, dźwignia, naklejki.
+Kosmos i galaktyka, chrome drip, „aura”. Ciemna przestrzeń, galaktyczny fiolet, chromowane obiekty, w których odbija się światło. Do tego odrobina zabawy: przycisk startu jak w centrum kontroli lotów i naklejki.
 
 Odniesienia (co bierzemy, a czego nie):
 
@@ -14,15 +14,15 @@ Odniesienia (co bierzemy, a czego nie):
 |---|---|---|
 | Rolka referencyjna (strona agencji, czerwień/czerń/krem) | Jeden obiekt 3D, który leci przez całą stronę i obraca się ze scrollem. Wstążka rysowana scrollem, łącząca sekcje. Przypięte pełnoekranowe panele z dużym numerem i własnym obiektem. Zmiana koloru tła między panelami | Kolory, teksty, układ 1:1 |
 | dorianlods.com | Hero: ogromny ozdobny napis i jeden opalizujący obiekt 3D na środku, który nachodzi na litery i reaguje na mysz. Ciemne tło z ledwo widoczną poświatą. Mały opis pod napisem | Jego krój pisma (komercyjny), kształt jego obiektu |
-| grink2025.dviga.marketing | Mechanika na wejściu: moneta, szczelina, dźwignia. Naklejki z białym obrysem i odklejonym rogiem. Własny kursor. Lekko zaokrąglona „rama” strony | Kreskówkowe postacie, czerwono-żółta paleta |
+| grink2025.dviga.marketing | Pomysł, że stronę uruchamia jedna fizyczna akcja na wejściu (u nas przycisk LAUNCH). Naklejki z białym obrysem i odklejonym rogiem. Własny kursor. Lekko zaokrąglona „rama” strony | Monetę i dźwignię, kreskówkowe postacie, czerwono-żółtą paletę |
 | moblinks.fr | Faliste przejścia między sekcjami w różnych kolorach. Bardzo duża, gruba typografia. Wielkie litery-naklejki pływające po bokach z paralaksą. Ściana powtórzonego napisu jako tło | Paleta wielokolorowa, układ sklepu |
 
 Zasada: bierzemy mechanizmy, nie wygląd. Żadnego kopiowania grafik, tekstów ani krojów z tych stron.
 
 ## 2. Podróż, sekcja po sekcji
 
-1. **Intro – wyrzutnia.** Ciemna przestrzeń. Na środku chromowana rakieta na ziemi. Obok naklejka z monetą i mała konsola ze szczeliną i dźwignią. Na dole strzałka, która lekko się rusza.
-2. **Start.** Pierwszy ruch kółkiem (albo moneta i dźwignia) odpala rakietę. Rakieta odrywa się powoli, dym zostaje w dole, kamera leci z nią w górę w kosmos. Strona jedzie sama, bez dalszego kręcenia.
+1. **Intro – wyrzutnia.** Ciemna przestrzeń. Na środku chromowana rakieta na ziemi. Pod nią jeden duży przycisk **LAUNCH**. Odwiedzający ma się poczuć jak właściciel firmy kosmicznej, który wydaje zgodę na start. Bez monety, bez dźwigni, bez startu scrollem.
+2. **Start.** Kliknięcie LAUNCH odpala rakietę. Rakieta odrywa się powoli, dym zostaje w dole, kamera leci z nią w górę w kosmos. Wszystko dzieje się samo, z dźwiękiem startu.
 3. **Dolot do hero.** Rakieta wlatuje w fioletową mgławicę. Z mgławicy wyłania się hero: napis HUBERT, obiekt 3D, latające ikony.
 4. **Lot przez projekty.** Dalszy scroll to podróż przez przestrzeń: gwiazdy, mgławice i galaktyki mijają kamerę. Projekty to stacje po drodze. Rakieta leci obok treści i zostawia smugę.
 5. **O mnie, narzędzia, CV.** Spokojniejszy odcinek na beżowym tle.
@@ -74,7 +74,7 @@ Wartości ustaw w `css/tokens.css`. Dobierz je tak, żeby każdy tekst miał kon
 Hubert dopuścił rezygnację z napisu 3D na rzecz hero w duchu dorianlods.com. Robimy tak:
 
 - Napis **HUBERT** płaski, ogromny, ozdobnym krojem ekspozycyjnym (gotycko-kaligraficznym), w kolorze bieli z lekkim ziarnem.
-- Na środku jeden **opalizujący obiekt 3D** zrobiony w Three.js (bez modelu z generatora): bryła z kilku pryzmatów albo chromowana kropla, materiał chrom z fioletowo-niebieską iryzacją. Nachodzi na litery, obraca się powoli, reaguje na mysz i na scroll.
+- Na środku jeden **opalizujący obiekt 3D**: model GLB z Higgsfielda (tabela assetów w zadaniu 15), materiał chrom z fioletowo-niebieską iryzacją ustawiony w Three.js. Nachodzi na litery, obraca się powoli, reaguje na mysz i na scroll.
 - Latające chromowane ikony i wejście do ruletki zostają.
 - Zadanie 10 (napis jako chromowana bryła 3D) jest anulowane.
 
