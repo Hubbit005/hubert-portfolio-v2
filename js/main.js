@@ -14,6 +14,7 @@ import { initPlanDemo } from './plan-demo.js?v=20261111';
 import { initStamp } from './stamp.js?v=20261111';
 import { initHeroIcons } from './hero-icons.js?v=20261111';
 import { initHeroPanel } from './hero-panel.js?v=20261111';
+import { initLaunch } from './launch.js?v=20261111';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -55,6 +56,8 @@ if (!reduced && window.Lenis) {
   }
 }
 window.__lenis = lenis;
+// The launch intro first: it takes the focus and stops the page under it (js/launch.js)
+initLaunch({ lenis, gsap });
 
 function navOffset() { return (document.getElementById('nav')?.offsetHeight || 64) + 8; }
 function scrollToTarget(el, immediate = false) {

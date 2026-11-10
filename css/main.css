@@ -1867,3 +1867,71 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .roulette__colour{ flex: 1; min-width: 0; min-height: 32px; }
   .roulette:not(.is-fallback) .roulette__card{ left: var(--gutter); right: auto; top: 50%; bottom: auto; translate: 0 -50%; width: 240px; }
 }
+
+/* ==========================================================================
+   LAUNCH INTRO (task 15): full-screen overlay over the page, js/launch.js.
+   Only with html.intro (head script), so without JS or with reduced motion there is none.
+   ========================================================================== */
+.launch{ display: none; }
+.intro{ overflow: hidden; scrollbar-gutter: stable; } /* the gutter stays, so nothing shifts when the page unlocks */
+.intro .launch{
+  display: block; position: fixed; inset: 0; z-index: 1000; overflow: hidden;
+  background: var(--space); color: var(--white);
+  transition: opacity var(--out, 0.7s) linear;
+}
+.launch.is-out{ opacity: 0; pointer-events: none; }
+.launch__poster, .launch__video{
+  position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover;
+}
+.launch__poster img{ width: 100%; height: 100%; object-fit: cover; }
+.launch__video{ opacity: 0; transition: opacity 0.35s linear; }
+.launch__video.is-on{ opacity: 1; }
+
+/* Controls: skip and sound in the top corner */
+.launch__bar{
+  position: absolute; z-index: 2; top: max(16px, env(safe-area-inset-top)); right: max(16px, env(safe-area-inset-right));
+  display: flex; gap: var(--s-2); align-items: center;
+}
+.launch__skip, .launch__mute{
+  min-height: 44px; border-radius: var(--r-pill); border: 1px solid rgb(247 245 240 / 0.4);
+  background: rgb(7 6 11 / 0.55); color: var(--white); cursor: pointer;
+  transition: border-color var(--t-1), background-color var(--t-1);
+}
+.launch__skip{ padding: 0 var(--s-4); font-size: var(--fs-mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.launch__mute{ width: 44px; padding: 0; display: grid; place-items: center; }
+.launch__mute svg{ width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.launch__spk{ fill: currentColor; }
+.launch__x, .launch__mute.is-muted .launch__wave{ display: none; }
+.launch__mute.is-muted .launch__x{ display: inline; }
+.launch__skip:hover, .launch__mute:hover{ border-color: var(--white); background: rgb(42 15 92 / 0.7); }
+.launch :focus-visible{ outline: 3px solid var(--white); outline-offset: 3px; }
+
+/* The LAUNCH button: a mission-control push button, violet dome in a striped safety ring.
+   Beside the rocket (it stands in the middle and fills the height), on the pad's level. */
+.launch__btn{
+  position: absolute; z-index: 2; right: clamp(16px, 15vw, 260px); bottom: max(24px, 16svh);
+  width: clamp(96px, 13vw, 156px); aspect-ratio: 1; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+  background:
+    radial-gradient(circle, var(--violet) 0 52%, var(--violet-deep) 60%, transparent 61%),
+    repeating-conic-gradient(var(--space) 0 12deg, var(--violet-light) 12deg 24deg);
+  box-shadow: 0 0 0 3px var(--white), 0 18px 40px rgb(0 0 0 / 0.6);
+  color: var(--white); font: 500 clamp(0.8rem, 0.7rem + 0.3vw, 0.95rem)/1 var(--font-mono); letter-spacing: 0.2em;
+  transition: transform var(--t-1) var(--ease-out), opacity var(--t-3) linear, visibility 0s var(--t-3);
+}
+.launch__count{ display: block; padding-left: 0.2em; text-shadow: 0 1px 2px rgb(7 6 11 / 0.6); }
+.launch__btn:active{ transform: scale(0.94); }
+/* a soft glow ring that breathes while it waits (opacity and transform only) */
+.launch__btn::before{
+  content: ""; position: absolute; inset: -14%; z-index: -1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.6), rgb(var(--glow-rgb) / 0) 100%);
+  animation: launch-breathe 2.4s var(--ease-in-out) infinite alternate;
+}
+@keyframes launch-breathe { from { opacity: 0.45; transform: scale(0.92); } to { opacity: 1; transform: scale(1.08); } }
+.launch.is-go .launch__count{ font-size: 2.2em; letter-spacing: 0; padding: 0; }
+.launch.is-flying .launch__btn{ opacity: 0; visibility: hidden; }
+@media (max-width: 700px) { .launch__btn{ right: 14px; bottom: max(20px, 22svh); } }
+@media (hover: hover) and (pointer: fine) {
+  .launch__btn:hover{ transform: scale(1.04); }
+}
+/* After the intro the focus lands on the hero heading (not a control): no ring for it */
+.hero__title[tabindex="-1"]:focus{ outline: none; }

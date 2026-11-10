@@ -40,12 +40,31 @@
       var h = (location.hash || '').toLowerCase(), l = h === '#pl' || h === '#en' ? h.slice(1) : null;
       if (!l) { try { l = localStorage.getItem('lang'); } catch (e) {} }
       if (l === 'pl') { d.lang = 'pl'; d.classList.add('lang-pending'); }
+      /* Launch intro (js/launch.js): once per session; not with an anchor in the address or reduced motion */
+      try { if (d.classList.contains('motion-ok') && (!h || l === h.slice(1)) && !sessionStorage.getItem('launched')) d.classList.add('intro'); } catch (e) {}
     })();
   </script>
   <link rel="stylesheet" href="css/tokens.css?v=20261111">
   <link rel="stylesheet" href="css/main.css?v=20261111">
 </head>
 <body>
+  <!-- ============ LAUNCH (task 15): full-screen intro over the page, once per session (js/launch.js).
+       Shown only with html.intro (set in the head script), so without JS there is no overlay. ============ -->
+  <div class="launch" id="launch" role="dialog" aria-modal="true" aria-label="Launch" data-i18n-attr="aria-label:a-launch.1">
+    <picture class="launch__poster">
+      <source media="(max-aspect-ratio: 1/1)" type="image/avif" srcset="assets/space/pad-m-720.avif 720w, assets/space/pad-m-1280.avif 1280w" sizes="100vw">
+      <source media="(max-aspect-ratio: 1/1)" type="image/webp" srcset="assets/space/pad-m-720.webp 720w, assets/space/pad-m-1280.webp 1280w" sizes="100vw">
+      <source type="image/avif" srcset="assets/space/pad-1280.avif 1280w, assets/space/pad-2560.avif 2560w" sizes="100vw">
+      <img src="assets/space/pad-1280.webp" srcset="assets/space/pad-1280.webp 1280w, assets/space/pad-2560.webp 2560w" sizes="100vw" width="2560" height="1448" alt="" decoding="async" fetchpriority="high">
+    </picture>
+    <video class="launch__video" id="launch-go" playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="assets/space/launch"></video>
+    <video class="launch__video" id="launch-arrive" playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="assets/space/arrive"></video>
+    <div class="launch__bar">
+      <button class="launch__mute" id="launch-mute" type="button" aria-label="Mute sound"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="launch__spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="launch__wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="launch__x" d="M16 9l6 6M22 9l-6 6"/></svg></button>
+      <button class="launch__skip mono" id="launch-skip" type="button"><span data-i18n="launch.1">Skip intro</span></button>
+    </div>
+    <button class="launch__btn" id="launch-btn" type="button" aria-label="Launch" data-i18n-attr="aria-label:a-launch.1"><span class="launch__count" aria-hidden="true">LAUNCH</span></button>
+  </div>
   <div class="glow" aria-hidden="true"><i class="glow__hero"></i><i class="glow__low"></i></div>
   <a class="skip-link" href="#main" data-i18n="page.1">Skip to content</a>
   <!-- Pause / play motion, first stop for keyboard users (shown on focus; js/pause.js) -->
