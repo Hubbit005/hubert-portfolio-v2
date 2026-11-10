@@ -15,6 +15,7 @@ export function initLaunch({ lenis, gsap }) {
   const root = document.getElementById('launch');
   if (!root) return;
   if (!doc.classList.contains('intro')) { root.remove(); return; }
+  doc.classList.add('launch-on'); // the CSS lock and the hero's hidden start apply only now (failsafe in css)
 
   const t = (k) => (window.i18n ? window.i18n.t(k) : k);
   const btn = document.getElementById('launch-btn');
@@ -61,7 +62,7 @@ export function initLaunch({ lenis, gsap }) {
   /* ---------- Start (the button only) ---------- */
   let started = false, done = false, arriving = false, iv = 0, guard = 0;
   // A clip started outside the click may be refused with sound (iOS): then it plays muted.
-  const play = (v) => v.play().catch(() => { v.muted = true; return v.play(); });
+  const play = (v) => v.play().catch(() => { setMute(true); return v.play(); });
   btn.addEventListener('click', () => {
     if (started) return;
     started = true;
@@ -111,7 +112,7 @@ export function initLaunch({ lenis, gsap }) {
     setTimeout(() => {
       [go, arrive].forEach((v) => { v.pause(); v.removeAttribute('src'); v.load(); });
       root.remove();
-      doc.classList.remove('intro');
+      doc.classList.remove('intro', 'launch-on');
       lenis?.start();
     }, (fast ? 0.3 : OUT) * 1000 + 50);
   }

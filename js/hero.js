@@ -44,7 +44,7 @@ export function initHero({ reduced, lenis, gsap, ScrollTrigger, onRoulette }) {
   const hero = stage?.closest('.hero');
   if (!stage || !hero || !gsap) return { destroy() {} };
   const pic = stage.querySelector('.hero__obj');
-  if (pic && !pic.getAttribute('src').includes(`/${OBJECT}-`)) pic.src = `assets/space/${OBJECT}-900.webp`;
+  if (pic && !pic.getAttribute('src').includes(`/${OBJECT}-`)) pic.srcset = `assets/space/${OBJECT}-480.webp 480w, assets/space/${OBJECT}-900.webp 900w`;
   // Depth: one scroll value for the planes (css/main.css, "HERO (task 15)")
   if (!reduced && ScrollTrigger) {
     ScrollTrigger.create({ trigger: hero, start: 'top top', end: 'bottom top', onUpdate: (st) => hero.style.setProperty('--hp', st.progress.toFixed(4)) });
