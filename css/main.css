@@ -2000,3 +2000,19 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
   .hero__obj{ position: relative; left: auto; top: auto; order: -1; width: calc(var(--fs) * 1.9); margin: 0 0 calc(var(--fs) * -0.42); }
   .hero__stage::before{ top: 38%; }
 }
+
+/* ==========================================================================
+   ROCKET GUIDE AND TRAIL (task 15, js/rocket.js)
+   Phones and narrow screens: picture and trail behind the content (only the dark sections show them),
+   so they never cover text. Wide screens (.rocket-wide): above the content, in the side margins.
+   ========================================================================== */
+#main{ position: relative; }
+.trail{ position: absolute; left: 0; top: 0; z-index: -1; overflow: visible; pointer-events: none; }
+.trail path{ fill: none; stroke: var(--violet); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0.85; }
+.rocket, .rocket-gl{ position: fixed; left: 0; top: 0; z-index: -1; pointer-events: none; opacity: 0; will-change: transform; }
+.rocket{ height: auto; max-width: none; }
+.rocket-wide .trail, .rocket-wide .rocket, .rocket-wide .rocket-gl{ z-index: 30; }
+.rocket-wide .trail path{ stroke-width: 2.5; }
+/* reduced motion: the whole trail, the rocket landed in the footer (page coordinates) */
+.rocket-static .rocket{ position: absolute; opacity: 1; }
+@media print { .trail, .rocket, .rocket-gl{ display: none; } }

@@ -15,6 +15,7 @@ import { initStamp } from './stamp.js?v=20261111';
 import { initHeroIcons } from './hero-icons.js?v=20261111';
 import { initHeroPanel } from './hero-panel.js?v=20261111';
 import { initLaunch } from './launch.js?v=20261111';
+import { initRocket } from './rocket.js?v=20261111';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -234,7 +235,8 @@ async function boot() {
   initHeroIcons({ reduced, gsap });
   initHeroPanel({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
-  initBackground({ reduced, gsap, ScrollTrigger, lenis });
+  initBackground({ reduced, gsap, lenis });
+  initRocket({ reduced, gsap });
   initMagnetic();
 
   measurePage();
