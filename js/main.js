@@ -16,6 +16,8 @@ import { initHeroIcons } from './hero-icons.js?v=20261111';
 import { initHeroPanel } from './hero-panel.js?v=20261111';
 import { initLaunch } from './launch.js?v=20261111';
 import { initRocket } from './rocket.js?v=20261111';
+import { initStations } from './stations.js?v=20261111';
+import { initCursor } from './cursor.js?v=20261111';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -236,7 +238,11 @@ async function boot() {
   initHeroPanel({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
   initBackground({ reduced, gsap, lenis });
-  initRocket({ reduced, gsap });
+  // Task 15 decoration: each in its own idle moment, so none of it adds to the first load's long tasks
+  const later = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+  later(() => initRocket({ reduced, gsap }), { timeout: 2000 });
+  later(() => initStations({ reduced, gsap, ScrollTrigger, lenis }), { timeout: 2000 });
+  later(() => initCursor({ reduced, gsap }), { timeout: 2000 });
   initMagnetic();
 
   measurePage();

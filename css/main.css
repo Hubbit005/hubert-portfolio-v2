@@ -2016,3 +2016,105 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* reduced motion: the whole trail, the rocket landed in the footer (page coordinates) */
 .rocket-static .rocket{ position: absolute; opacity: 1; }
 @media print { .trail, .rocket, .rocket-gl{ display: none; } }
+
+/* ==========================================================================
+   LIGHT PARTS (task 15): beige stations and the calm stretch (AI, About, CV). Tokens of the light
+   theme, scoped. Dark parts stay transparent, so the world (js/background.js) shows through them.
+   ========================================================================== */
+.is-light{
+  color-scheme: light;
+  --bg: var(--beige); --bg-rgb: 233 223 204; --surface: var(--white); --surface-2: #ddd1bb;
+  --ink: var(--space); --ink-rgb: 7 6 11; --ink-2: #4f4860;
+  --line: rgb(7 6 11 / 0.14); --line-strong: rgb(7 6 11 / 0.32);
+  --accent-ink: #5a22d6; --focus: var(--space); --glow-a: 0.22;
+  background: var(--bg); color: var(--ink);
+  isolation: isolate; /* stickers sit between the beige and the content */
+}
+.is-light .ambient{ display: none; } /* the dark film shots belong to the dark parts */
+.is-light + .case, .case + .is-light{ border-top: 0; }
+
+/* Waves where light meets dark (js/stations.js); they stretch a little with the scroll speed */
+.wave{ position: absolute; left: 0; z-index: 1; display: block; width: 100%; height: clamp(22px, 3.6vw, 56px); pointer-events: none; fill: var(--bg); }
+.wave--top{ bottom: calc(100% - 1px); transform-origin: 50% 100%; }
+.wave--bottom{ top: calc(100% - 1px); transform-origin: 50% 0; }
+.wave--bottom path{ transform: scaleY(-1); transform-origin: 50% 50%; }
+
+/* Letter stickers: big letters of HUBERT at the sides, white outline, slight turn (js/stations.js) */
+.sticker{
+  position: absolute; z-index: -1; top: 30%; pointer-events: none; user-select: none;
+  font: 700 clamp(84px, 10vw, 180px)/1 var(--font-expo);
+  color: var(--violet); -webkit-text-stroke: 0.07em var(--white); paint-order: stroke fill;
+  filter: drop-shadow(0 10px 14px rgb(7 6 11 / 0.22));
+  rotate: var(--rot, -8deg);
+  translate: 0 calc(var(--travel, 140px) * (1 - 2 * var(--lp, 0.5)));
+}
+.sticker--l{ left: -0.42em; }
+.sticker--r{ right: -0.42em; top: 62%; }
+/* half off the screen, so only the side margin shows it and no text ever lies over it */
+@media (max-width: 700px) { .sticker{ font-size: 64px; } .sticker--l{ left: -0.5em; } .sticker--r{ right: -0.5em; } }
+
+/* ==========================================================================
+   STATIONS (task 15): a full-screen cover per project, pinned for half a screen (js/stations.js)
+   ========================================================================== */
+.case:has(.station){ padding-top: 0; }
+.station{ position: relative; height: 150svh; margin-bottom: clamp(2rem, 1rem + 3vw, 4rem); }
+.station__pin{
+  position: sticky; top: 0; height: 100svh; overflow: hidden;
+  display: grid; place-items: center; grid-template-rows: 1fr auto; padding: 96px var(--gutter) clamp(32px, 7vh, 72px);
+}
+.station__obj{
+  width: clamp(220px, 32vw, 500px); height: auto; max-width: 80vw;
+  rotate: calc(var(--sp, 0.5) * 50deg - 25deg); translate: 0 calc(var(--sp, 0.5) * -8vh + 4vh);
+  filter: drop-shadow(0 24px 40px rgb(var(--glow-rgb) / 0.35));
+  transition: opacity var(--t-3) var(--ease-out);
+}
+.station.is-3d .station__obj{ opacity: 0; } /* the 3D model is drawn over its place */
+.station__name{
+  font: 700 clamp(52px, 9.5vw, 168px)/0.95 var(--font-expo); text-align: center; color: var(--ink);
+  max-width: 14ch; text-wrap: balance;
+  translate: 0 calc(var(--sp, 0.5) * -6vh + 3vh);
+}
+.station-gl{ position: fixed; left: 0; top: 0; z-index: 20; pointer-events: none; opacity: 0; will-change: transform; }
+
+/* Sticker labels: white outline, slight turn, a corner peels off on hover */
+.station__num, .tag-progress{
+  position: relative; display: inline-block;
+  border: 3px solid var(--white); box-shadow: 0 6px 14px rgb(7 6 11 / 0.3);
+  transition: clip-path var(--t-2) var(--ease-out);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+}
+.station__num{
+  position: absolute; top: clamp(84px, 13vh, 130px); left: var(--gutter); rotate: -6deg;
+  padding: 10px 16px; border-radius: 14px; background: var(--violet); color: var(--white);
+  font-size: clamp(1.4rem, 1rem + 1.6vw, 2.6rem); letter-spacing: 0.04em; line-height: 1;
+}
+.tag-progress{ rotate: -3deg; border-width: 2px; border-radius: 10px; }
+.station__num::after, .tag-progress::after{
+  content: ""; position: absolute; right: -3px; bottom: -3px; width: 0; height: 0;
+  background: linear-gradient(135deg, transparent 50%, #d9d4e6 50%, var(--white));
+  border-radius: 0 0 4px 0; transition: width var(--t-2) var(--ease-out), height var(--t-2) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .station__num:hover, .tag-progress:hover{ clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%); }
+  .station__num:hover::after, .tag-progress:hover::after{ width: 21px; height: 21px; }
+}
+.station__pin{ pointer-events: none; } .station__num{ pointer-events: auto; }
+@media (max-width: 700px) { .station{ height: 130svh; } .station__pin{ padding-top: 84px; } }
+
+/* About: the chrome helmet floats beside the text */
+/* in the space above the section's text (its top padding), so it never lies under text */
+.about__helmet{ position: absolute; right: 7vw; top: -2.5rem; z-index: 2; width: min(180px, calc(var(--section-pad) * 1.1)); height: auto; pointer-events: none; rotate: 8deg; filter: drop-shadow(0 20px 30px rgb(7 6 11 / 0.25)); }
+
+/* Footer: HUBERT in the display face, its ceramic fill toned violet */
+.wordmark{ font-family: var(--font-expo); font-stretch: normal; font-weight: 700; line-height: 0.95; letter-spacing: 0; }
+.wordmark__line--fill > span{ filter: hue-rotate(245deg) saturate(1.1); }
+
+/* Cursor (js/cursor.js): desktop only */
+.cursor{
+  position: fixed; left: 0; top: 0; z-index: 900; width: 34px; height: 34px; margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--violet); border-radius: 50%; pointer-events: none; opacity: 0;
+  box-shadow: 0 0 0 1px rgb(247 245 240 / 0.35); transition: opacity var(--t-2), scale var(--t-2) var(--ease-out), background-color var(--t-2);
+}
+.cursor.is-on{ opacity: 1; }
+.cursor.is-hot{ scale: 1.8; background: rgb(var(--glow-rgb) / 0.18); }
+@media print { .cursor, .station-gl, .sticker, .wave{ display: none; } }

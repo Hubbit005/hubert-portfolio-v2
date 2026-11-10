@@ -74,7 +74,9 @@ export function initRocket({ reduced, gsap }) {
     ROUTE.forEach((s, i) => {
       const el = document.querySelector(s);
       if (!el) return;
-      tops.push(el.getBoundingClientRect().top + sy);
+      // the contact sticks under the CV (curtain): its place in the page is right after the CV
+      const top = (el.id === 'contact' ? document.getElementById('cv') || el : el).getBoundingClientRect()[el.id === 'contact' ? 'bottom' : 'top'] + sy;
+      tops.push(Math.max(top, (tops[tops.length - 1] || 0) + 1));
       // phones: one edge only (the simple trail); desktop: alternate
       sides.push(!wide ? xR : i % 2 ? xL : xR);
     });
