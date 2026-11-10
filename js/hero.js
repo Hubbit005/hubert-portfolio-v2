@@ -1,40 +1,31 @@
-/* Hero: the word HUBERT as one extruded, bevelled chrome solid, twisted around its long (horizontal)
-   axis like a twisted ice lolly (three.js, task 10). The twist is a vertex deformation in the shader:
-   the cross-section turns more and more along X (about 96° over the whole word), so the middle reads
-   straight on and the ends show the twist. Positions and normals are turned together, so the light
-   and the reflections follow the twist. Font: vendor/fonts/typeface/archivo-900-125-hubert.json
-   (Archivo, widest width, black weight; converted once offline).
-   Motion: the twist slowly "waves" (its angle changes over time), the word turns a little around the
-   vertical axis (±15°) and floats up and down. It can be grabbed with a mouse and spun (horizontal drag
-   turns it around the vertical axis, vertical drag rolls it around its long axis); the spin has inertia,
-   dies down and then the word glides back to the middle and to the calm motion. The icons
-   (js/hero-icons.js) bounce off it: hero.js publishes the word's size on the stage (data-ww, data-wh).
-   Material: chrome like the icons and the roulette (metalness 1, low roughness, the studio reflection
-   map assets/hf/env-studio.jpg through PMREMGenerator), with accent and pink lights in the reflections.
-   Roulette ("Play roulette", task 12: 37 pockets of the European wheel, js/roulette.js). Opening it unwinds the twist; the word floats up and away
-   and fades while the camera tilts down onto the chrome wheel. A real chrome ball decides the result:
-   it runs along the rim against the wheel's turn, slows down, spirals in, bounces off the frets between
-   the fields and stops in a pocket. That pocket is the result (card and aria-live). Sound:
-   js/roulette-sound.js.
-   Phones: fewer segments, no dragging (the page scrolls), a tap gives a short roll; the 3D word starts
-   only after the first touch, scroll or key (or after a while), so it never slows the first view.
-   Reduced motion: the solid stands still with a fixed twist (one frame, redrawn on resize); the
-   roulette uses the simple panel (js/roulette.js). No WebGL or a load error: the static word stays.
+/* Hero (task 15): the flat word HUBERT in the display face (HTML, css/main.css) and one iridescent
+   chrome object in the middle that overlaps the letters (three.js): a Higgsfield/Meshy model
+   (assets/space/<OBJECT>.glb, meshopt) with a chrome material, violet-blue iridescence and the nebula
+   as its reflection map. It turns slowly, follows the mouse a little, turns further with the scroll
+   and can be grabbed and spun (inertia, then it glides back). The icons (js/hero-icons.js) keep to an
+   ellipse around the word: hero.js publishes the word's size on the stage (data-ww, data-wh).
+   Phones, reduced motion and no WebGL: the object is its picture (assets/space/<OBJECT>-900.webp);
+   phones still get the WebGL scene for the roulette (after the first touch, scroll or key).
+   Depth: background, word, object and icons scroll at different speeds (--hp on the hero, set here).
+   After the launch intro (js/launch.js) the object comes in when the overlay fades.
+   Roulette ("Play roulette", task 12: 37 pockets of the European wheel, js/roulette.js). Opening it
+   sends the object up and away while the camera tilts down onto the chrome wheel. A real chrome ball
+   decides the result: it runs along the rim against the wheel's turn, slows down, spirals in, bounces
+   off the frets between the fields and stops in a pocket. That pocket is the result (card and
+   aria-live). Sound: js/roulette-sound.js.
    One loop: the GSAP ticker, only while the hero is on screen, the tab is visible and the guitar panel
    (js/hero-panel.js, hero.dataset.panel) does not cover it. */
 import { ORDER, RED } from './roulette.js?v=20261111';
 import { createRouletteSound } from './roulette-sound.js?v=20261111';
 
-const WORD = 'HUBERT';
-const TRACK = 0.06;       // gap between glyphs, in em
-const DEPTH = 0.3;        // extrusion depth, in em
+const OBJECT = 'planet';  // the hero object; the spare is 'star' (both in assets/space/)
+const OBJ_SIZE = 1.4;     // object size (largest side), in em of the word
+const OBJ_Y = 0.22;       // object centre above the word's middle, in em
+const CAP = 0.7;          // letter height, in em (the roulette wheel stands at their foot)
 const PERSP = 13;         // camera distance, in em
 const TAU = Math.PI * 2;
 const DEG = Math.PI / 180;
-const TWIST = 96 * DEG;   // twist over the whole word (ends ±48°)
-const WAVE = 10 * DEG;    // the travelling wave on top of the twist
-const YAW = 15 * DEG;     // calm turn around the vertical axis
-const ENTER_MS = 1800;
+const ENTER_MS = 1600;
 const ELEV = 58 * DEG;    // camera elevation in the roulette view
 const TURN_MS = 1250;     // camera move between the views
 const WHEEL_R = 2.5;      // roulette wheel radius, in em
@@ -48,17 +39,24 @@ function hasWebGL() {
   } catch (e) { return false; }
 }
 
-export function initHero({ reduced, lenis, gsap, onRoulette }) {
+export function initHero({ reduced, lenis, gsap, ScrollTrigger, onRoulette }) {
   const stage = document.getElementById('hero-stage');
   const hero = stage?.closest('.hero');
   if (!stage || !hero || !gsap) return { destroy() {} };
-  if (!hasWebGL()) return { destroy() {} }; // static word stays
+  const pic = stage.querySelector('.hero__obj');
+  if (pic && !pic.getAttribute('src').includes(`/${OBJECT}-`)) pic.src = `assets/space/${OBJECT}-900.webp`;
+  // Depth: one scroll value for the planes (css/main.css, "HERO (task 15)")
+  if (!reduced && ScrollTrigger) {
+    ScrollTrigger.create({ trigger: hero, start: 'top top', end: 'bottom top', onUpdate: (st) => hero.style.setProperty('--hp', st.progress.toFixed(4)) });
+  }
+  // Reduced motion: the picture stands still and the roulette uses its simple panel (js/roulette.js)
+  if (reduced || !hasWebGL()) return { destroy() {} };
 
   const ctl = { destroy() {} };
-  const run = () => start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }).catch(() => {
-    stage.classList.remove('is-3d'); // keep the static word
+  const run = () => start({ stage, hero, lenis, gsap, ctl, onRoulette }).catch(() => {
+    stage.classList.remove('is-3d'); // the picture stays
   });
-  // Phones: the static word shows first; the 3D word (and with it the icons and the roulette wheel)
+  // Phones: the picture shows first; the WebGL scene (and with it the icons and the roulette wheel)
   // starts on the first touch, scroll or key, or after a while, so it never slows the first view.
   const phone = Math.min(window.innerWidth, window.innerHeight) < 700 || matchMedia('(pointer: coarse)').matches;
   if (!phone) run();
@@ -77,16 +75,11 @@ export function initHero({ reduced, lenis, gsap, onRoulette }) {
   return { destroy() { ctl.destroy(); } };
 }
 
-async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
+async function start({ stage, hero, lenis, gsap, ctl, onRoulette }) {
   const base = new URL('../vendor/', import.meta.url);
-  const [THREE, { FontLoader }, fontJson] = await Promise.all([
-    import(new URL('three/three.module.min.js', base).href),
-    import(new URL('three/addons/loaders/FontLoader.js', base).href),
-    fetch(new URL('fonts/typeface/archivo-900-125-hubert.json', base)).then((r) => r.json()),
-  ]);
-  const font = new FontLoader().parse(fontJson);
-  const upm = fontJson.resolution;
-  const capH = (fontJson.capHeight || 686) / upm;
+  const THREE = await import(new URL('three/three.module.min.js', base).href);
+  const capH = CAP;
+  const doc = document.documentElement;
   const title = stage.querySelector('.hero__title');
   // The canvas lives in panel 1 (it slides away with it); classes stay on the hero (#home).
   const host = stage.closest('.hero__panel') || hero;
@@ -124,48 +117,14 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
     pink.color.set(cs.getPropertyValue('--chrome-tint').trim() || '#ffffff'); // tokens.css
   }
 
-  /* ---------- The word: one solid, glyphs merged into one geometry ---------- */
-  const parts = [];
-  let x = 0;
-  for (const ch of WORD) {
-    const g = new THREE.ExtrudeGeometry(font.generateShapes(ch, 1), {
-      depth: DEPTH, curveSegments: small ? 3 : 8,
-      bevelEnabled: true, bevelThickness: 0.035, bevelSize: 0.018, bevelSegments: small ? 1 : 3,
-    });
-    g.translate(x, 0, 0);
-    parts.push(g);
-    x += (fontJson.glyphs[ch]?.ha || upm) / upm + TRACK;
-  }
-  const wordGeo = mergeGeometries(THREE, parts);
-  wordGeo.computeBoundingBox();
-  const bb = wordGeo.boundingBox;
-  const LEN = bb.max.x - bb.min.x;
-  wordGeo.translate(-(bb.min.x + bb.max.x) / 2, -capH / 2, -DEPTH / 2);
-
-  // Twist in the vertex shader: angle(x) = twist · x / LEN + wave · sin(2π · x / LEN − time)
-  const twistU = { uTwist: { value: TWIST }, uWave: { value: WAVE }, uPhase: { value: 0 }, uLen: { value: LEN } };
-  const wordMat = new THREE.MeshStandardMaterial({ color: '#f4eaee', metalness: 1, roughness: 0.14, envMapIntensity: 1.75, transparent: true });
-  wordMat.onBeforeCompile = (sh) => {
-    Object.assign(sh.uniforms, twistU);
-    sh.vertexShader = sh.vertexShader
-      .replace('#include <common>', `#include <common>
-uniform float uTwist; uniform float uWave; uniform float uPhase; uniform float uLen;
-mat3 twistAt(float x) {
-  float u = x / uLen;
-  float a = uTwist * u + uWave * sin(6.2831853 * u - uPhase);
-  float c = cos(a), s = sin(a);
-  return mat3(1.0, 0.0, 0.0, 0.0, c, s, 0.0, -s, c);
-}`)
-      .replace('#include <beginnormal_vertex>', 'vec3 objectNormal = twistAt(position.x) * vec3(normal);')
-      .replace('#include <begin_vertex>', 'vec3 transformed = twistAt(position.x) * vec3(position);');
-  };
-  const word = new THREE.Mesh(wordGeo, wordMat);
-  word.frustumCulled = false; // the shader moves the vertices outside the stored bounds
-
+  /* ---------- The object (its model is loaded after the first frame, desktop only) ---------- */
+  const objMat = new THREE.MeshPhysicalMaterial({
+    color: '#ece8f6', metalness: 1, roughness: 0.12, envMapIntensity: 1.9,
+    iridescence: 1, iridescenceIOR: 1.7, iridescenceThicknessRange: [160, 640],
+  });
   const tilt = new THREE.Group();   // fit to the screen (scale) and the hover tilt
-  const wordG = new THREE.Group();  // the word's own motion
-  wordG.add(word);
-  tilt.add(wordG);
+  const objG = new THREE.Group();   // the object's own motion
+  tilt.add(objG);
   scene.add(tilt);
   applyTheme();
 
@@ -183,7 +142,7 @@ mat3 twistAt(float x) {
   const faceTex = new THREE.CanvasTexture(wheelCanvas(small ? 768 : 1024));
   faceTex.colorSpace = THREE.SRGBColorSpace;
   faceTex.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
-  // Chrome: standard materials with the studio reflection map (loadEnv below, shared with the word).
+  // Chrome: standard materials with the nebula reflection map (loadEnv below, shared with the object).
   const chrome = (color, rough, extra = {}) => new THREE.MeshStandardMaterial({ color, metalness: 1, roughness: rough, ...extra });
   const faceMat = new THREE.MeshStandardMaterial({
     map: faceTex, emissiveMap: faceTex, emissive: new THREE.Color('#ffffff'), emissiveIntensity: 0.5,
@@ -222,13 +181,13 @@ mat3 twistAt(float x) {
   const RB = RW * 0.064;
   const ballMesh = new THREE.Mesh(new THREE.SphereGeometry(RB, 32, 24), chrome('#f4f4f6', 0.06));
   rou.add(ballMesh);
-  const envMats = [wordMat, faceMat, baseMat, rimMat, fretMat, ballMesh.material];
-  // The studio reflection map (chrome for the word, the wheel and the ball): loaded once, at start.
+  const envMats = [objMat, faceMat, baseMat, rimMat, fretMat, ballMesh.material];
+  // The nebula as the reflection map (chrome for the object, the wheel and the ball): loaded once, at start.
   let envReady = null;
   function loadEnv() {
     if (envReady) return envReady;
     envReady = new Promise((res) => {
-      new THREE.TextureLoader().load(new URL('../assets/hf/env-studio.jpg', import.meta.url).href, (tex) => {
+      new THREE.TextureLoader().load(new URL('../assets/space/env-nebula.jpg', import.meta.url).href, (tex) => {
         tex.mapping = THREE.EquirectangularReflectionMapping;
         tex.colorSpace = THREE.SRGBColorSpace;
         const pm = new THREE.PMREMGenerator(renderer);
@@ -311,14 +270,14 @@ mat3 twistAt(float x) {
     camera.aspect = (W * 3) / Hv; // virtual frame is 3 canvases wide so the view can slide sideways
     // Vertical field so that 1 world unit = 1 em at the word's plane.
     camera.fov = (2 * Math.atan((Hv / fsPx) / 2 / PERSP) * 180) / Math.PI;
-    // Fit: the word stays clear of the hero's right edge, where the big "to the guitar" arrow
-    // stands (--hero-side: its width plus margins, on both sides so the word stays centred).
+    // Fit: the object stays clear of the hero's sides (--hero-side, on both sides so it stays centred).
     const side = parseFloat(getComputedStyle(hero).getPropertyValue('--hero-side')) || 24;
-    const wordPx = LEN * 1.06 * fsPx;  // a little extra for the turn and the twisted ends
-    const sc = Math.min(1, Math.max(0.3, (W - 2 * side) / wordPx));
+    const sc = Math.min(1, Math.max(0.3, (W - 2 * side) / (OBJ_SIZE * 1.3 * fsPx)));
     tilt.scale.setScalar(sc);
-    stage.dataset.ww = String(Math.round(LEN * 1.04 * fsPx * sc));
-    stage.dataset.wh = String(Math.round(capH * 1.5 * fsPx * sc));
+    // the word's box, for the icons' ellipse (js/hero-icons.js)
+    const wordEl = title.querySelector('.hero__word') || title;
+    stage.dataset.ww = String(Math.round(wordEl.offsetWidth));
+    stage.dataset.wh = String(Math.round(Math.max(wordEl.offsetHeight, OBJ_SIZE * fsPx * sc))); // the object stands over it
     const stageMid = stage.offsetTop + stage.offsetHeight / 2;
     yOffN = Hv / 2 - stageMid;
     const half = Math.max(stage.offsetHeight / 2, fsPx * sc * 1.1) + fsPx * 0.3; // room for the spin
@@ -357,24 +316,22 @@ mat3 twistAt(float x) {
   let time = 0;
   const pose = { yaw: 0, roll: 0 }; // the grabbed spin, on top of the calm motion
   const vel = { yaw: 0, roll: 0 };
-  const spr = { x: 0, xV: 0, xT: 0, y: 0, yV: 0, yT: 0 }; // the word follows the hand a little (em)
+  const spr = { x: 0, xV: 0, xT: 0, y: 0, yV: 0, yT: 0 }; // the object follows the hand a little (em)
   let tiltX = 0, tiltXT = 0, tiltY = 0, tiltYT = 0;
-  let entered = reduced;
+  let scrollP = 0;                  // hero scroll progress (turns the object further)
 
-  // Places the word for time t. e: entrance progress (0 … 1), r: roulette progress (eased).
+  // Places the object for time t. e: entrance progress (0 … 1), r: roulette progress (eased).
   function place(e, r) {
-    const calm = reduced ? 0 : 1;
-    const enter = 1 - e;                       // the entrance: a fast unwinding roll
-    twistU.uTwist.value = (TWIST * (1 + 0.06 * Math.sin(time * 0.5) * calm) + enter * TAU * 1.2) * (1 - r);
-    twistU.uWave.value = WAVE * calm * (1 - r);
-    twistU.uPhase.value = time * 0.9;
-    wordG.rotation.order = 'YXZ';
-    wordG.rotation.y = YAW * Math.sin(time * 0.42) * calm + pose.yaw - enter * 0.6;
-    wordG.rotation.x = 0.05 * Math.sin(time * 0.31) * calm + pose.roll - enter * TAU * 0.5;
-    wordG.position.set(spr.x, 0.06 * Math.sin(time * 0.9) * calm + spr.y + r * 2.6, -r * 4);
-    wordG.scale.setScalar(1 - 0.45 * r);
-    wordMat.opacity = Math.max(0, Math.min(1, 1 - (r - 0.25) / 0.55));
-    wordG.visible = wordMat.opacity > 0.01;
+    const enter = 1 - e;
+    objG.rotation.order = 'YXZ';
+    objG.rotation.y = time * 0.25 + scrollP * 2.4 + pose.yaw - enter * 1.8;
+    objG.rotation.x = 0.32 + 0.08 * Math.sin(time * 0.31) + scrollP * 0.5 + pose.roll; // tipped so the ring shows
+    objG.position.set(spr.x, OBJ_Y + 0.06 * Math.sin(time * 0.9) + spr.y + r * 2.6, -r * 4);
+    objG.scale.setScalar((1 - 0.45 * r) * (0.6 + 0.4 * e));
+    const op = Math.max(0, Math.min(1, 1 - (r - 0.25) / 0.55)) * e;
+    objMat.opacity = op;
+    objMat.transparent = op < 0.999;
+    objG.visible = op > 0.01;
     tilt.rotation.x = tiltX * DEG;
     tilt.rotation.z = -tiltY * 0.2 * DEG;
   }
@@ -565,19 +522,19 @@ mat3 twistAt(float x) {
   }
 
   /* ---------- Grab and spin (mouse); a tap or click gives a short roll ---------- */
-  const fineDrag = !small && !reduced;
+  const fineDrag = !small;
   const drag = { on: false, id: null, x: 0, y: 0, x0: 0, y0: 0, t: 0, vx: 0, vy: 0, moved: false, touch: false };
   const pxPerRad = () => Math.max(60, fsPx * tilt.scale.x * 1.6);
   const onEnter = () => {};
   const onLeave = () => { tiltXT = 0; tiltYT = 0; };
   const onMove = (e) => {
-    if (e.pointerType !== 'mouse' || rT || reduced) return;
+    if (e.pointerType !== 'mouse' || rT) return;
     const r = stage.getBoundingClientRect();
     tiltXT = ((e.clientY - r.top) / r.height - 0.5) * 8;
     tiltYT = ((e.clientX - r.left) / r.width - 0.5) * 6;
   };
   const onDown = (e) => {
-    if (reduced || e.button !== 0 || stage.classList.contains('is-locked')) return;
+    if (e.button !== 0 || stage.classList.contains('is-locked')) return;
     drag.on = true; drag.id = e.pointerId; drag.touch = e.pointerType !== 'mouse' || !fineDrag;
     drag.x = drag.x0 = e.clientX; drag.y = drag.y0 = e.clientY; drag.t = performance.now();
     drag.vx = drag.vy = 0; drag.moved = false;
@@ -646,16 +603,18 @@ mat3 twistAt(float x) {
   let visible = true;
   const io = new IntersectionObserver(([en]) => { visible = en.isIntersecting; });
   io.observe(stage);
-  const enterStart = performance.now();
+  let enterStart = 0; // set when the model is in and the launch intro (if any) has ended
   function tick(_, deltaMs) {
-    // off screen, hidden tab, or the guitar panel shows (js/hero-panel.js): no rendering
+    // off screen, hidden tab, the guitar panel shows (js/hero-panel.js) or the launch intro still covers the page
     if (!visible || document.hidden || hero.dataset.panel === 'guitar') return;
+    if (doc.classList.contains('intro') && !doc.classList.contains('launched')) return;
     const dt = Math.min((deltaMs || 16.7) / 1000, 0.05);
     if (!window.__motionPaused) time += dt;
     const k = 1 - Math.exp(-dt * 3);
-    const te = Math.min(1, (performance.now() - enterStart) / ENTER_MS);
-    if (te >= 1) entered = true;
-    const e = entered ? 1 : 1 - Math.pow(1 - te, 4);
+    if (!enterStart && objG.children.length) enterStart = performance.now();
+    const te = enterStart ? Math.min(1, (performance.now() - enterStart) / ENTER_MS) : 0;
+    const e = 1 - Math.pow(1 - te, 4);
+    scrollP = Math.min(1.5, window.scrollY / Hc);
     settle('yaw', dt); settle('roll', dt);
     tiltX += (tiltXT - tiltX) * k;
     tiltY += (tiltYT - tiltY) * k;
@@ -671,24 +630,37 @@ mat3 twistAt(float x) {
   resize();
   window.addEventListener('resize', resize);
   document.addEventListener('langchange', () => requestAnimationFrame(resize));
-  const mo = new MutationObserver(() => { applyTheme(); if (reduced) render(); });
+  const mo = new MutationObserver(applyTheme);
   mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
   await loadEnv();
-  if (reduced) {
-    // still: a fixed twist, no motion; drawn once and again on resize
-    place(1, 0);
-    render();
-    window.addEventListener('resize', () => { place(1, 0); render(); });
-    stage.classList.add('is-3d');
-    ctl.destroy = () => { io.disconnect(); mo.disconnect(); renderer.dispose(); canvas.remove(); };
-    return;
-  }
   place(0, 0);
   render();
   stage.classList.add('is-3d');
   gsap.ticker.add(tick);
   onRoulette?.(api);
+
+  // The model after the first frame; phones keep the picture (lighter, and the page scrolls under the thumb)
+  if (!small) {
+    Promise.all([
+      import(new URL('three/addons/loaders/GLTFLoader.js', base).href),
+      import(new URL('three/addons/libs/meshopt_decoder.module.js', base).href),
+    ]).then(([{ GLTFLoader }, { MeshoptDecoder }]) => new GLTFLoader().setMeshoptDecoder(MeshoptDecoder)
+      .loadAsync(new URL(`../assets/space/${OBJECT}.glb`, import.meta.url).href))
+      .then((gltf) => {
+        const obj = gltf.scene;
+        obj.traverse((m) => { if (m.isMesh) { m.material.dispose?.(); m.material = objMat; } });
+        const box = new THREE.Box3().setFromObject(obj);
+        const size = box.getSize(new THREE.Vector3());
+        obj.position.sub(box.getCenter(new THREE.Vector3()));
+        const fit = new THREE.Group();
+        fit.add(obj);
+        fit.scale.setScalar(OBJ_SIZE / Math.max(size.x, size.y, size.z));
+        objG.add(fit);
+        stage.classList.add('has-obj'); // the picture fades out (css)
+      })
+      .catch(() => { /* the picture stays */ });
+  }
 
   ctl.destroy = () => {
     gsap.ticker.remove(tick);
@@ -698,19 +670,4 @@ mat3 twistAt(float x) {
     renderer.dispose();
     canvas.remove();
   };
-}
-
-// Glyph geometries (ExtrudeGeometry has no index) joined into one: positions, normals, uvs.
-function mergeGeometries(THREE, list) {
-  const out = new THREE.BufferGeometry();
-  ['position', 'normal', 'uv'].forEach((name) => {
-    const size = list[0].getAttribute(name).itemSize;
-    const total = list.reduce((n, g) => n + g.getAttribute(name).array.length, 0);
-    const arr = new Float32Array(total);
-    let o = 0;
-    list.forEach((g) => { arr.set(g.getAttribute(name).array, o); o += g.getAttribute(name).array.length; });
-    out.setAttribute(name, new THREE.BufferAttribute(arr, size));
-  });
-  list.forEach((g) => g.dispose());
-  return out;
 }

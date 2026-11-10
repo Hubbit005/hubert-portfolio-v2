@@ -110,6 +110,13 @@
            without JS the guitar is a normal block under the hero. -->
       <div class="hero__track" id="hero-track">
         <div class="hero__main hero__panel" id="hero-main">
+          <!-- Far plane: the quiet space the launch flight ends in (task 15) -->
+          <picture class="hero__bg" aria-hidden="true">
+            <source media="(max-aspect-ratio: 1/1)" type="image/avif" srcset="assets/space/calm-m-720.avif 720w, assets/space/calm-m-1280.avif 1280w" sizes="100vw">
+            <source media="(max-aspect-ratio: 1/1)" type="image/webp" srcset="assets/space/calm-m-720.webp 720w, assets/space/calm-m-1280.webp 1280w" sizes="100vw">
+            <source type="image/avif" srcset="assets/space/calm-1280.avif 1280w, assets/space/calm-2560.avif 2560w" sizes="100vw">
+            <img src="assets/space/calm-1280.webp" srcset="assets/space/calm-1280.webp 1280w, assets/space/calm-2560.webp 2560w" sizes="100vw" width="2560" height="1448" alt="" decoding="async">
+          </picture>
           <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
             <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
             <span data-i18n="roulette-open.1">Play roulette</span>
@@ -117,11 +124,10 @@
           <div class="hero__stage" id="hero-stage">
             <h1 class="hero__title" id="hero-title">
               <span class="sr-only">Hubert</span>
-              <span class="hero__word" aria-hidden="true">
-                <!-- Static word (no JS, no WebGL, and until the 3D solid has started) -->
-                <span class="cyl__static">HUBERT</span>
-              </span>
+              <span class="hero__word" aria-hidden="true">HUBERT</span>
             </h1>
+            <!-- The hero object's picture (phones, reduced motion, no WebGL, and until the 3D model is in: js/hero.js) -->
+            <img class="hero__obj" src="assets/space/planet-900.webp" width="900" height="900" alt="" aria-hidden="true" decoding="async">
           </div>
           <div class="roulette" id="roulette" role="region" aria-label="Roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
             <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>

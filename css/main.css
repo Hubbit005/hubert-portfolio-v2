@@ -231,15 +231,8 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 }
 @media (max-width: 600px) { .hero__stage{ --fs: clamp(48px, 16.5vw, 120px); min-height: calc(var(--fs) * 3); } }
 .hero__title{ position: relative; font-size: var(--fs); line-height: 1; transform-style: preserve-3d; }
-.hero__word{
-  position: relative; display: block;
-  font-family: var(--font-display); font-stretch: 125%; font-weight: 900;
-  letter-spacing: -0.01em; text-transform: uppercase;
-  transform-style: preserve-3d;
-}
-.cyl__static{ display: block; position: relative; transform: translateZ(1px); line-height: 0.86; }
+.hero__word{ position: relative; display: block; } /* the face, size and planes: "HERO (task 15)" at the end */
 .hero__gl{ position: absolute; left: 0; top: 0; z-index: 1; display: block; pointer-events: none; }
-.hero__stage.is-3d .cyl__static{ visibility: hidden; }
 
 .hero__foot{
   display: grid; gap: var(--s-5);
@@ -1482,8 +1475,9 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .hero-icon{
   position: absolute; left: 0; top: 0; height: auto; max-width: none; pointer-events: auto;
   touch-action: pan-y; user-select: none; -webkit-user-select: none; will-change: transform; cursor: grab;
-  /* depth: far icons are smaller and darker (all stay sharp); all get a warm glow underneath */
-  filter: drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
+  /* depth: far icons are smaller and darker (all stay sharp); all get a violet glow underneath */
+  filter: hue-rotate(245deg) /* task 15: the orange-pink chrome turns violet-blue */
+          drop-shadow(0 calc(14px - var(--z) * 6px) calc(26px - var(--z) * 10px) rgb(var(--glow-rgb) / calc(0.42 - var(--z) * 0.22)))
           brightness(calc(1 - var(--z) * 0.32));
 }
 .hero-icons.is-away .hero-icon{ pointer-events: none; }
@@ -1935,3 +1929,62 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 /* After the intro the focus lands on the hero heading (not a control): no ring for it */
 .hero__title[tabindex="-1"]:focus{ outline: none; }
+
+/* ==========================================================================
+   HERO (task 15): flat HUBERT in the display face, the iridescent object over it (js/hero.js;
+   its picture on phones, with reduced motion and without WebGL) and the quiet space the launch ends in.
+   Depth planes on scroll (--hp from js/hero.js: 0 at the top, 1 when the hero has left), set with the
+   `translate` property so they add to the transforms the hero already uses:
+   background slowest, then the word, the object, and the icons fastest.
+   ========================================================================== */
+.hero__bg{
+  position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent);
+  translate: 0 calc(var(--hp, 0) * 40vh);
+}
+.hero__bg img{ width: 100%; height: 100%; object-fit: cover; }
+.hero__stage{ --fs: clamp(96px, 17vw, 300px); }
+/* violet light behind the object */
+.hero__stage::before{
+  content: ""; position: absolute; left: 50%; top: 46%; width: calc(var(--fs) * 2.6); aspect-ratio: 1;
+  translate: -50% -50%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.42), rgb(var(--glow-rgb) / 0.12) 55%, rgb(var(--glow-rgb) / 0));
+}
+.hero__title{ font-size: var(--fs); translate: 0 calc(var(--hp, 0) * 16vh); }
+.hero__word{
+  font-family: var(--font-expo); font-weight: 600; line-height: 0.92; letter-spacing: 0.01em;
+  color: var(--white);
+}
+/* white with a light grain (an SVG noise tile under the letters) */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__word{
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .04 0 0 0 0 .03 0 0 0 0 .08 .55 0 0 0 -.26'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") var(--white);
+    background-size: 160px;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+}
+.hero__obj{
+  position: absolute; left: 50%; top: 50%; z-index: 2; pointer-events: none;
+  width: calc(var(--fs) * 1.4); height: auto; max-width: none; /* OBJ_SIZE and OBJ_Y in js/hero.js */
+  margin: calc(var(--fs) * -0.92) 0 0 calc(var(--fs) * -0.7);
+  translate: 0 calc(var(--hp, 0) * -10vh);
+  transition: opacity var(--t-3) var(--ease-out);
+}
+.hero__stage.has-obj .hero__obj{ opacity: 0; }
+.hero__gl{ translate: 0 calc(var(--hp, 0) * -10vh); }
+.hero-icons{ translate: 0 calc(var(--hp, 0) * -22vh); }
+.hero.is-roulette .hero__word, .hero.is-roulette .hero__obj{ opacity: 0; }
+.hero__word{ transition: opacity var(--t-3) var(--ease-out); }
+
+/* Out of the nebula: after the launch intro the word and the object grow out of the fading overlay */
+.intro .hero__word, .intro .hero__obj{ opacity: 0; }
+.launched .hero__word, .launched .hero__stage:not(.has-obj) .hero__obj{ animation: hero-emerge 1.4s var(--ease-out) backwards; }
+@keyframes hero-emerge { from { opacity: 0; scale: 1.14; } to { opacity: 1; scale: 1; } }
+
+/* Phones: a composition of their own: the object above the word, both large, the word lower */
+@media (max-width: 700px) {
+  .hero__stage{ --fs: clamp(72px, 25vw, 150px); display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: calc(var(--fs) * 2.9); margin-bottom: 170px; } /* room for the small guitar (right) */
+  .hero__obj{ position: relative; left: auto; top: auto; order: -1; width: calc(var(--fs) * 1.9); margin: 0 0 calc(var(--fs) * -0.42); }
+  .hero__stage::before{ top: 38%; }
+}
