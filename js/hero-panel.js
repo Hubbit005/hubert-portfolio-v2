@@ -13,7 +13,7 @@
    No JS: panel 2 is a normal block under the hero and the small scene is hidden (CSS).
    Reduced motion: the panels swap without zooming (a short cross-fade). */
 
-const V = '?v=20261110';
+const V = '?v=20261111';
 
 export function initHeroPanel({ reduced, gsap }) {
   const hero = document.getElementById('home');

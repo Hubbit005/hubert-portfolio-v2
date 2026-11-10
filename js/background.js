@@ -1,7 +1,7 @@
 /* Living background: one fixed full-screen WebGL layer under the content (three.js, the same module
    the hero loads, so the library is fetched and parsed once).
    One quad, one fragment shader, three layers of depth that scroll at different speeds:
-     1. far:  soft orange light fields (--glow-rgb on --bg). At the top of the page they are drawn
+     1. far:  soft violet light fields (--glow-rgb on --bg). At the top of the page they are drawn
               exactly like the CSS .glow (same ellipses, stops and strength), only slowly breathing;
      2. mid:  a fine dot grid, at most ~7 % of --ink, breathing in patches;
      3. near: a few dozen small, slightly blurred specks in --accent and --ink.
@@ -241,9 +241,9 @@ async function start({ api, gsap, ScrollTrigger, lenis, touch }) {
     const cs = getComputedStyle(doc);
     u.uBg.value.fromArray(cssColor(cs.getPropertyValue('--bg').trim(), '#0f0f10'));
     u.uInk.value.fromArray(cssColor(cs.getPropertyValue('--ink').trim(), '#eeeeea'));
-    u.uAccent.value.fromArray(cssColor(cs.getPropertyValue('--accent').trim(), '#ff5a1f'));
+    u.uAccent.value.fromArray(cssColor(cs.getPropertyValue('--accent').trim(), '#7b3cff'));
     const g = cs.getPropertyValue('--glow-rgb').trim().split(/[\s,]+/).map(Number);
-    u.uGlow.value.set((g[0] || 255) / 255, (g[1] || 84) / 255, (g[2] || 20) / 255);
+    u.uGlow.value.set((g[0] || 123) / 255, (g[1] || 60) / 255, (g[2] || 255) / 255);
     u.uGlowA.value = parseFloat(cs.getPropertyValue('--glow-a')) || 0.3;
   }
   readTheme();

@@ -329,7 +329,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
   padding: 44px 16px 14px;
   background: linear-gradient(to top, rgb(0 0 0 / 0.82), rgb(0 0 0 / 0.55) 55%, transparent);
 }
-.card__num{ color: #ffb08f; font-size: 0.7rem; }
+.card__num{ color: var(--violet-light); font-size: 0.7rem; }
 .card__title{ font-family: var(--font-display); font-stretch: 118%; font-weight: 820; font-size: clamp(1rem, 0.85rem + 0.5vw, 1.3rem); line-height: 1.05; text-transform: uppercase; }
 .card__tag{ font-size: 0.64rem; color: rgb(255 255 255 / 0.82); }
 .card--psy { background: #f4f3ef; color: var(--ink); }
@@ -349,7 +349,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 .type-cover__path i{ position: absolute; border-radius: 50%; border: 1.5px solid #0d0d0d; }
 .type-cover__path i:nth-child(1){ width: 140%; height: 70%; left: -20%; bottom: -36%; background: #c8d3c4; border: 0; }
 .type-cover__path i:nth-child(2){ width: 120%; height: 60%; left: 10%; bottom: -40%; background: #b6c3b1; border: 0; }
-.type-cover__path i:nth-child(3){ width: 18px; height: 18px; left: 62%; top: 44%; background: #ff4f12; border: 0; }
+.type-cover__path i:nth-child(3){ width: 18px; height: 18px; left: 62%; top: 44%; background: var(--accent); border: 0; }
 .type-cover__path i:nth-child(4){ width: 120%; height: 120%; left: -58%; top: 46%; border-style: dashed; }
 
 .arc__controls{ display: flex; align-items: center; justify-content: center; gap: var(--s-5); margin-top: var(--s-5); }
@@ -365,7 +365,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
 }
 .case-index a:hover{ background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .case-index .mono{ color: var(--accent-ink); }
-.case-index a:hover .mono{ color: var(--accent); }
+.case-index a:hover .mono{ color: var(--accent-ink); }
 
 .case{ position: relative; padding-block: clamp(4rem, 3rem + 5vw, 8rem); scroll-margin-top: 64px; }
 .case + .case{ border-top: 1px solid var(--line); }
@@ -461,7 +461,7 @@ a:not([class]):hover{ text-decoration-thickness: 2px; }
   --bg: #0d0d0d; --bg-rgb: 13 13 13; --surface: #171717; --surface-2: #222;
   --ink: #eeeeea; --ink-rgb: 238 238 234; --ink-2: #a3a39c;
   --line: rgb(238 238 234 / 0.14); --line-strong: rgb(238 238 234 / 0.32);
-  --accent-ink: #ff8a5c; --focus: #eeeeea;
+  --accent-ink: var(--violet-light); --focus: #eeeeea;
   background: var(--bg); color: var(--ink);
   border-radius: clamp(20px, 3vw, 40px);
   margin-inline: clamp(6px, 1vw, 16px);
@@ -762,7 +762,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .tag-progress{
   display: inline-block; vertical-align: middle; margin-left: 0.4em;
   padding: 5px 12px; border-radius: var(--r-pill);
-  background: var(--accent); color: #0d0d0d;
+  background: var(--accent); color: var(--on-accent);
   font-size: 0.72rem; letter-spacing: 0.08em; line-height: 1.2;
   transform: translateY(-0.4em);
 }
@@ -795,12 +795,12 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .arc__glow{
   position: absolute; display: block; z-index: -1; pointer-events: none;
   left: -6%; right: -6%; bottom: -34px; height: 72px;
-  background: radial-gradient(closest-side, rgb(255 90 31 / 0.55), rgb(255 90 31 / 0.18) 55%, transparent);
+  background: radial-gradient(closest-side, rgb(var(--glow-rgb) / 0.55), rgb(var(--glow-rgb) / 0.18) 55%, transparent);
   opacity: 0;
 }
 .card__edge{
   position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
-  box-shadow: inset 0 -2px 0 rgb(255 150 100 / 0.95), inset 0 -36px 40px -30px rgb(255 110 50 / 0.55);
+  box-shadow: inset 0 -2px 0 var(--violet-light), inset 0 -36px 40px -30px rgb(var(--glow-rgb) / 0.55);
   opacity: 0;
 }
 @media (max-width: 700px) {
@@ -1152,6 +1152,8 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .ambient__video{
   position: absolute; inset: -8% 0; width: 100%; height: 116%; max-width: none;
   object-fit: cover; opacity: 0.8;
+  /* Violet toning (task 15): the Higgsfield shots were lit orange; turn that light violet without new files */
+  filter: hue-rotate(245deg) saturate(0.85);
 }
 /* --bg gradient: strong on the left where the text runs, weaker in the middle */
 .ambient::after{
@@ -1545,7 +1547,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 .guitar.is-hover .guitar__img, .guitar.is-playing .guitar__img{ filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.55)) drop-shadow(0 0 26px rgb(var(--glow-rgb) / 0.75)); }
 .amp__img{ filter: drop-shadow(0 22px 34px rgb(0 0 0 / 0.6)); }
 .guitar__strings{ position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.guitar__string{ fill: none; stroke: #fff4ea; stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 3px rgb(var(--glow-rgb) / 0.9)); }
+.guitar__string{ fill: none; stroke: var(--white); stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 3px rgb(var(--glow-rgb) / 0.9)); }
 /* the floor shadow: smaller and lighter while the object is up (same period as the float) */
 .guitar__shadow{
   width: 70%; height: 22px; margin-top: 26px; border-radius: 50%;
@@ -1557,7 +1559,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 /* amp: the pilot lamp and the two speakers (transforms and opacity only) */
 .amp__lamp{
   position: absolute; left: 79.2%; top: 26.2%; width: 5%; aspect-ratio: 1; margin: -2.5% 0 0 -2.5%; border-radius: 50%;
-  background: radial-gradient(circle, #fff3d6 0%, var(--accent) 45%, rgb(var(--glow-rgb) / 0) 72%);
+  background: radial-gradient(circle, var(--white) 0%, var(--accent) 45%, rgb(var(--glow-rgb) / 0) 72%);
   opacity: 0.35; mix-blend-mode: screen; pointer-events: none;
 }
 .amp__cone{
@@ -1776,7 +1778,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 }
 .roulette__grid .roulette__cell{ padding: 0; grid-area: var(--a); }
 .roulette__cell input{ position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.roulette__cell.is-red{ background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.roulette__cell.is-red{ background: var(--roulette-red); color: var(--white); border-color: transparent; }
 .roulette__cell.is-black{ background: #1d1d21; color: #f2f2ee; }
 .roulette__cell.is-green{ background: #2e5b45; color: #f2f2ee; border-color: transparent; }
 .roulette__cell:has(input:checked){ box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); z-index: 1; }
@@ -1817,7 +1819,7 @@ code{ font-family: var(--font-mono); font-size: 0.88em; padding: 1px 5px; border
 @keyframes rouletteInUp{ from{ opacity: 0; transform: translateY(18px); } to{ opacity: 1; transform: none; } }
 .roulette__name{ display: flex; align-items: center; gap: 10px; }
 .roulette__dot{ width: 18px; height: 18px; border-radius: 50%; flex: none; border: 1px solid var(--line-strong); }
-.roulette__dot.is-red{ background: var(--accent); } .roulette__dot.is-black{ background: #1d1d21; } .roulette__dot.is-green{ background: #2e5b45; }
+.roulette__dot.is-red{ background: var(--roulette-red); } .roulette__dot.is-black{ background: #1d1d21; } .roulette__dot.is-green{ background: #2e5b45; }
 .roulette__kicker{ margin-bottom: 10px; font-size: 0.9rem; color: var(--ink-2); }
 .roulette__card.is-win .roulette__kicker{ color: var(--accent-ink); }
 .roulette.is-fallback .roulette__card{ top: auto; left: 50%; right: auto; bottom: clamp(20px, 5vh, 48px); transform: translateX(-50%); }

@@ -1,19 +1,19 @@
 /* Main entry: nav, smooth scroll, motion, hero, carousel. */
-import { initHero } from './hero.js?v=20261110';
-import { initArc } from './carousel.js?v=20261110';
-import { initMotion } from './motion.js?v=20261110';
-import { initRoulette } from './roulette.js?v=20261110';
-import { initBackground } from './background.js?v=20261110';
-import { initCasesMotion } from './cases-motion.js?v=20261110';
-import { initFooter } from './footer.js?v=20261110';
-import { initAmbient } from './ambient.js?v=20261110';
-import { initPause } from './pause.js?v=20261110';
-import { initJar } from './jar.js?v=20261110';
-import { initLetters } from './letters.js?v=20261110';
-import { initPlanDemo } from './plan-demo.js?v=20261110';
-import { initStamp } from './stamp.js?v=20261110';
-import { initHeroIcons } from './hero-icons.js?v=20261110';
-import { initHeroPanel } from './hero-panel.js?v=20261110';
+import { initHero } from './hero.js?v=20261111';
+import { initArc } from './carousel.js?v=20261111';
+import { initMotion } from './motion.js?v=20261111';
+import { initRoulette } from './roulette.js?v=20261111';
+import { initBackground } from './background.js?v=20261111';
+import { initCasesMotion } from './cases-motion.js?v=20261111';
+import { initFooter } from './footer.js?v=20261111';
+import { initAmbient } from './ambient.js?v=20261111';
+import { initPause } from './pause.js?v=20261111';
+import { initJar } from './jar.js?v=20261111';
+import { initLetters } from './letters.js?v=20261111';
+import { initPlanDemo } from './plan-demo.js?v=20261111';
+import { initStamp } from './stamp.js?v=20261111';
+import { initHeroIcons } from './hero-icons.js?v=20261111';
+import { initHeroPanel } from './hero-panel.js?v=20261111';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);

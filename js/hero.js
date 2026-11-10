@@ -22,8 +22,8 @@
    roulette uses the simple panel (js/roulette.js). No WebGL or a load error: the static word stays.
    One loop: the GSAP ticker, only while the hero is on screen, the tab is visible and the guitar panel
    (js/hero-panel.js, hero.dataset.panel) does not cover it. */
-import { ORDER, RED } from './roulette.js?v=20261110';
-import { createRouletteSound } from './roulette-sound.js?v=20261110';
+import { ORDER, RED } from './roulette.js?v=20261111';
+import { createRouletteSound } from './roulette-sound.js?v=20261111';
 
 const WORD = 'HUBERT';
 const TRACK = 0.06;       // gap between glyphs, in em
@@ -38,6 +38,8 @@ const ENTER_MS = 1800;
 const ELEV = 58 * DEG;    // camera elevation in the roulette view
 const TURN_MS = 1250;     // camera move between the views
 const WHEEL_R = 2.5;      // roulette wheel radius, in em
+
+const css = (name, fb) => getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fb;
 
 function hasWebGL() {
   try {
@@ -111,15 +113,15 @@ async function start({ stage, hero, lenis, gsap, ctl, reduced, onRoulette }) {
   const amb = new THREE.AmbientLight(0xffffff, 0.35);
   const key = new THREE.DirectionalLight(0xffffff, 1.4);
   key.position.set(-0.4, 0.9, 0.8);
-  const warm = new THREE.DirectionalLight(0xff5a1f, 1.9);
+  const warm = new THREE.DirectionalLight(0x7b3cff, 1.9);
   warm.position.set(0.9, -0.5, 0.5);
   const pink = new THREE.DirectionalLight(0xffffff, 1.8);
   pink.position.set(-0.9, -0.3, 0.6);
   scene.add(amb, key, warm, pink);
   function applyTheme() {
     const cs = getComputedStyle(document.documentElement);
-    warm.color.set(cs.getPropertyValue('--accent').trim() || '#ff5a1f');
-    pink.color.set(cs.getPropertyValue('--chrome-pink').trim() || '#ffffff'); // tokens.css
+    warm.color.set(cs.getPropertyValue('--accent').trim() || '#7b3cff');
+    pink.color.set(cs.getPropertyValue('--chrome-tint').trim() || '#ffffff'); // tokens.css
   }
 
   /* ---------- The word: one solid, glyphs merged into one geometry ---------- */
@@ -246,7 +248,7 @@ mat3 twistAt(float x) {
     const r = size / 2;
     const k = size / 1024;
     // red pockets in the accent, black in dark chrome, 0 in a muted green (the only extra colour)
-    const fill = (n) => (n === 0 ? ['#2e5b45', '#f2f2ee'] : RED.has(n) ? ['#ff4f12', '#0d0d0d'] : ['#1d1d21', '#f2f2ee']);
+    const fill = (n) => (n === 0 ? ['#2e5b45', '#f2f2ee'] : RED.has(n) ? [css('--roulette-red', '#c8102e'), '#f7f5f0'] : ['#1d1d21', '#f2f2ee']);
     g.translate(r, r);
     // Canvas direction (sin a, cos a) is local wheel angle a (see the texture mapping of the face).
     const th = (a) => Math.PI / 2 - a;
@@ -278,11 +280,11 @@ mat3 twistAt(float x) {
     g.lineWidth = 22 * k; g.strokeStyle = '#0d0d0d';
     g.beginPath(); g.arc(0, 0, r - 11 * k, 0, TAU); g.stroke();
     g.fillStyle = '#0d0d0d'; g.beginPath(); g.arc(0, 0, 92 * k, 0, TAU); g.fill();
-    g.fillStyle = '#ff4f12'; g.beginPath(); g.arc(0, 0, 80 * k, 0, TAU); g.fill();
+    g.fillStyle = css('--accent', '#7b3cff'); g.beginPath(); g.arc(0, 0, 80 * k, 0, TAU); g.fill();
     g.fillStyle = '#0d0d0d'; g.beginPath(); g.arc(0, 0, 72 * k, 0, TAU); g.fill();
     g.save();
     g.scale(1.6 * k, 1.6 * k); g.translate(-32, -32);
-    g.fillStyle = '#ff4f12';
+    g.fillStyle = css('--accent', '#7b3cff');
     g.fill(new Path2D('M23 12h6v40h-6z'));
     g.fillStyle = '#ecece9';
     g.fill(new Path2D('M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z'));
