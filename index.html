@@ -6,7 +6,7 @@
   <title>Hubert · Junior UX/UI Designer, AI-native · Portfolio</title>
   <meta name="description" content="Hubert, Junior UX/UI Designer working with AI tools every day. Client websites, a visual system and motion ad, an interactive 3D model and promotional video.">
   <meta name="author" content="Hubert">
-  <meta name="theme-color" content="#0f0f10">
+  <meta name="theme-color" content="#07060b">
   <meta name="color-scheme" content="dark">
   <link rel="canonical" href="https://hubbit005.github.io/hubert-portfolio-v2/">
 
@@ -26,6 +26,7 @@
 
   <link rel="preload" href="vendor/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="vendor/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="vendor/fonts/grenze-gotisch-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 
   <script>
     /* Theme and JS flag before first paint. No content waits for JS. */
@@ -40,12 +41,31 @@
       var h = (location.hash || '').toLowerCase(), l = h === '#pl' || h === '#en' ? h.slice(1) : null;
       if (!l) { try { l = localStorage.getItem('lang'); } catch (e) {} }
       if (l === 'pl') { d.lang = 'pl'; d.classList.add('lang-pending'); }
+      /* Launch intro (js/launch.js): once per session; not with an anchor in the address or reduced motion */
+      try { if (d.classList.contains('motion-ok') && (!h || l === h.slice(1)) && !sessionStorage.getItem('launched')) d.classList.add('intro'); } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="css/tokens.css?v=20261110">
-  <link rel="stylesheet" href="css/main.css?v=20261110">
+  <link rel="stylesheet" href="css/tokens.css?v=20261111">
+  <link rel="stylesheet" href="css/main.css?v=20261111">
 </head>
 <body>
+  <!-- ============ LAUNCH (task 15): full-screen intro over the page, once per session (js/launch.js).
+       Shown only with html.intro (set in the head script), so without JS there is no overlay. ============ -->
+  <div class="launch" id="launch" role="dialog" aria-modal="true" aria-label="Launch" data-i18n-attr="aria-label:a-launch.1">
+    <picture class="launch__poster">
+      <source media="(max-aspect-ratio: 1/1)" type="image/avif" srcset="assets/space/pad-m-720.avif 720w, assets/space/pad-m-1280.avif 1280w" sizes="100vw">
+      <source media="(max-aspect-ratio: 1/1)" type="image/webp" srcset="assets/space/pad-m-720.webp 720w, assets/space/pad-m-1280.webp 1280w" sizes="100vw">
+      <source type="image/avif" srcset="assets/space/pad-1280.avif 1280w, assets/space/pad-2560.avif 2560w" sizes="100vw">
+      <img src="assets/space/pad-1280.webp" srcset="assets/space/pad-1280.webp 1280w, assets/space/pad-2560.webp 2560w" sizes="100vw" width="2560" height="1448" alt="" decoding="async" loading="lazy">
+    </picture>
+    <video class="launch__video" id="launch-go" playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="assets/space/launch"></video>
+    <video class="launch__video" id="launch-arrive" playsinline preload="none" aria-hidden="true" tabindex="-1" data-src="assets/space/arrive"></video>
+    <div class="launch__bar">
+      <button class="launch__mute" id="launch-mute" type="button" aria-label="Mute sound"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="launch__spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="launch__wave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="launch__x" d="M16 9l6 6M22 9l-6 6"/></svg></button>
+      <button class="launch__skip mono" id="launch-skip" type="button"><span data-i18n="launch.1">Skip intro</span></button>
+    </div>
+    <button class="launch__btn" id="launch-btn" type="button" aria-label="Launch" data-i18n-attr="aria-label:a-launch.1"><span class="launch__count" aria-hidden="true">LAUNCH</span></button>
+  </div>
   <div class="glow" aria-hidden="true"><i class="glow__hero"></i><i class="glow__low"></i></div>
   <a class="skip-link" href="#main" data-i18n="page.1">Skip to content</a>
   <!-- Pause / play motion, first stop for keyboard users (shown on focus; js/pause.js) -->
@@ -55,7 +75,7 @@
   <header class="nav" id="nav">
     <div class="nav__inner">
       <a class="nav__brand" href="#home">
-        <svg class="nav__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#0d0d0d"/><path d="M23 12h6v40h-6z" fill="#ff4f12"/><path d="M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z" fill="#ecece9"/></svg>
+        <svg class="nav__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#0d0d0d"/><path d="M23 12h6v40h-6z" fill="#7b3cff"/><path d="M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z" fill="#ecece9"/></svg>
         <span class="nav__name" data-i18n="nav.1">Hubert<span class="sr-only">, back to top</span></span>
       </a>
       <nav class="nav__links" aria-label="Sections" data-i18n-attr="aria-label:a-nav.1">
@@ -91,6 +111,8 @@
            without JS the guitar is a normal block under the hero. -->
       <div class="hero__track" id="hero-track">
         <div class="hero__main hero__panel" id="hero-main">
+          <!-- Far plane: the quiet space the launch flight ends in (task 15) -->
+          <div class="hero__bg" aria-hidden="true"></div>
           <button class="roulette-open" id="roulette-open" type="button" aria-expanded="false" aria-controls="roulette">
             <svg class="roulette-open__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/><circle class="dot" cx="12" cy="12" r="2.4"/></svg>
             <span data-i18n="roulette-open.1">Play roulette</span>
@@ -98,11 +120,10 @@
           <div class="hero__stage" id="hero-stage">
             <h1 class="hero__title" id="hero-title">
               <span class="sr-only">Hubert</span>
-              <span class="hero__word" aria-hidden="true">
-                <!-- Static word (no JS, no WebGL, and until the 3D solid has started) -->
-                <span class="cyl__static">HUBERT</span>
-              </span>
+              <span class="hero__word" aria-hidden="true">HUBERT</span>
             </h1>
+            <!-- The hero object's picture (phones, reduced motion, no WebGL, and until the 3D model is in: js/hero.js) -->
+            <img class="hero__obj" src="assets/space/planet-900.webp" srcset="assets/space/planet-480.webp 480w, assets/space/planet-900.webp 900w" sizes="(max-width: 700px) 48vw, 26vw" width="900" height="900" alt="" aria-hidden="true" decoding="async">
           </div>
           <div class="roulette" id="roulette" role="region" aria-label="Roulette" hidden data-i18n-attr="aria-label:a-roulette.1">
             <p class="sr-only" id="roulette-status" role="status" aria-live="polite"></p>
@@ -300,8 +321,16 @@
       </div>
 
       <!-- ---------- CASE 01 BASKO CLEAN ---------- -->
-      <article class="case" id="basko-clean" aria-labelledby="basko-title">
+      <article class="is-light case" id="basko-clean" aria-labelledby="basko-title">
         <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/basko-poster.webp" data-ambient="assets/higgsfield/basko"></video></div>
+        <!-- Station cover (task 15, js/stations.js): decorative; the real heading follows below -->
+        <div class="station" aria-hidden="true">
+          <div class="station__pin">
+            <span class="station__num mono">01</span>
+            <img class="station__obj" src="assets/space/star-480.webp" data-model="star" width="480" height="480" alt="" loading="lazy" decoding="async">
+            <span class="station__name">Basko Clean</span>
+          </div>
+        </div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="basko-title"><span class="mask"><span>Basko Clean</span></span></h3>
@@ -368,6 +397,14 @@
       <!-- ---------- CASE 02 KSK PRETOR ---------- -->
       <article class="case case--dark" id="ksk-pretor" aria-labelledby="ksk-title">
         <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/ksk-poster.webp" data-ambient="assets/higgsfield/ksk"></video></div>
+        <!-- Station cover (task 15, js/stations.js): decorative; the real heading follows below -->
+        <div class="station" aria-hidden="true">
+          <div class="station__pin">
+            <span class="station__num mono">02</span>
+            <img class="station__obj" src="assets/space/asteroid-480.webp" data-model="asteroid" width="480" height="480" alt="" loading="lazy" decoding="async">
+            <span class="station__name">KSK Pretor</span>
+          </div>
+        </div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="ksk-title"><span class="mask"><span>KSK Pretor</span></span></h3>
@@ -465,8 +502,16 @@
       </article>
 
       <!-- ---------- CASE 03 LIVINGROOM ---------- -->
-      <article class="case" id="livingroom" aria-labelledby="living-title">
+      <article class="is-light case" id="livingroom" aria-labelledby="living-title">
         <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/living-poster.webp" data-ambient="assets/higgsfield/living"></video></div>
+        <!-- Station cover (task 15, js/stations.js): decorative; the real heading follows below -->
+        <div class="station" aria-hidden="true">
+          <div class="station__pin">
+            <span class="station__num mono">03</span>
+            <img class="station__obj" src="assets/space/satellite-480.webp" data-model="satellite" width="480" height="480" alt="" loading="lazy" decoding="async">
+            <span class="station__name">Livingroom</span>
+          </div>
+        </div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="living-title"><span class="mask"><span>Livingroom</span></span></h3>
@@ -522,6 +567,14 @@
       <!-- ---------- CASE 04 PSYCHOLOGIST ---------- -->
       <article class="case case--minor" id="psychologist-site" aria-labelledby="psy-title">
         <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/psy-poster.webp" data-ambient="assets/higgsfield/psy"></video></div>
+        <!-- Station cover (task 15, js/stations.js): decorative; the real heading follows below -->
+        <div class="station" aria-hidden="true">
+          <div class="station__pin">
+            <span class="station__num mono">04</span>
+            <img class="station__obj" src="assets/space/moon-480.webp" data-model="moon" width="480" height="480" alt="" loading="lazy" decoding="async">
+            <span class="station__name"><span data-i18n="arc-track.15">Website for Agata Patelka</span></span>
+          </div>
+        </div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="psy-title"><span class="mask"><span data-i18n="arc-track.15">Website for Agata Patelka</span></span> <span class="tag-progress mono" data-i18n="arc-track.13">In progress</span></h3>
@@ -561,8 +614,16 @@
       </article>
 
       <!-- ---------- CASE 05 SMALLER PROJECTS ---------- -->
-      <article class="case case--minor" id="smaller-projects" aria-labelledby="smaller-title">
+      <article class="is-light case case--minor" id="smaller-projects" aria-labelledby="smaller-title">
         <div class="ambient" aria-hidden="true"><video class="ambient__video" muted loop playsinline preload="none" aria-hidden="true" tabindex="-1" data-poster="assets/higgsfield/gym-poster.webp" data-ambient="assets/higgsfield/gym"></video></div>
+        <!-- Station cover (task 15, js/stations.js): decorative; the real heading follows below -->
+        <div class="station" aria-hidden="true">
+          <div class="station__pin">
+            <span class="station__num mono">05</span>
+            <img class="station__obj" src="assets/space/ufo-480.webp" data-model="ufo" width="480" height="480" alt="" loading="lazy" decoding="async">
+            <span class="station__name"><span data-i18n="smaller-title.1">Smaller projects</span></span>
+          </div>
+        </div>
         <div class="container">
           <header class="case__head">
             <h3 class="case__title" id="smaller-title"><span class="mask"><span data-i18n="smaller-title.1">Smaller projects</span></span></h3>
@@ -603,7 +664,7 @@
     </section>
 
     <!-- ============ 03 HOW I WORK WITH AI ============ -->
-    <section class="section ai" id="ai" aria-labelledby="ai-title">
+    <section class="is-light section ai" id="ai" aria-labelledby="ai-title">
       <div class="container">
         <header class="sec-head">
           <h2 class="sec-head__title" id="ai-title"><span class="mask"><span data-i18n="ai-title.1">How I work with AI</span></span></h2>
@@ -745,7 +806,8 @@
     </section>
 
     <!-- ============ 04 ABOUT ============ -->
-    <section class="section about" id="about" aria-labelledby="about-title">
+    <section class="is-light section about" id="about" aria-labelledby="about-title">
+      <img class="about__helmet" src="assets/space/helmet-600.webp" width="600" height="600" alt="" aria-hidden="true" loading="lazy" decoding="async">
       <div class="container">
         <header class="sec-head">
           <h2 class="sec-head__title" id="about-title"><span class="mask"><span data-i18n="about-title.1">About</span></span></h2>
@@ -773,7 +835,7 @@
          uncovered like a curtain at the end of the page (js/footer.js, only when it fits the screen). -->
     <div class="curtain" id="curtain">
     <!-- ============ 05 CV ============ -->
-    <section class="section cv" id="cv" aria-labelledby="cv-title">
+    <section class="is-light section cv" id="cv" aria-labelledby="cv-title">
       <div class="container">
         <header class="sec-head">
           <h2 class="sec-head__title" id="cv-title"><span class="mask"><span>CV</span></span></h2>
@@ -841,7 +903,7 @@
           <span class="wordmark__line wordmark__line--fill"><span>H</span><span>U</span><span>B</span><span>E</span><span>R</span><span>T</span></span>
         </div>
         <div class="container footer__inner">
-          <p class="mono footer__brand"><svg class="footer__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#0d0d0d"/><path d="M23 12h6v40h-6z" fill="#ff4f12"/><path d="M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z" fill="#ecece9"/></svg><span>Hubert · Portfolio 2026</span></p>
+          <p class="mono footer__brand"><svg class="footer__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="14" fill="#0d0d0d"/><path d="M23 12h6v40h-6z" fill="#7b3cff"/><path d="M13 12h10v40H13zM41 12h10v40H41zM23 31l18-9v10l-18 9z" fill="#ecece9"/></svg><span>Hubert · Portfolio 2026</span></p>
           <!-- Pause / play for the continuous decorative motion (shown by js/pause.js; label from js/i18n.js) -->
           <button class="motion-toggle mono" id="motion-toggle" type="button" hidden></button>
           <span class="footer__top-wrap">
@@ -854,7 +916,7 @@
     </div>
   </main>
 
-  <script src="js/i18n.js?v=20261110"></script>
+  <script src="js/i18n.js?v=20261111"></script>
   <script>
     /* Scripts start after the first paint (task 09, phone performance): the text is already on screen,
        so the libraries and the modules never hold the first view back. Order: GSAP, ScrollTrigger and
@@ -870,7 +932,7 @@
       }
       function boot() {
         var left = 3;
-        var next = function () { if (--left === 0) add('js/main.js?v=20261110', true); };
+        var next = function () { if (--left === 0) add('js/main.js?v=20261111', true); };
         add('vendor/js/gsap.min.js', false, next);
         add('vendor/js/ScrollTrigger.min.js', false, next);
         add('vendor/js/lenis.min.js', false, next);

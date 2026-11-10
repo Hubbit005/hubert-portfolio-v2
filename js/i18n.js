@@ -330,6 +330,10 @@
     "a-nav.1": "Sekcje",
     // EN: Roulette
     "a-roulette.1": "Ruletka",
+    // EN: Launch (aria-label; the button itself says LAUNCH in both languages)
+    "a-launch.1": "Start",
+    // EN: Skip intro
+    "launch.1": "Pomiń intro",
     // EN: Projects
     "a-arc-viewport.1": "Projekty",
     // EN: Open
@@ -431,6 +435,7 @@
       'roulette.sound': 'Sound on/off',
       'guitar.play': 'Play', 'guitar.pause': 'Pause',
       'guitar.pauseMusic': 'Pause music', 'guitar.playMusic': 'Play music',
+      'launch.mute': 'Mute sound', 'launch.unmute': 'Unmute sound',
     },
     pl: {
       'meta.title': 'Hubert · Junior UX/UI Designer, AI-native · Portfolio',
@@ -486,6 +491,7 @@
       'roulette.sound': 'Dźwięk wł./wył.',
       'guitar.play': 'Zagraj', 'guitar.pause': 'Pauza',
       'guitar.pauseMusic': 'Wstrzymaj muzykę', 'guitar.playMusic': 'Włącz muzykę',
+      'launch.mute': 'Wycisz dźwięk', 'launch.unmute': 'Włącz dźwięk',
     },
   };
 

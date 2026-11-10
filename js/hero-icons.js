@@ -11,7 +11,7 @@
    (no dragging, the page always scrolls). Loaded after the hero's 3D word has started (or after
    the page load without WebGL), so they never slow the first view.
    Decorative (aria-hidden). Reduced motion or paused motion: the icons stand still at home. */
-import { World, circle, box, run, hand } from './physics.js?v=20261110';
+import { World, circle, box, run, hand } from './physics.js?v=20261111';
 
 // a: angle of the home on the ellipse (deg, 0 = right, 90 = down); k: share of the free radius;
 // s: size in px (desktop); z: depth 0 (near) … 1 (far)
@@ -25,11 +25,12 @@ const DESK = [
   { id: 'galaxy', a: 92, k: 0.8, s: 92, z: 1 },
   { id: 'cards', a: 128, k: 0.8, s: 132, z: 0.2 },
 ];
+// Phones (task 15): all four in the upper half, around the object; the word fills the width below it
 const PHONE = [
-  { id: 'guitar', a: 212, k: 0.85, s: 74, z: 0 },
-  { id: 'car', a: 328, k: 0.85, s: 70, z: 0.3 },
-  { id: 'diamond', a: 40, k: 0.85, s: 58, z: 0.5 },
-  { id: 'dollar', a: 140, k: 0.85, s: 56, z: 0.6 },
+  { id: 'guitar', a: 200, k: 0.85, s: 74, z: 0 },
+  { id: 'dollar', a: 245, k: 0.85, s: 56, z: 0.6 },
+  { id: 'diamond', a: 295, k: 0.85, s: 58, z: 0.5 },
+  { id: 'car', a: 340, k: 0.85, s: 70, z: 0.3 },
 ];
 const IDLE = 5; // s without touching before the icons go home
 

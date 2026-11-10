@@ -51,37 +51,65 @@
   src: url(../vendor/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
 }
 
+@font-face {
+  font-family: "Grenze Gotisch";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../vendor/fonts/grenze-gotisch-latin-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* Display face for HUBERT and big station headings only (SIL OFL, vendor/fonts/grenze-gotisch-OFL.txt) */
+@font-face {
+  font-family: "Grenze Gotisch";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(../vendor/fonts/grenze-gotisch-latin-ext-wght-normal.woff2) format("woff2-variations");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 :root {
   color-scheme: light;
 
+  /* Palette (task 15): galactic violet, black, beige, white. Every colour below derives from these. */
+  --space: #07060b;
+  --violet-deep: #2a0f5c;
+  --violet: #7b3cff;
+  --violet-light: #b89cff;
+  --beige: #e9dfcc;
+  --white: #f7f5f0;
+  --roulette-red: #c8102e; /* the roulette's red pockets (game colour, not brand) */
+
   /* Colour */
-  --bg: #ecece9;
-  --bg-rgb: 236 236 233;
-  --surface: #f7f7f5;
-  --surface-2: #e2e2de;
-  --ink: #0d0d0d;
-  --ink-rgb: 13 13 13;
-  --ink-2: #55554f;
-  --line: rgb(13 13 13 / 0.14);
-  --line-strong: rgb(13 13 13 / 0.32);
-  --accent: #ff4f12;
-  --accent-ink: #b23300; /* accent used as text on light bg (AA) */
-  --on-accent: #0d0d0d;
+  --bg: var(--beige);
+  --bg-rgb: 233 223 204;
+  --surface: var(--white);
+  --surface-2: #ddd1bb;
+  --ink: var(--space);
+  --ink-rgb: 7 6 11;
+  --ink-2: #4f4860;
+  --line: rgb(7 6 11 / 0.14);
+  --line-strong: rgb(7 6 11 / 0.32);
+  --accent: var(--violet);
+  --accent-ink: #5a22d6; /* accent used as text on light bg (AA) */
+  --on-accent: var(--white);
   --success: #1f7a3d;
   --danger: #b42318;
   --warning: #8a5a00;
-  --focus: #0d0d0d;
-  --focus-halo: #ff4f12;
-  --glow-rgb: 255 118 52;
+  --focus: var(--space);
+  --focus-halo: var(--violet);
+  --glow-rgb: 123 60 255;
   --glow-a: 0.22;
-  /* Objects in the guitar scene and the 3D word's lights (not page colours) */
+  /* Objects in the guitar scene and the hero object's lights (not page colours) */
   --cable: #1c1c1f;
   --cable-plug: #2a2a2c;
   --cable-tip: #c9c9cf;
   --led-hot: #fff1e0;
-  --chrome-pink: #ff8fbf;
+  --chrome-tint: var(--violet-light);
 
   /* Typography */
+  --font-expo: "Grenze Gotisch", Georgia, serif;
   --font-display: "Archivo", "Arial Black", system-ui, sans-serif;
   --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
@@ -144,7 +172,7 @@
   --toy-ball-hi: #ffffff;
   --toy-ball: #e6e6e1;
   --toy-ball-lo: #9d9d96;
-  --toy-ball-ink: #0d0d0d;
+  --toy-ball-ink: var(--space);
   /* Training plan demo: the colours of the client template in the screenshots (demo only, not brand) */
   --demo-bg: #f5f5f3;
   --demo-card: #ffffff;
@@ -158,25 +186,25 @@
 /* Dark: explicit choice */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0f0f10;
-  --bg-rgb: 15 15 16;
-  --surface: #18181a;
-  --surface-2: #222225;
-  --ink: #eeeeea;
-  --ink-rgb: 238 238 234;
-  --ink-2: #a3a39c;
-  --line: rgb(238 238 234 / 0.14);
-  --line-strong: rgb(238 238 234 / 0.32);
-  --accent: #ff5a1f;
-  --accent-ink: #ff8a5c;
-  --on-accent: #0d0d0d;
+  --bg: var(--space);
+  --bg-rgb: 7 6 11;
+  --surface: #120d22;
+  --surface-2: #1c1433;
+  --ink: var(--white);
+  --ink-rgb: 247 245 240;
+  --ink-2: #b3adc2;
+  --line: rgb(247 245 240 / 0.14);
+  --line-strong: rgb(247 245 240 / 0.32);
+  --accent: var(--violet);
+  --accent-ink: var(--violet-light);
+  --on-accent: var(--white);
   --success: #5cc584;
   --danger: #ff8a80;
   --warning: #f2c14e;
-  --focus: #eeeeea;
-  --focus-halo: #ff5a1f;
-  --glow-rgb: 255 84 20;
-  --glow-a: 0.3;
+  --focus: var(--white);
+  --focus-halo: var(--violet);
+  --glow-rgb: 123 60 255;
+  --glow-a: 0.34;
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
   --shadow-2: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
   --shadow-3: 0 6px 12px rgb(0 0 0 / 0.45), 0 30px 60px rgb(0 0 0 / 0.55);
@@ -186,25 +214,25 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0f0f10;
-    --bg-rgb: 15 15 16;
-    --surface: #18181a;
-    --surface-2: #222225;
-    --ink: #eeeeea;
-    --ink-rgb: 238 238 234;
-    --ink-2: #a3a39c;
-    --line: rgb(238 238 234 / 0.14);
-    --line-strong: rgb(238 238 234 / 0.32);
-    --accent: #ff5a1f;
-    --accent-ink: #ff8a5c;
-    --on-accent: #0d0d0d;
+    --bg: var(--space);
+    --bg-rgb: 7 6 11;
+    --surface: #120d22;
+    --surface-2: #1c1433;
+    --ink: var(--white);
+    --ink-rgb: 247 245 240;
+    --ink-2: #b3adc2;
+    --line: rgb(247 245 240 / 0.14);
+    --line-strong: rgb(247 245 240 / 0.32);
+    --accent: var(--violet);
+    --accent-ink: var(--violet-light);
+    --on-accent: var(--white);
     --success: #5cc584;
     --danger: #ff8a80;
     --warning: #f2c14e;
-    --focus: #eeeeea;
-    --focus-halo: #ff5a1f;
-  --glow-rgb: 255 84 20;
-  --glow-a: 0.3;
+    --focus: var(--white);
+    --focus-halo: var(--violet);
+  --glow-rgb: 123 60 255;
+  --glow-a: 0.34;
     --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
     --shadow-2: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
     --shadow-3: 0 6px 12px rgb(0 0 0 / 0.45), 0 30px 60px rgb(0 0 0 / 0.55);

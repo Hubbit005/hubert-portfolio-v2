@@ -1,19 +1,23 @@
 /* Main entry: nav, smooth scroll, motion, hero, carousel. */
-import { initHero } from './hero.js?v=20261110';
-import { initArc } from './carousel.js?v=20261110';
-import { initMotion } from './motion.js?v=20261110';
-import { initRoulette } from './roulette.js?v=20261110';
-import { initBackground } from './background.js?v=20261110';
-import { initCasesMotion } from './cases-motion.js?v=20261110';
-import { initFooter } from './footer.js?v=20261110';
-import { initAmbient } from './ambient.js?v=20261110';
-import { initPause } from './pause.js?v=20261110';
-import { initJar } from './jar.js?v=20261110';
-import { initLetters } from './letters.js?v=20261110';
-import { initPlanDemo } from './plan-demo.js?v=20261110';
-import { initStamp } from './stamp.js?v=20261110';
-import { initHeroIcons } from './hero-icons.js?v=20261110';
-import { initHeroPanel } from './hero-panel.js?v=20261110';
+import { initHero } from './hero.js?v=20261111';
+import { initArc } from './carousel.js?v=20261111';
+import { initMotion } from './motion.js?v=20261111';
+import { initRoulette } from './roulette.js?v=20261111';
+import { initBackground } from './background.js?v=20261111';
+import { initCasesMotion } from './cases-motion.js?v=20261111';
+import { initFooter } from './footer.js?v=20261111';
+import { initAmbient } from './ambient.js?v=20261111';
+import { initPause } from './pause.js?v=20261111';
+import { initJar } from './jar.js?v=20261111';
+import { initLetters } from './letters.js?v=20261111';
+import { initPlanDemo } from './plan-demo.js?v=20261111';
+import { initStamp } from './stamp.js?v=20261111';
+import { initHeroIcons } from './hero-icons.js?v=20261111';
+import { initHeroPanel } from './hero-panel.js?v=20261111';
+import { initLaunch } from './launch.js?v=20261111';
+import { initRocket } from './rocket.js?v=20261111';
+import { initStations } from './stations.js?v=20261111';
+import { initCursor } from './cursor.js?v=20261111';
 
 const doc = document.documentElement;
 const t = (k, v) => (window.i18n ? window.i18n.t(k, v) : k);
@@ -55,6 +59,8 @@ if (!reduced && window.Lenis) {
   }
 }
 window.__lenis = lenis;
+// The launch intro first: it takes the focus and stops the page under it (js/launch.js)
+initLaunch({ lenis, gsap });
 
 function navOffset() { return (document.getElementById('nav')?.offsetHeight || 64) + 8; }
 function scrollToTarget(el, immediate = false) {
@@ -218,7 +224,7 @@ document.addEventListener('langchange', () => {
 async function boot() {
   try { await document.fonts.ready; } catch (e) { /* ignore */ }
   const roulette = initRoulette({ gsap });
-  initHero({ reduced, lenis, gsap, onRoulette: (api) => roulette.attach(api) });
+  initHero({ reduced, lenis, gsap, ScrollTrigger, onRoulette: (api) => roulette.attach(api) });
   initArc({ reduced });
   initPause({ reduced });
   initMotion({ reduced, gsap, ScrollTrigger, lenis });
@@ -231,7 +237,12 @@ async function boot() {
   initHeroIcons({ reduced, gsap });
   initHeroPanel({ reduced, gsap });
   initAmbient({ reduced, gsap, ScrollTrigger });
-  initBackground({ reduced, gsap, ScrollTrigger, lenis });
+  initBackground({ reduced, gsap, lenis });
+  // Task 15 decoration: each in its own idle moment, so none of it adds to the first load's long tasks
+  const later = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+  later(() => initRocket({ reduced, gsap }), { timeout: 2000 });
+  later(() => initStations({ reduced, gsap, ScrollTrigger, lenis }), { timeout: 2000 });
+  later(() => initCursor({ reduced, gsap }), { timeout: 2000 });
   initMagnetic();
 
   measurePage();
