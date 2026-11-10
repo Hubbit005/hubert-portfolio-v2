@@ -5,7 +5,11 @@ Adres: https://hubbit005.github.io/hubert-portfolio-v2/
 
 Wersja 2 to kopia strony z repo `Hubbit005/hubert-portfolio`. Stare repo zostaje bez zmian, nie ruszaj go.
 
-Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz, nowy kursor, ładniej pokazane projekty, nowa stopka i kilka realistycznych ujęć wideo z Higgsfielda. Zadania są w folderze `prompts/`, wykonuj je po kolei.
+Cel wersji 2: efekt „wow” przez ruch. Od 10.11.2026 (decyzja Huberta) strona staje się podróżą kosmiczną: intro ze startem rakiety, lot do hero, dalej lot przez przestrzeń między projektami. Brief jest w `prompts/14-kosmos-brief.md`, zadanie w `prompts/15-kosmos-budowa.md`. Zadania 00–13 są wykonane, a zadanie 10 anulowane.
+
+Budujesz skillem **scroll-craft** (`.claude/skills/scroll-craft/`, Nate Herk, MIT). Jego wywiad zastępuje gotowy brief. Jego generatora assetów (`scripts/kie.mjs`, Kie.ai) nie używaj.
+
+Kopia strony sprzed przebudowy: gałąź `backup/przed-kosmosem-2026-11-10`. Nie zmieniaj jej i nie usuwaj.
 
 ## Stos
 
@@ -17,11 +21,12 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 ## Czego nie zmieniać (zamrożone)
 
-1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): pomarańczowo-różowa poświata zostaje. Od 7.11.2026 (decyzje Huberta) hero jest odblokowane dla: chromowanych ikon i ruletki (zadanie 09), napisu HUBERT jako chromowanej skręconej bryły 3D (zadanie 10) oraz sceny z gitarą (zadania 11 i 12). Ikony są ostre, bez rozmycia, i poruszają się tylko w elipsie wokół napisu; głębię dają tylko wielkość i jasność. Od zadania 12 ruletka to gra kasynowa na numery i monety, a nie losowanie projektów.
+1. **Hero** (`#home`, `js/hero.js`, `js/roulette.js`): działanie ruletki, chromowanych ikon i sceny z gitarą (zadania 09, 11, 12, 13) zostaje. Od 10.11.2026 hero jest odblokowane dla: nowego napisu HUBERT krojem ekspozycyjnym, opalizującego obiektu 3D na środku i fioletowej poświaty (brief, sekcja „Hero – decyzja”). Przed hero dochodzi sekcja `#launch`. Ikony są ostre, bez rozmycia, i poruszają się tylko w elipsie wokół napisu; głębię dają tylko wielkość i jasność. Od zadania 12 ruletka to gra kasynowa na numery i monety, a nie losowanie projektów.
 2. **Karuzela projektów** (`#work`, `js/carousel.js`): zostaje jak jest.
-3. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też. Wyjątki tylko według promptów (np. zadanie 11 usuwa blok „Where AI speeds me up” / „What I decide” i przenosi `#guitar` do hero).
-4. **Kotwice** (`#guitar`, `#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
-5. **Paleta.** Ciemny motyw jest domyślny. Akcent `--accent`, poświata `--glow-rgb`. Bez nowych kolorów marki.
+3. **Sekcje pod hero** są odblokowane dla nowego układu i ruchu (stacje, faliste przejścia, tło worldflight), ale ich treść nie.
+4. **Treść.** Każde zdanie po angielsku w `index.html` i po polsku w `js/i18n.js` zostaje słowo w słowo. Kolejność sekcji i projektów też. Wyjątki tylko według promptów (np. zadanie 11 usuwa blok „Where AI speeds me up” / „What I decide” i przenosi `#guitar` do hero).
+5. **Kotwice** (`#guitar`, `#basko-clean`, `#ksk-pretor`, `#ksk-3d-model`, `#ksk-video`, `#livingroom`, `#psychologist-site`, `#smaller-projects`, `#training-plans`, `#this-portfolio` i sekcje z menu). Używa ich karuzela, ruletka i menu.
+6. **Paleta.** Od 10.11.2026: galaktyczny fiolet, czerń, beż, biel (tabela w briefie). Pomarańcz i róż znikają. Wartości tylko w `css/tokens.css`: akcent `--accent`, poświata `--glow-rgb`. Bez innych kolorów marki.
 
 ## Twarde zasady treści
 
@@ -33,7 +38,7 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 - `prefers-reduced-motion: reduce`: wszystkie nowe efekty mają wersję statyczną, a treść jest widoczna od razu. Wzór: `js/motion.js`.
 - Strona działa i wszystko widać bez JS (klasy `no-js` / `js` w `<html>`).
-- Kursor systemowy na wszystkich urządzeniach, bez własnego kursora (decyzja Huberta, zadanie 12).
+- Kursor: od 10.11.2026 własny kursor tylko na desktopie (`hover: hover` i `pointer: fine`), opis w zadaniu 15. Na urządzeniach dotykowych kursor systemowy.
 - Urządzenia dotykowe (`hover: none` / `pointer: coarse`): bez efektów zależnych od najechania myszą.
 - Klawiatura: widoczny focus, nic nie łapie fokusu, kolejność tabulacji bez zmian.
 - Kontrast tekstu nie może spaść przez nowe tło (WCAG AA).
@@ -42,7 +47,8 @@ Cel wersji 2: efekt „wow” przez ruch: żywe tło reagujące na scroll i mysz
 
 - Lighthouse mobile: cel Performance ≥ 90, CLS < 0,1. Stan na 7.11.2026: 75–81. Żadna zmiana nie może obniżyć wyniku. Zmierz przed i po każdym zadaniu.
 - Rzeczy spoza pierwszego ekranu (np. panel z gitarą) ładuj dopiero po interakcji albo przy zbliżaniu się do ekranu, nigdy przy starcie.
-- Animuj tylko `transform`, `opacity`, `clip-path` i uniformy shaderów.
+- Animuj tylko `transform`, `opacity`, `clip-path`, `stroke-dashoffset` i uniformy shaderów.
+- Wideo przewijane scrollem: plakat jako pierwszy obraz, wideo dociągane po pierwszym malowaniu, osobny lżejszy plik na telefon.
 - WebGL: `devicePixelRatio` maks. 1,5, tło renderowane w obniżonej rozdzielczości, pauza, gdy karta jest ukryta.
 - Słabe urządzenie albo brak WebGL: zostaje obecne tło CSS (`.glow`).
 - Obrazy: zostają `loading="lazy"`, wymiary i `srcset`. Bez nowych ciężkich plików bez potrzeby.
