@@ -1,5 +1,6 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
 import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261111';
+import { initLang } from './i18n.js?v=20261111';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -7,6 +8,7 @@ const weak = navigator.hardwareConcurrency <= 2 || navigator.deviceMemory <= 2;
 const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
 const phone = matchMedia('(max-width: 767px)');
 
+initLang();
 await renderGlyphs();
 
 // Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.

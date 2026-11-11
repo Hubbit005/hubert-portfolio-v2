@@ -66,7 +66,6 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .services__list { top: calc(390 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(1000 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); column-gap: calc(40 * var(--u)); row-gap: calc(44 * var(--u)); }
 .services__list li { padding-top: calc(14 * var(--u)); border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
 .services__list b { display: block; font-weight: 700; font-size: calc(14 * var(--u)); }
-.services__list b i { font-style: normal; font-weight: 500; color: var(--ink-2); margin-right: .8em; }
 .services__list span { display: block; margin-top: calc(6 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); color: var(--ink-2); }
 .services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
 
@@ -112,6 +111,15 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .socials__links { top: calc(460 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
+
+/* ===== Przełącznik języka (js/i18n.js): lewy górny róg, minimalnie ===== */
+.lang { position: fixed; z-index: 3; top: calc(40 * var(--u)); left: calc(63 * var(--u)); display: flex; align-items: center; gap: .5em; font: 700 calc(12 * var(--u)) / 1 var(--font); letter-spacing: .08em; }
+.lang span { opacity: .3; }
+.lang button { padding: 4px 0; border: 0; background: none; color: var(--ink); font: inherit; letter-spacing: inherit; cursor: pointer; opacity: .45; transition: opacity .3s; }
+.lang button[aria-pressed="true"] { opacity: 1; }
+.lang button:hover, .lang button:focus-visible { opacity: 1; }
+.lang button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+@media (max-width: 767px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
 
 /* ===== Scena WebGL (js/scene.js) ===== */
 canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }

@@ -39,7 +39,7 @@ const LIGHT = /* glsl */`
     float kr = smoothstep(.15 * sig, 1.3 * sig, dot(d, -dir));
     c = mix(c, uRed, kr * .45);
     float warm = smoothstep(.1 * sig, -1.3 * sig, d.y) * (.35 + .65 * uWarm);
-    return mix(c, mix(uAmber, uRed, .55), warm * .55);
+    return mix(c, uRed, warm * .4); // bez bursztynu: tylko fiolet, niebieski, czerwień
   }`;
 
 const BG_FRAG = /* glsl */`

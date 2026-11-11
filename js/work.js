@@ -1,5 +1,6 @@
 // Strona projektu: przypięty panel, taśma zdjęć przesuwana scrollem w bok, CLOSE i Esc.
 import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261111';
+import { initLang } from './i18n.js?v=20261111';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const weak = navigator.hardwareConcurrency <= 2 || navigator.deviceMemory <= 2;
@@ -7,6 +8,7 @@ const desktop = matchMedia('(min-width: 768px) and (hover: hover) and (pointer: 
 const strip = document.querySelector('.strip');
 const close = document.querySelector('.close');
 
+initLang('../');
 await renderGlyphs(document, '../');
 
 addEventListener('keydown', (e) => { if (e.key === 'Escape') location.href = close.href; });
