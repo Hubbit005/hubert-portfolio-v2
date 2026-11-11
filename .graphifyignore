@@ -1,7 +1,7 @@
-prompts/
-assets/
-vendor/
-proto/
 .claude/
-*.md
-404.html
+CLAUDE.md
+vendor/
+assets/
+prompts/
+work/
+graphify-out/
