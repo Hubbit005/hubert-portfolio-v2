@@ -75,7 +75,17 @@ function startMotion() {
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); return; }
     html.classList.add('gl');
-    const pose = crystalPath(STEP, HOLD);
+    const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
+    // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
+    let tb = null;
+    const titleBox = (f, live) => {
+      if ((live || !tb) && titleSvgs.length === 2) {
+        const a = titleSvgs[0].getBoundingClientRect(), b = titleSvgs[1].getBoundingClientRect();
+        tb = { x: b.left / f.u, w: b.width / f.u, y: (a.top - f.top) / f.u, h: (b.bottom - a.top) / f.u };
+      }
+      return tb;
+    };
+    const pose = crystalPath(STEP, HOLD, titleBox);
     gl.beforeRender = (dt) => {
       const f = frame(), p = progress(), st = sections(p, f);
       const c = pose(p, st, dt, f);
@@ -131,22 +141,55 @@ function startMotion() {
 }
 
 // Tor kryształu (brief 16, sekcja 6) we współrzędnych projektu: środek x, y, rozmiar s, głębokość z.
-function crystalPath(STEP, HOLD) {
+// Hero (zmiana 11.11): kryształ jeździ w pętli po trasie narysowanej przez Huberta, zawsze przed napisem.
+// Punkty: u = 0–1 wzdłuż szerokości SKONIECZNY, v = 0 góra HUBERT, 1 dół SKONIECZNY.
+const ROUTE = [
+  [.76, .24], [.80, .16], [.76, .12], [.66, .15], [.527, .39], [.44, .48], [.35, .59], [.217, .70],
+  [.137, .71], [.124, .76], [.15, .80], [.26, .80], [.394, .78], [.48, .59], [.57, .44], [.686, .31],
+];
+const LOOP = 14; // s na jedno okrążenie
+
+// Zamknięty Catmull-Rom, próbkowany równo po długości (stała prędkość) dla danej ramki napisu.
+function routeSampler() {
+  let key = '', pts = [];
+  const cr = (a, b, c, d, t) => .5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t * t + (-a + 3 * b - 3 * c + d) * t * t * t);
+  return (box, phase) => {
+    const k = [box.x, box.y, box.w, box.h].map(Math.round).join();
+    if (k !== key) {
+      key = k;
+      const P = ROUTE.map(([u, v]) => [box.x + u * box.w, box.y + v * box.h]), N = P.length, raw = [];
+      for (let i = 0; i < N; i++) for (let s = 0; s < 40; s++) {
+        const [a, b, c, d] = [-1, 0, 1, 2].map((o) => P[(i + o + N) % N]), t = s / 40;
+        raw.push([cr(a[0], b[0], c[0], d[0], t), cr(a[1], b[1], c[1], d[1], t)]);
+      }
+      let L = 0; pts = raw.map((q, i) => { if (i) L += Math.hypot(q[0] - raw[i - 1][0], q[1] - raw[i - 1][1]); return [q[0], q[1], L]; });
+      const total = L + Math.hypot(raw[0][0] - raw.at(-1)[0], raw[0][1] - raw.at(-1)[1]);
+      pts.total = total;
+    }
+    const d = (phase % 1) * pts.total;
+    let lo = 0, hi = pts.length - 1;
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (pts[m][2] <= d) lo = m; else hi = m - 1; }
+    const a = pts[lo], b = pts[(lo + 1) % pts.length], seg = (b[2] || pts.total) - a[2], t = seg > 0 ? (d - a[2]) / seg : 0;
+    return { x: a[0] + (b[0] - a[0]) * t, y: a[1] + (b[1] - a[1]) * t };
+  };
+}
+
+function crystalPath(STEP, HOLD, titleBox) {
   const D = [null, { x: 950, y: 430, s: 300 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
   const M = [null, { x: 435, y: 360, s: 420 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
   const MID = { x: 1090, y: 450 };
   const ease = (t) => t * t * (3 - 2 * t);
+  const route = routeSampler();
   let orbit = 0;
-  const hero = (m) => {
-    const th = orbit / 10 * Math.PI * 2;                     // jeden obieg ok. 10 s
-    if (m) return { x: 335 + 60 * Math.cos(th), y: 355 + 14 * Math.sin(th), s: 200, z: -80 }; // [Z] telefon: mała orbita za literami
-    const a = -8 * Math.PI / 180, ex = 480 * Math.cos(th), ey = 70 * Math.sin(th);
-    return { x: 720 + ex * Math.cos(a) - ey * Math.sin(a), y: 462 + ex * Math.sin(a) + ey * Math.cos(a), s: 140, z: 150 * Math.sin(th) };
+  const hero = (m, f, live) => {
+    const box = titleBox(f, live) ?? (m ? { x: 40, y: 300, w: 310, h: 120 } : { x: 284, y: 250, w: 873, h: 322 });
+    const q = route(box, orbit / LOOP);
+    return { x: q.x, y: q.y, s: m ? 64 : 140, z: 60 }; // zawsze przed literami (decyzja Huberta 11.11)
   };
   return (p, { k, t }, dt, f) => {
     if (p <= HOLD) orbit += dt;
     const P = f.m ? M : D;
-    const from = k === 0 ? hero(f.m) : { ...P[k], z: 0 };
+    const from = k === 0 ? hero(f.m, f, p <= HOLD && t === 0) : { ...P[k], z: 0 };
     if (t === 0 || k >= 3) return from;
     const to = { ...P[k + 1], z: 0 }, e = ease(t);
     const lerp = (a, b) => a + (b - a) * e;

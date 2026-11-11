@@ -20,7 +20,8 @@
   --light-ice: #D9E8FF;
   --light-amber: #F0913A;
   --light-rose: #FF5A7A;
-  --rainbow: linear-gradient(90deg, var(--light-rose), var(--light-amber), var(--light-blue), var(--light-violet));
+  --light-red: #FF2D3F;   /* czerwień jak u Doriana: poświata i podszewka rozmycia */
+  --rainbow: linear-gradient(90deg, var(--light-red), var(--light-rose), var(--light-amber), var(--light-blue), var(--light-violet));
 
   --font: "Manrope", system-ui, sans-serif;
 

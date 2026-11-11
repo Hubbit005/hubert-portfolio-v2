@@ -5,7 +5,11 @@ import * as THREE from '../vendor/three/three.module.min.js';
 
 const GX = 60, GY = 35;          // rzadka siatka fizyki
 const DEPTH = 30, RADIUS = 140;  // wgniecenie łyżeczki, px
-const K = 56, C = 5.2;           // sprężyna: powrót ok. 1,5 s z lekkim przeregulowaniem
+const K = 30, C = 2.4;           // sprężyna powrotu: miękka, budyń faluje jeszcze ok. 1,5 s
+const WAVE = 190;                // sprzężenie sąsiadów (komórki²/s²): fala rozchodzi się jak w wodzie
+const FK = 55, FC = 6.5;         // „palec” goni kursor z bezwładnością: po zatrzymaniu przejeżdża ok. 10% dalej
+const BLUR_R = 190;              // promień rozmycia napisu, px
+const BLUR_IN = .55, BLUR_OUT = 4; // narastanie ok. 0,55 s, powrót liter ok. 4 s (decyzja Huberta 11.11)
 const BG_Z = -600;               // tło za płaszczyzną napisu, żeby kryształ mógł chować się za literami
 
 const css = getComputedStyle(document.documentElement);
@@ -23,7 +27,7 @@ const VERT = /* glsl */`
   }`;
 
 const LIGHT = /* glsl */`
-  uniform vec3 uViolet, uBlue, uAmber, uIce;
+  uniform vec3 uViolet, uBlue, uAmber, uIce, uRed;
   uniform float uTime, uWarm;
   // Światło jak przez kryształ: fiolet -> błękit, ciepła bursztynowa plama od dołu.
   vec3 crystalLight(vec2 d, float sig) {
@@ -31,8 +35,11 @@ const LIGHT = /* glsl */`
     vec2 dir = vec2(cos(t), sin(t));
     float k = smoothstep(-sig, sig, dot(d, dir)) * (1. - .45 * uWarm);
     vec3 c = mix(uViolet, uBlue, k);
+    // czerwień jak u Doriana: brzeg po przeciwnej stronie niż błękit, obraca się razem z nim
+    float kr = smoothstep(.15 * sig, 1.3 * sig, dot(d, -dir));
+    c = mix(c, uRed, kr * .45);
     float warm = smoothstep(.1 * sig, -1.3 * sig, d.y) * (.35 + .65 * uWarm);
-    return mix(c, uAmber, warm * .55);
+    return mix(c, mix(uAmber, uRed, .55), warm * .55);
   }`;
 
 const BG_FRAG = /* glsl */`
@@ -59,25 +66,28 @@ const BG_FRAG = /* glsl */`
   }`;
 
 const TEXT_FRAG = /* glsl */`
-  uniform sampler2D uText; uniform vec2 uRes, uMouse; uniform float uAlpha, uShift, uHover;
-  uniform vec3 uInk, uRose, uBlue, uAmber;
+  uniform sampler2D uText, uBlurMap; uniform vec2 uRes, uMouse; uniform float uAlpha, uShift, uHover;
+  uniform vec3 uInk, uRed, uBlue, uAmber;
   varying vec2 vUv;
   float tx(vec2 px) { return texture2D(uText, (px - vec2(0., uShift)) / uRes).a; }
   float blur(vec2 px, vec2 dir, float r) { return (tx(px) * 2. + tx(px + dir * r) + tx(px - dir * r) + tx(px + vec2(-dir.y, dir.x) * r) + tx(px - vec2(-dir.y, dir.x) * r)) / 6.; }
   void main() {
     vec2 px = vUv * uRes;
-    vec2 m = px - uMouse;
-    float a = smoothstep(180., 20., length(m)) * uHover;
-    vec2 dir = normalize(m + .001);
-    vec2 o = dir * 12. * a;
-    float r = 6. * a;
+    // siła rozmycia z mapy na CPU: narasta powoli i wraca ok. 4 s po zejściu kursora
+    float a = texture2D(uBlurMap, vUv).r * uHover;
+    a = a * a * (3. - 2. * a);
+    vec2 dir = normalize(vec2(1., .16));
+    vec2 o = dir * 18. * a;
+    float r = 9. * a;
     float t0 = tx(px);
     float tr = blur(px + o, dir, r), ta = blur(px, dir, r), tb = blur(px - o, dir, r);
-    vec3 split = (uRose * tr + uAmber * ta + uBlue * tb) / (uRose + uAmber + uBlue) * uInk;
-    vec3 c = mix(uInk * t0, split, a);
-    float al = mix(t0, max(max(tr, ta), tb), a) * uAlpha;
-    if (al < .02) discard;
-    gl_FragColor = vec4(c / max(mix(t0, max(max(tr, ta), tb), a), .001), al);
+    // beż w środku, czerwona podszewka z przodu, chłodny błękit z tyłu (premultiplied)
+    vec3 pm = uInk * ta + uRed * max(tr - ta, 0.) * 1.1 + uBlue * max(tb - ta, 0.) * .7;
+    float sa = max(max(tr, ta), tb);
+    vec3 c = mix(uInk * t0, pm, a);
+    float al = mix(t0, sa, a);
+    if (al * uAlpha < .02) discard;
+    gl_FragColor = vec4(c / max(al, .001), al * uAlpha);
     #include <colorspace_fragment>
   }`;
 
@@ -104,11 +114,16 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const disp = new THREE.DataTexture(dispData, GX, GY, THREE.RedFormat);
   disp.magFilter = disp.minFilter = THREE.LinearFilter;
   disp.needsUpdate = true;
+  // Mapa rozmycia napisu (0–255), osobna od budyniu, żeby żyła własnym, wolniejszym czasem.
+  const blurF = new Float32Array(GX * GY), blurData = new Uint8Array(GX * GY);
+  const blurTex = new THREE.DataTexture(blurData, GX, GY, THREE.RedFormat);
+  blurTex.magFilter = blurTex.minFilter = THREE.LinearFilter;
+  blurTex.needsUpdate = true;
 
   const shared = {
     uDisp: { value: disp }, uDepth: { value: DEPTH }, uRes: { value: new THREE.Vector2() },
     uViolet: { value: col('--light-violet') }, uBlue: { value: col('--light-blue') },
-    uAmber: { value: col('--light-amber') }, uIce: { value: col('--light-ice') },
+    uAmber: { value: col('--light-amber') }, uIce: { value: col('--light-ice') }, uRed: { value: col('--light-red') },
     uTime: { value: 0 }, uWarm: { value: .5 },
   };
   const grid = new THREE.PlaneGeometry(1, 1, 120, 70);
@@ -129,7 +144,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     uniforms: {
       ...shared, uText: { value: textTex }, uMouse: { value: new THREE.Vector2(-999, -999) },
       uAlpha: { value: 1 }, uShift: { value: 0 }, uHover: { value: touch ? 0 : 1 },
-      uInk: { value: col('--ink') }, uRose: { value: col('--light-rose') },
+      uInk: { value: col('--ink') }, uBlurMap: { value: blurTex },
     },
   }));
   text.renderOrder = 1;
@@ -173,6 +188,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   addEventListener('resize', resize);
 
   // Wskaźnik: px od lewego dolnego rogu (jak gl_FragCoord).
+  const fp = { x: -999, y: -999, vx: 0, vy: 0 };
   const ptr = { x: -999, y: -999, active: false }, light = new THREE.Vector2(-999, -999);
   const at = (e, on) => { ptr.x = e.clientX; ptr.y = H - e.clientY; ptr.active = on; };
   if (touch) { // palec wgniata tylko w ruchu (także podczas przewijania)
@@ -190,22 +206,46 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     size: () => ({ W, H }),
     update(dt, time) {
       shared.uTime.value = time;
-      // sprężyny
-      const R2 = RADIUS * RADIUS;
+      // „palec” z bezwładnością: goni kursor sprężyną, po zatrzymaniu jeszcze przejeżdża i wraca
+      if (ptr.active) {
+        if (fp.x === -999) { fp.x = ptr.x; fp.y = ptr.y; }
+        fp.vx += (FK * (ptr.x - fp.x) - FC * fp.vx) * dt; fp.vy += (FK * (ptr.y - fp.y) - FC * fp.vy) * dt;
+        fp.x += fp.vx * dt; fp.y += fp.vy * dt;
+      }
+      // budyń: sprężyna do spoczynku + fala między sąsiadami (rozchodzi się i gaśnie jak na wodzie)
+      const R2 = RADIUS * RADIUS, n = Math.max(1, Math.ceil(dt / .012)), h = dt / n;
+      for (let it = 0; it < n; it++) {
+        for (let j = 0, i = 0; j < GY; j++) {
+          const cy = (j + .5) / GY * H;
+          for (let k = 0; k < GX; k++, i++) {
+            let target = 0;
+            if (ptr.active) {
+              const dx = (k + .5) / GX * W - fp.x, dy = cy - fp.y, d2 = dx * dx + dy * dy;
+              if (d2 < R2) { const f = 1 - d2 / R2; target = -f * f; }
+            }
+            const l = hgt[k > 0 ? i - 1 : i] + hgt[k < GX - 1 ? i + 1 : i] + hgt[j > 0 ? i - GX : i] + hgt[j < GY - 1 ? i + GX : i] - 4 * hgt[i];
+            vel[i] += (K * (target - hgt[i]) + WAVE * l - C * vel[i]) * h;
+          }
+        }
+        for (let i = 0; i < hgt.length; i++) hgt[i] += vel[i] * h;
+      }
+      for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, 128 + hgt[i] * 100));
+      disp.needsUpdate = true;
+      // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s
+      const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
       for (let j = 0, i = 0; j < GY; j++) {
         const cy = (j + .5) / GY * H;
         for (let k = 0; k < GX; k++, i++) {
           let target = 0;
-          if (ptr.active) {
+          if (ptr.active && !touch) {
             const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
-            if (d2 < R2) { const f = 1 - d2 / R2; target = -f * f; }
+            if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
           }
-          vel[i] += (K * (target - hgt[i]) - C * vel[i]) * dt;
-          hgt[i] += vel[i] * dt;
-          dispData[i] = Math.max(0, Math.min(255, 128 + hgt[i] * 100));
+          blurF[i] += (target - blurF[i]) * (target > blurF[i] ? up : down);
+          blurData[i] = blurF[i] * 255;
         }
       }
-      disp.needsUpdate = true;
+      blurTex.needsUpdate = true;
       // światło za kursorem z opóźnieniem ok. 0,15 s; na dotyku stoi w miejscu kryształu
       const target = touch ? api.lightAt : ptr.x > -999 ? ptr : null;
       if (target) {
