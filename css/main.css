@@ -61,14 +61,23 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 }
 .works .crystal-img { --cx: 800; --cy: 280; --cs: 300; }
 
-/* 03 My Story */
+/* 03 Services: minimalnie, bez kart i ikon. Siatka 3 x 2, cienka linia nad każdą usługą. */
+.services__title { --gh: 50; top: calc(250 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.services__list { top: calc(390 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(1000 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); column-gap: calc(40 * var(--u)); row-gap: calc(44 * var(--u)); }
+.services__list li { padding-top: calc(14 * var(--u)); border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
+.services__list b { display: block; font-weight: 700; font-size: calc(14 * var(--u)); }
+.services__list b i { font-style: normal; font-weight: 500; color: var(--ink-2); margin-right: .8em; }
+.services__list span { display: block; margin-top: calc(6 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); color: var(--ink-2); }
+.services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
+
+/* 04 My Story */
 .story__title { --gh: 58; top: calc(330 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .story__text { top: calc(410 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(720 * var(--u)); text-align: center; font-weight: 500; font-size: calc(13 * var(--u)); }
 .story__text p + p { margin-top: calc(14 * var(--u)); }
 .story__text a { text-decoration: underline 1px; text-underline-offset: .25em; }
 .story .crystal-img { --cx: 660; --cy: 170; --cs: 120; }
 
-/* 04 Socials */
+/* 05 Socials */
 .socials__title { --gh: 50; top: calc(396 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .socials__links { top: calc(474 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; gap: calc(28 * var(--u)); font-weight: 700; font-size: calc(14 * var(--u)); }
 .socials__links a { text-decoration: underline 1px; text-underline-offset: .25em; }
@@ -88,6 +97,13 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .works__list { top: calc(230 * var(--u)); left: 0; right: 0; text-align: center; font-size: 16px; line-height: calc(28 * var(--u)); }
   .works .crystal-img { --cx: 225; --cy: 150; --cs: 420; }
 
+  .services__title { --gh: 44; top: calc(110 * var(--u)); }
+  .services__list { top: calc(190 * var(--u)); width: calc(330 * var(--u)); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
+  .services__list li { padding-top: 10px; }
+  .services__list b { font-size: 14px; }
+  .services__list span { font-size: 12px; margin-top: 4px; }
+  .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
+
   .story__title { --gh: 44; top: calc(250 * var(--u)); }
   .story__text { top: calc(320 * var(--u)); width: calc(330 * var(--u)); font-size: 14px; }
   .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
@@ -103,7 +119,7 @@ html.gl .glow { display: none; }
 html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
 
 /* ===== Ruch: jedna sekcja na ekran (js/main.js) ===== */
-html.motion .home main { height: 560vh; } /* 4 sekcje: 3 przejścia po 1 ekranie + 4 postoje po 0,4 */
+html.motion .home main { height: 700vh; } /* 5 sekcji: 4 przejścia po 1 ekranie + 5 postojów po 0,4 + 1 ekran */
 html.motion .sec { position: fixed; inset: 0; height: auto; will-change: opacity, transform; }
 html.motion .sec + .sec { opacity: 0; }
 html.crystal .crystal-img { display: none; }

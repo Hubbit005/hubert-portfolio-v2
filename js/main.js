@@ -147,8 +147,9 @@ const LOOP = 14;                       // s na jedno okrążenie
 const TILT_O = -6 * Math.PI / 180;     // pochylenie owalu
 
 function crystalPath(STEP, HOLD, titleBox) {
-  const D = [null, { x: 950, y: 430, s: 300 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
-  const M = [null, { x: 435, y: 360, s: 420 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
+  // sekcje: hero, Selected Works, Services, My Story, Socials
+  const D = [null, { x: 950, y: 430, s: 300 }, { x: 1250, y: 170, s: 110 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
+  const M = [null, { x: 435, y: 360, s: 420 }, { x: 380, y: 120, s: 240 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
   const MID = { x: 1090, y: 450 };
   const ease = (t) => t * t * (3 - 2 * t);
   let orbit = 0;
@@ -164,7 +165,7 @@ function crystalPath(STEP, HOLD, titleBox) {
     if (p <= HOLD) orbit += dt;
     const P = f.m ? M : D;
     const from = k === 0 ? hero(f.m, f, p <= HOLD && t === 0) : { ...P[k], z: 0 };
-    if (t === 0 || k >= 3) return from;
+    if (t === 0 || k >= P.length - 1) return from;
     const to = { ...P[k + 1], z: 0 }, e = ease(t);
     const lerp = (a, b) => a + (b - a) * e;
     if (k === 0 && !f.m) {
