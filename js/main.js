@@ -79,7 +79,7 @@ function startMotion() {
       // poświata sekcji: w hero stała plama (780–1340, 260–820), dalej przy krysztale
       const hx = 1060 * f.u, hy = 540 * f.u + f.top, a = Math.min(1, p / STEP);
       gl.bgUniforms.uGlow.value.set(hx + (x - hx) * a, H - (hy + (y - hy) * a));
-      gl.bgUniforms.uGlowA.value = f.m && a === 0 ? .6 : 1;
+      gl.bgUniforms.uGlowA.value = f.m ? .5 : 1;
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 

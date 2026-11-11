@@ -75,6 +75,9 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 
 /* ===== Telefon (projekt 390 x 844, tekst w stałych px) ===== */
 @media (max-width: 767px) {
+  /* kryształ leży pod tekstem: ciemna otoczka trzyma kontrast AA */
+  .frame p, .frame li, .frame h1, .frame h2 { text-shadow: 0 0 6px var(--bg), 0 0 14px var(--bg); }
+  .frame .g svg { filter: drop-shadow(0 0 8px var(--bg)); }
   .hero__title { --gh: 36; top: calc(330 * var(--u)); gap: calc(6 * var(--u)); }
   .hero__sub { top: calc(430 * var(--u)); width: calc(330 * var(--u)); margin: 0 auto; font-size: 12px; }
   .hero__sub br { display: none; }
