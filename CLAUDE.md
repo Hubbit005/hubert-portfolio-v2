@@ -7,6 +7,8 @@ Wersja 2 to kopia strony z repo `Hubbit005/hubert-portfolio`. Stare repo zostaje
 
 **Od 11.11.2026 (decyzja Huberta) obowiązuje wersja 3:** minimalistyczna strona w stylu dorianlods.com według projektu w Figmie. Brief: `prompts/16-dorian-brief.md`, zadanie: `prompts/17-dorian-budowa.md`. Brief zastępuje wszystkie wcześniejsze zadania (00–15) i reguły „Czego nie zmieniać” poniżej, jeśli są z nim sprzeczne. Kosmos, ruletka, gitara i karuzela znikają.
 
+**Od 11.11.2026 wieczorem obowiązuje wersja 3.1** (gałąź `claude/prototyp-v3-1`), zatwierdzona przez Huberta w interaktywnym prototypie: `prompts/18-v3-1-wdrozenie.md`. Plik 18 ma pierwszeństwo przed 16 i 17 oraz przed regułami poniżej, jeśli są sprzeczne.
+
 Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup/przed-dorianem-2026-11-11`. Nie zmieniaj ich i nie usuwaj.
 
 ## Stos
@@ -19,14 +21,14 @@ Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup
 
 ## Czego nie zmieniać (zamrożone)
 
-1. **Projekt z briefu 16.** Układ, wymiary, teksty i ruch są zatwierdzone w Figmie. Zmiany tylko na prośbę Huberta.
-2. **Paleta.** Czerń `#0A0A0C`, beż `#ECE6DC`, galaktyczny fiolet `#6B4FD8`, szary `#9A94A8`. Wszystkie akcenty świetlne w kolorach kryształu (tokeny `--light-*` w briefie 16, sekcja 2). Wartości tylko w `css/tokens.css`.
-3. **Napisy ekspozycyjne** tylko z glifów `assets/font/glyphs.json` (odrysowane z próbki fontu Huberta). Nie podmieniaj ich na inny font.
+1. **Projekt z briefu 16 z poprawkami z pliku 18.** Układ, wymiary, teksty i ruch są zatwierdzone. Zmiany tylko na prośbę Huberta.
+2. **Paleta.** Czerń `#050506`, beż `#ECE6DC`, galaktyczny fiolet `#6B4FD8`, szary `#9A94A8`. Wszystkie akcenty świetlne w kolorach kryształu (tokeny `--light-*` w briefie 16, sekcja 2). Wartości tylko w `css/tokens.css`.
+3. **Napisy ekspozycyjne** tylko z glifów `assets/font/glyphs.json` (font Candle Shlop, wersja demo: przed publikacją potrzebna licencja komercyjna). Nie podmieniaj ich na inny font.
 
 ## Twarde zasady treści
 
 - **Żadnych nowych liczb:** statystyk, procentów, liczników, „lat doświadczenia”, wyników. Hubert nie ma danych, a strona nie może zawierać nic nieprawdziwego.
-- Nowy tekst tylko tam, gdzie wymaga go zadanie. Od wersji 3 strona jest tylko po angielsku.
+- Nowy tekst tylko tam, gdzie wymaga go zadanie. Od wersji 3.1 strona ma wersję EN (domyślną) i PL; polskie teksty są w `js/i18n.js`.
 - Elementy czysto dekoracyjne mają `aria-hidden="true"`.
 
 ## Dostępność i ruch
@@ -51,7 +53,7 @@ Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup
 ## Sposób pracy
 
 - Nowa sesja Claude Code na każde zadanie (albo na parę zadań, jeśli prompt tak mówi).
-- Oszczędzaj limit Huberta: na start każdej sesji włącz skill **Ponytail** (`/ponytail`, najmniej kodu) i używaj grafu **Graphify** zbudowanego tylko z `js/`, `css/`, `index.html` zamiast czytania całych plików. Instalacja i szczegóły w `prompts/17-dorian-budowa.md`, punkt 0.
+- Oszczędzaj limit Huberta: na start każdej sesji włącz skill **Ponytail** (`/ponytail`, najmniej kodu) i używaj grafu **Graphify** zbudowanego tylko z `js/`, `css/`, `index.html` zamiast czytania całych plików. Instalacja i szczegóły w `prompts/18-v3-1-wdrozenie.md`, punkt 0 (plik `.graphifyignore` ogranicza graf do kodu).
 - Jedno zadanie z `prompts/` = jeden commit z opisem po polsku (albo commit na punkt, jeśli prompt tak mówi). Po każdym commicie push. Na końcu pull request do `main`.
 - Przy każdej zmianie JS lub CSS podbij wersję `?v=RRRRMMDD` (jedna wartość w `index.html` i we wszystkich importach w `js/`; `vendor/` bez wersji).
 - Przed pierwszym zadaniem zrób zrzuty ekranu obecnej strony (stan wyjściowy) Playwrightem i trzymaj je poza repo.

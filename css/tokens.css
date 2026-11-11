@@ -9,18 +9,19 @@
 }
 
 :root {
-  --bg: #0A0A0C;
+  --bg: #050506;   /* ciemniej, bliżej czerni (11.11) */
   --ink: #ECE6DC;
   --ink-2: #9A94A8;
   --violet: #6B4FD8;
 
   /* Światło w kolorach kryształu */
   --light-violet: #7A5CF0;
-  --light-blue: #5AB8FF;
+  --light-blue: #4D6BFF;   /* głęboki niebieski, bez zieleni i turkusu (decyzja 11.11) */
   --light-ice: #D9E8FF;
   --light-amber: #F0913A;
   --light-rose: #FF5A7A;
-  --rainbow: linear-gradient(90deg, var(--light-rose), var(--light-amber), var(--light-blue), var(--light-violet));
+  --light-red: #FF2D3F;   /* czerwień jak u Doriana: poświata i podszewka rozmycia */
+  --rainbow: linear-gradient(90deg, var(--light-red), var(--light-rose), var(--light-amber), var(--light-blue), var(--light-violet));
 
   --font: "Manrope", system-ui, sans-serif;
 

@@ -1,5 +1,6 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
 import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261111';
+import { initLang } from './i18n.js?v=20261111';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -7,10 +8,11 @@ const weak = navigator.hardwareConcurrency <= 2 || navigator.deviceMemory <= 2;
 const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
 const phone = matchMedia('(max-width: 767px)');
 
+initLang();
 await renderGlyphs();
 
 // Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
-const back = document.querySelector(`.works__list a[href="work/${new URLSearchParams(location.search).get('w')}.html"]`);
+const back = document.querySelector(`.works__list a[href="work/${CSS.escape(new URLSearchParams(location.search).get('w') ?? '')}.html"]`);
 back?.classList.add('is-active');
 const moved = (fn) => addEventListener('pointermove', function h(e) {
   if (!e.movementX && !e.movementY) return; // przeglądarka wysyła też sztuczne ruchy po zmianie układu
@@ -75,7 +77,17 @@ function startMotion() {
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); return; }
     html.classList.add('gl');
-    const pose = crystalPath(STEP, HOLD);
+    const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
+    // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
+    let tb = null;
+    const titleBox = (f, live) => {
+      if ((live || !tb) && titleSvgs.length === 2) {
+        const a = titleSvgs[0].getBoundingClientRect(), b = titleSvgs[1].getBoundingClientRect();
+        tb = { x: b.left / f.u, w: b.width / f.u, y: (a.top - f.top) / f.u, h: (b.bottom - a.top) / f.u };
+      }
+      return tb;
+    };
+    const pose = crystalPath(STEP, HOLD, titleBox);
     gl.beforeRender = (dt) => {
       const f = frame(), p = progress(), st = sections(p, f);
       const c = pose(p, st, dt, f);
@@ -131,23 +143,31 @@ function startMotion() {
 }
 
 // Tor kryształu (brief 16, sekcja 6) we współrzędnych projektu: środek x, y, rozmiar s, głębokość z.
-function crystalPath(STEP, HOLD) {
-  const D = [null, { x: 950, y: 430, s: 300 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
-  const M = [null, { x: 435, y: 360, s: 420 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
+// Hero (zmiana 11.11, wersja 2): kryształ płynie po owalu dookoła całego napisu „HUBERT SKONIECZNY”,
+// zawsze przed literami. Owal lekko pochylony, lekka zmiana wielkości daje wrażenie głębi.
+const LOOP = 14;                       // s na jedno okrążenie
+const TILT_O = -6 * Math.PI / 180;     // pochylenie owalu
+
+function crystalPath(STEP, HOLD, titleBox) {
+  // sekcje: hero, Selected Works, Services, My Story, Socials
+  const D = [null, { x: 950, y: 430, s: 300 }, { x: 1250, y: 170, s: 110 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
+  const M = [null, { x: 435, y: 360, s: 420 }, { x: 380, y: 120, s: 240 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
   const MID = { x: 1090, y: 450 };
   const ease = (t) => t * t * (3 - 2 * t);
   let orbit = 0;
-  const hero = (m) => {
-    const th = orbit / 10 * Math.PI * 2;                     // jeden obieg ok. 10 s
-    if (m) return { x: 335 + 60 * Math.cos(th), y: 355 + 14 * Math.sin(th), s: 200, z: -80 }; // [Z] telefon: mała orbita za literami
-    const a = -8 * Math.PI / 180, ex = 480 * Math.cos(th), ey = 70 * Math.sin(th);
-    return { x: 720 + ex * Math.cos(a) - ey * Math.sin(a), y: 462 + ex * Math.sin(a) + ey * Math.cos(a), s: 140, z: 150 * Math.sin(th) };
+  const hero = (m, f, live) => {
+    const box = titleBox(f, live) ?? (m ? { x: 40, y: 300, w: 310, h: 120 } : { x: 284, y: 250, w: 873, h: 322 });
+    const th = orbit / LOOP * Math.PI * 2;
+    const ex = .5 * box.w * Math.cos(th), ey = .44 * box.h * Math.sin(th);
+    const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
+    const x = cx + ex * Math.cos(TILT_O) - ey * Math.sin(TILT_O), y = cy + ex * Math.sin(TILT_O) + ey * Math.cos(TILT_O);
+    return { x, y, s: (m ? 64 : 140) * (1 + .1 * Math.sin(th)), z: 60 }; // zawsze przed literami
   };
   return (p, { k, t }, dt, f) => {
     if (p <= HOLD) orbit += dt;
     const P = f.m ? M : D;
-    const from = k === 0 ? hero(f.m) : { ...P[k], z: 0 };
-    if (t === 0 || k >= 3) return from;
+    const from = k === 0 ? hero(f.m, f, p <= HOLD && t === 0) : { ...P[k], z: 0 };
+    if (t === 0 || k >= P.length - 1) return from;
     const to = { ...P[k + 1], z: 0 }, e = ease(t);
     const lerp = (a, b) => a + (b - a) * e;
     if (k === 0 && !f.m) {
