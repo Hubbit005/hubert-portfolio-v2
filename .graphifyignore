@@ -1,0 +1,7 @@
+prompts/
+assets/
+vendor/
+proto/
+.claude/
+*.md
+404.html

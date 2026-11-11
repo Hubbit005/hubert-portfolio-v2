@@ -9,24 +9,19 @@
        If the repository is renamed, change the base below. -->
   <base href="/hubert-portfolio-v2/">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/tokens.css?v=20261111">
+  <link rel="stylesheet" href="css/main.css?v=20261111">
   <style>
-    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink); font-family: var(--font-body); padding: 24px; }
-    main { position: relative; text-align: center; max-width: 560px; }
-    .bar { position: absolute; left: 50%; top: -40px; width: 120px; height: 260px; margin-left: -60px; background: var(--accent); z-index: -1; }
-    h1 { font-family: var(--font-display); font-stretch: 125%; font-weight: 900; font-size: clamp(5rem, 22vw, 11rem); line-height: .85; margin: 0 0 24px; letter-spacing: -.02em; }
-    p { font-size: 1.15rem; line-height: 1.5; margin: 0 0 28px; }
-    .mono { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); margin-bottom: 16px; }
-    a { display: inline-flex; align-items: center; min-height: 52px; padding: 0 26px; border-radius: 999px; background: var(--ink); color: var(--bg); font-family: var(--font-display); font-stretch: 112%; font-weight: 700; text-transform: uppercase; text-decoration: none; }
-    a:focus-visible { outline: 3px solid var(--focus-halo); outline-offset: 3px; }
+    body { min-height: 100vh; display: grid; place-items: center; padding: 24px; text-align: center; text-transform: uppercase; letter-spacing: .02em; }
+    h1 { font-size: 96px; font-weight: 800; line-height: 1; margin-bottom: 24px; }
+    p { font-weight: 500; font-size: 14px; line-height: 1.55; margin-bottom: 28px; color: var(--ink-2); }
+    a { font-weight: 700; font-size: 14px; text-decoration: underline 1px; text-underline-offset: .25em; }
   </style>
 </head>
 <body>
   <main>
-    <span class="bar" aria-hidden="true"></span>
-    <p class="mono">Error 404</p>
     <h1>404</h1>
-    <p>This page does not exist. The whole portfolio is on one page.</p>
+    <p>This page does not exist.</p>
     <a href="./">Back to the portfolio</a>
   </main>
 </body>
