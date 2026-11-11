@@ -53,14 +53,16 @@ const BG_FRAG = /* glsl */`
     vec2 cell = uRes * e;
     vec3 n = normalize(vec3((h(vUv - vec2(e.x, 0.)) - h(vUv + vec2(e.x, 0.))) / (2. * cell.x),
                             (h(vUv - vec2(0., e.y)) - h(vUv + vec2(0., e.y))) / (2. * cell.y), .35));
-    float sig = 120.;
+    // Światło rozlane na cały ekran (zmiana 11.11): bez okrągłej plamy, słabsze, kolory przechodzą przez całą stronę.
+    float span = length(uRes);
+    float sig = .42 * span;
     vec2 d = px - uLight;
-    float g = exp(-dot(d, d) / (2. * sig * sig)) * smoothstep(280., 120., length(d)); // średnica ok. 560 px
-    float shade = clamp(.8 + 1.4 * dot(n.xy, -normalize(d + .001)) * smoothstep(0., 60., length(d)), .45, 1.6);
-    vec3 c = crystalLight(d, sig) * g * .28 * shade;
+    float g = exp(-dot(d, d) / (2. * sig * sig));
+    float shade = clamp(.85 + 1.2 * dot(n.xy, -normalize(d + .001)) * smoothstep(0., 60., length(d)), .5, 1.5);
+    vec3 c = crystalLight(d, .25 * span) * g * .09 * shade;
     vec2 d2 = px - uGlow;
-    float s2 = 150.;
-    c += crystalLight(d2, s2) * exp(-dot(d2, d2) / (2. * s2 * s2)) * smoothstep(300., 120., length(d2)) * .2 * uGlowA;
+    float s2 = .5 * span;
+    c += crystalLight(d2, .3 * span) * exp(-dot(d2, d2) / (2. * s2 * s2)) * .05 * uGlowA;
     gl_FragColor = vec4(uBg + c, 1.);
     #include <colorspace_fragment>
   }`;
