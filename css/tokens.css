@@ -1,249 +1,35 @@
-/* Design tokens – Hubert portfolio
-   Light is default. Dark follows the OS unless the user picks a theme
-   (data-theme on <html>). */
+/* Tokens: wersja 3 (brief 16). Kolory, font i skala tylko stąd. */
 
 @font-face {
-  font-family: "Archivo";
+  font-family: "Manrope";
+  src: url("../vendor/fonts/manrope-latin-wght-normal.woff2") format("woff2");
+  font-weight: 200 800;
   font-style: normal;
   font-display: swap;
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
-  src: url(../vendor/fonts/archivo-latin-wdth-normal.woff2) format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Archivo";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  font-stretch: 62% 125%;
-  src: url(../vendor/fonts/archivo-latin-ext-wdth-normal.woff2) format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url(../vendor/fonts/inter-latin-wght-normal.woff2) format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Inter";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url(../vendor/fonts/inter-latin-ext-wght-normal.woff2) format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url(../vendor/fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");
-}
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 500;
-  src: url(../vendor/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
-}
-
-@font-face {
-  font-family: "Grenze Gotisch";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url(../vendor/fonts/grenze-gotisch-latin-wght-normal.woff2) format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* Display face for HUBERT and big station headings only (SIL OFL, vendor/fonts/grenze-gotisch-OFL.txt) */
-@font-face {
-  font-family: "Grenze Gotisch";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url(../vendor/fonts/grenze-gotisch-latin-ext-wght-normal.woff2) format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
 :root {
-  color-scheme: light;
+  --bg: #0A0A0C;
+  --ink: #ECE6DC;
+  --ink-2: #9A94A8;
+  --violet: #6B4FD8;
 
-  /* Palette (task 15): galactic violet, black, beige, white. Every colour below derives from these. */
-  --space: #07060b;
-  --violet-deep: #2a0f5c;
-  --violet: #7b3cff;
-  --violet-light: #b89cff;
-  --beige: #e9dfcc;
-  --white: #f7f5f0;
-  --roulette-red: #c8102e; /* the roulette's red pockets (game colour, not brand) */
+  /* Światło w kolorach kryształu */
+  --light-violet: #7A5CF0;
+  --light-blue: #5AB8FF;
+  --light-ice: #D9E8FF;
+  --light-amber: #F0913A;
+  --light-rose: #FF5A7A;
+  --rainbow: linear-gradient(90deg, var(--light-rose), var(--light-amber), var(--light-blue), var(--light-violet));
 
-  /* Colour */
-  --bg: var(--beige);
-  --bg-rgb: 233 223 204;
-  --surface: var(--white);
-  --surface-2: #ddd1bb;
-  --ink: var(--space);
-  --ink-rgb: 7 6 11;
-  --ink-2: #4f4860;
-  --line: rgb(7 6 11 / 0.14);
-  --line-strong: rgb(7 6 11 / 0.32);
-  --accent: var(--violet);
-  --accent-ink: #5a22d6; /* accent used as text on light bg (AA) */
-  --on-accent: var(--white);
-  --success: #1f7a3d;
-  --danger: #b42318;
-  --warning: #8a5a00;
-  --focus: var(--space);
-  --focus-halo: var(--violet);
-  --glow-rgb: 123 60 255;
-  --glow-a: 0.22;
-  /* Objects in the guitar scene and the hero object's lights (not page colours) */
-  --cable: #1c1c1f;
-  --cable-plug: #2a2a2c;
-  --cable-tip: #c9c9cf;
-  --led-hot: #fff1e0;
-  --chrome-tint: var(--violet-light);
+  --font: "Manrope", system-ui, sans-serif;
 
-  /* Typography */
-  --font-expo: "Grenze Gotisch", Georgia, serif;
-  --font-display: "Archivo", "Arial Black", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --stretch-display: 125%;
-
-  --fs-mono: 0.75rem;      /* 12 */
-  --fs-small: 0.875rem;    /* 14 */
-  --fs-body: 1.0625rem;    /* 17 */
-  --fs-lead: clamp(1.125rem, 0.9rem + 0.7vw, 1.375rem);
-  --fs-h4: clamp(1.05rem, 0.95rem + 0.4vw, 1.25rem);
-  --fs-h3: clamp(1.25rem, 1rem + 0.9vw, 1.75rem);
-  --fs-h2: clamp(2rem, 1.2rem + 3.4vw, 4.5rem);
-  --fs-h1: clamp(3.5rem, 1rem + 12vw, 13rem);
-  --lh-tight: 0.92;
-  --lh-snug: 1.2;
-  --lh-body: 1.6;
-  --measure: 65ch;
-
-  /* Spacing (4px base) */
-  --s-1: 0.25rem;
-  --s-2: 0.5rem;
-  --s-3: 0.75rem;
-  --s-4: 1rem;
-  --s-5: 1.5rem;
-  --s-6: 2rem;
-  --s-7: 3rem;
-  --s-8: 4rem;
-  --s-9: 6rem;
-  --s-10: 8rem;
-  --gutter: clamp(16px, 4vw, 56px);
-  --maxw: 1320px;
-  --section-pad: clamp(4.5rem, 3rem + 7vw, 10rem);
-
-  /* Radius */
-  --r-xs: 6px;
-  --r-sm: 12px;
-  --r-md: 20px;
-  --r-lg: 28px;
-  --r-pill: 999px;
-
-  /* Shadow */
-  --shadow-1: 0 1px 2px rgb(13 13 13 / 0.06), 0 2px 8px rgb(13 13 13 / 0.05);
-  --shadow-2: 0 2px 4px rgb(13 13 13 / 0.06), 0 12px 32px rgb(13 13 13 / 0.12);
-  --shadow-3: 0 6px 12px rgb(13 13 13 / 0.08), 0 30px 60px rgb(13 13 13 / 0.18);
-
-  /* Motion */
-  --t-1: 160ms;
-  --t-2: 320ms;
-  --t-3: 640ms;
-  --t-4: 1000ms;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-  --z-nav: 500; /* above the carousel's fade and controls (z-index up to 401) while scrolling */
-  --z-panel: 80;
-  /* Toys (task 08). Glass follows the text colour; the tool balls are porcelain in both themes. */
-  --jar-glass: var(--ink);
-  --jar-edge: var(--ink);
-  --toy-ball-hi: #ffffff;
-  --toy-ball: #e6e6e1;
-  --toy-ball-lo: #9d9d96;
-  --toy-ball-ink: var(--space);
-  /* Training plan demo: the colours of the client template in the screenshots (demo only, not brand) */
-  --demo-bg: #f5f5f3;
-  --demo-card: #ffffff;
-  --demo-ink: #1b1b1a;
-  --demo-ink-2: #62625c;
-  --demo-line: #e3e3de;
-  --demo-green: #11735c;
-  --demo-green-soft: #dceee8;
+  /* Skala: desktop projekt 1440 x 900, telefon 390 x 844 */
+  --u: calc(100vw / 1440);
+  --m: calc(100vw / 390);
+  --frame-h: 900;
 }
 
-/* Dark: explicit choice */
-:root[data-theme="dark"] {
-  color-scheme: dark;
-  --bg: var(--space);
-  --bg-rgb: 7 6 11;
-  --surface: #120d22;
-  --surface-2: #1c1433;
-  --ink: var(--white);
-  --ink-rgb: 247 245 240;
-  --ink-2: #b3adc2;
-  --line: rgb(247 245 240 / 0.14);
-  --line-strong: rgb(247 245 240 / 0.32);
-  --accent: var(--violet);
-  --accent-ink: var(--violet-light);
-  --on-accent: var(--white);
-  --success: #5cc584;
-  --danger: #ff8a80;
-  --warning: #f2c14e;
-  --focus: var(--white);
-  --focus-halo: var(--violet);
-  --glow-rgb: 123 60 255;
-  --glow-a: 0.34;
-  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
-  --shadow-2: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
-  --shadow-3: 0 6px 12px rgb(0 0 0 / 0.45), 0 30px 60px rgb(0 0 0 / 0.55);
-}
-
-/* Dark: OS preference, unless user forced light */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --bg: var(--space);
-    --bg-rgb: 7 6 11;
-    --surface: #120d22;
-    --surface-2: #1c1433;
-    --ink: var(--white);
-    --ink-rgb: 247 245 240;
-    --ink-2: #b3adc2;
-    --line: rgb(247 245 240 / 0.14);
-    --line-strong: rgb(247 245 240 / 0.32);
-    --accent: var(--violet);
-    --accent-ink: var(--violet-light);
-    --on-accent: var(--white);
-    --success: #5cc584;
-    --danger: #ff8a80;
-    --warning: #f2c14e;
-    --focus: var(--white);
-    --focus-halo: var(--violet);
-  --glow-rgb: 123 60 255;
-  --glow-a: 0.34;
-    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.4), 0 2px 8px rgb(0 0 0 / 0.3);
-    --shadow-2: 0 2px 4px rgb(0 0 0 / 0.4), 0 12px 32px rgb(0 0 0 / 0.45);
-    --shadow-3: 0 6px 12px rgb(0 0 0 / 0.45), 0 30px 60px rgb(0 0 0 / 0.55);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --t-1: 0ms;
-    --t-2: 0ms;
-    --t-3: 0ms;
-    --t-4: 0ms;
-  }
+@media (max-width: 767px) {
+  :root { --u: var(--m); --frame-h: 844; }
 }
