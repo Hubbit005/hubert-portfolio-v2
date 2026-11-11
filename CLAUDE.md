@@ -12,7 +12,7 @@ Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup
 ## Stos
 
 - HTML, CSS, czysty JavaScript (moduły ES). Bez npm w działającej stronie, bez CDN.
-- Biblioteki leżą lokalnie: `vendor/js/gsap.min.js`, `vendor/js/ScrollTrigger.min.js`, `vendor/js/lenis.min.js`, `vendor/three/three.module.min.js` (+ `vendor/three/addons`).
+- Biblioteki leżą lokalnie: `vendor/js/gsap.min.js`, `vendor/js/lenis.min.js`, `vendor/three/three.module.min.js` (+ `vendor/three/addons`).
 - Jedna pętla animacji: ticker GSAP (Lenis już jest do niego podpięty w `js/main.js`). Nie zakładaj osobnych `requestAnimationFrame`, jeśli da się użyć tickera.
 - Nowe moduły dodawaj w `js/` (np. `background.js`, `cursor.js`, `cases-motion.js`, `footer.js`) i importuj w `js/main.js`.
 - Style dopisuj do `css/main.css` w osobnych, opisanych sekcjach. Kolory i odstępy tylko z `css/tokens.css`.

@@ -43,3 +43,12 @@ export async function renderGlyphs(root = document, base = '') {
   }
   document.documentElement.classList.add('glyphs');
 }
+
+// Ciężkie rzeczy (scena WebGL) po pierwszym malowaniu: pierwszy ruch użytkownika albo 1,5 s po load.
+export function afterFirstPaint(fn) {
+  let done = false;
+  const go = () => { if (!done) { done = true; fn(); } };
+  for (const ev of ['pointermove', 'pointerdown', 'wheel', 'keydown', 'touchstart']) addEventListener(ev, go, { once: true, passive: true });
+  if (document.readyState === 'complete') setTimeout(go, 1500);
+  else addEventListener('load', () => setTimeout(go, 1500), { once: true });
+}

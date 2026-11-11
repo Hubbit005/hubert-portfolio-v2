@@ -86,6 +86,12 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   canvas.className = 'stage';
   canvas.setAttribute('aria-hidden', 'true');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  // WebGL liczony programowo (bez karty graficznej) = słabe urządzenie: zostaje tło CSS. ?gl=1 wymusza scenę (testy).
+  const ctx = renderer.getContext(), info = ctx.getExtension('WEBGL_debug_renderer_info');
+  if (/swiftshader|llvmpipe|software/i.test(info ? ctx.getParameter(info.UNMASKED_RENDERER_WEBGL) : '') && !location.search.includes('gl=1')) {
+    renderer.dispose();
+    throw new Error('programowy WebGL');
+  }
   document.body.prepend(canvas);
   renderer.setPixelRatio(Math.min(devicePixelRatio, touch ? 1 : 1.5));
 
@@ -132,7 +138,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
 
   let W = 0, H = 0, textTop0 = 0;
   async function drawText() {
-    const r = devicePixelRatio > 1 ? 2 : 1.5;
+    const r = Math.min(devicePixelRatio, 1.5); // jak renderer; większa tekstura przekracza limit części kart
     textCanvas.width = W * r; textCanvas.height = H * r;
     const ctx = textCanvas.getContext('2d');
     ctx.fillStyle = '#fff';

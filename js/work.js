@@ -1,5 +1,5 @@
 // Strona projektu: przypięty panel, taśma zdjęć przesuwana scrollem w bok, CLOSE i Esc.
-import { renderGlyphs } from './glyphs.js?v=20261111';
+import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261111';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const weak = navigator.hardwareConcurrency <= 2 || navigator.deviceMemory <= 2;
@@ -18,7 +18,7 @@ if (desktop) {
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   const step = { ArrowDown: 1, ArrowRight: 1, PageDown: 3, ArrowUp: -1, ArrowLeft: -1, PageUp: -3 };
   addEventListener('keydown', (e) => {
-    if (!(e.key in step) || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (!(e.key in step) || e.altKey || e.ctrlKey || e.metaKey || e.target.closest?.('video')) return;
     e.preventDefault();
     lenis.scrollTo(lenis.targetScroll + step[e.key] * 260 * innerWidth / 1440);
   });
@@ -41,6 +41,5 @@ if (!reduce && !weak) {
       gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
     } catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); }
   };
-  if (document.readyState === 'complete') setTimeout(start, 0);
-  else addEventListener('load', () => setTimeout(start, 0), { once: true });
+  afterFirstPaint(start);
 }

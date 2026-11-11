@@ -1,5 +1,5 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261111';
+import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261111';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -8,6 +8,16 @@ const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
 const phone = matchMedia('(max-width: 767px)');
 
 await renderGlyphs();
+
+// Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
+const back = document.querySelector(`.works__list a[href="work/${new URLSearchParams(location.search).get('w')}.html"]`);
+back?.classList.add('is-active');
+const moved = (fn) => addEventListener('pointermove', function h(e) {
+  if (!e.movementX && !e.movementY) return; // przeglądarka wysyła też sztuczne ruchy po zmianie układu
+  removeEventListener('pointermove', h); fn(e);
+});
+if (back) moved((e) => { if (!back.contains(e.target)) back.classList.remove('is-active'); });
+
 if (!reduce && !weak) startMotion();
 
 function startMotion() {
@@ -89,9 +99,7 @@ function startMotion() {
     if (!touch) addEventListener('pointermove', (e) => crystal.tilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1), { passive: true });
     bindWorks();
   };
-  // Scena po pierwszym malowaniu, nigdy przy starcie.
-  if (document.readyState === 'complete') setTimeout(start, 0);
-  else addEventListener('load', () => setTimeout(start, 0), { once: true });
+  afterFirstPaint(start);
 
   // Hover na projekcie: kryształ obraca się ścianą projektu, zdjęcie widać tylko przez szkło.
   function bindWorks() {
@@ -101,15 +109,13 @@ function startMotion() {
       current?.classList.remove('is-active');
       current = a;
       if (!a) return crystal.face(-1);
-      if (touch || a.dataset.kept) a.classList.add('is-active');
+      if (touch) a.classList.add('is-active');
       crystal.face(+a.dataset.face, a.dataset.img);
     };
     for (const a of links) {
       if (!touch) {
         a.addEventListener('pointerenter', () => show(a));
         a.addEventListener('pointerleave', () => show(null));
-      }
-      if (!touch) {
         a.addEventListener('focus', () => show(a));
         a.addEventListener('blur', () => show(null));
       }
@@ -117,11 +123,9 @@ function startMotion() {
       a.addEventListener('click', (e) => { if (touch && !a.classList.contains('is-active')) { e.preventDefault(); show(null); show(a); } });
     }
     if (touch) document.addEventListener('click', (e) => { if (!e.target.closest('.works__list a')) show(null); });
-    // Powrót ze strony projektu: ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
-    const back = links.find((a) => a.getAttribute('href') === `work/${new URLSearchParams(location.search).get('w')}.html`);
-    if (back) {
-      back.dataset.kept = 1; show(back); delete back.dataset.kept;
-      addEventListener('pointermove', (e) => { if (!back.contains(e.target)) { back.classList.remove('is-active'); if (current === back && !touch) show(null); } }, { once: true });
+    if (back?.classList.contains('is-active')) {
+      show(back); back.classList.add('is-active');
+      moved((e) => { if (current === back && !back.contains(e.target)) show(null); });
     }
   }
 }
