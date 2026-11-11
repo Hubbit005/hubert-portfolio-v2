@@ -20,7 +20,22 @@ Wszystko, czego nie ma w tym briefie: nawigacja, intro z rakietą, kosmos i stac
 | Tło | `#0A0A0C` |
 | Tekst | `#ECE6DC` (beż) |
 | Tekst drugorzędny | `#9A94A8` |
-| Poświata | `#6B4FD8` (galaktyczny fiolet) |
+| Poświata bazowa | `#6B4FD8` (galaktyczny fiolet) |
+
+**Akcenty świetlne w kolorach kryształu** (decyzja Huberta 11.11.2026). Każde światło na stronie (poświata za kursorem, poświaty sekcji, światło w scenie i mapa otoczenia kryształu, hover, focus, podkreślenia linków przy hoverze) bierze kolory z kryształu, a nie jeden płaski fiolet:
+
+| Token | Wartość | Skąd w krysztale |
+|---|---|---|
+| `--light-violet` | `#7A5CF0` | główne ściany |
+| `--light-blue` | `#5AB8FF` | chłodne odbicia |
+| `--light-ice` | `#D9E8FF` | rozbłyski na krawędziach |
+| `--light-amber` | `#F0913A` | ciepłe światło w dolnych ścianach |
+| `--light-rose` | `#FF5A7A` | tęczowa krawędź (tylko cienkie akcenty) |
+
+- Poświata nie jest jednolita: to miękki gradient fiolet → błękit z ciepłą bursztynową plamą od dołu, jak światło przechodzące przez kryształ. Barwa przesuwa się powoli (cykl ok. 12 s, w rytmie obrotu kryształu) i lekko zależy od położenia kursora (lewo chłodniej, prawo cieplej).
+- Rozszczepienie RGB na napisie pod kursorem używa tych kolorów zamiast czystego czerwonego, zielonego i niebieskiego (np. kanały przesunięte w stronę `--light-rose`, `--light-blue`, `--light-amber`).
+- Focus i hover linków: cienka tęczowa linia (gradient rose → amber → blue → violet), bez ciężkich wypełnień.
+- Tekst zostaje beżowy. Kolory światła nie mogą obniżyć kontrastu tekstu poniżej WCAG AA.
 
 - **Napisy ekspozycyjne** (imię w hero, tytuły sekcji, tytuły projektów, „CLOSE”): font z próbki Huberta. Pliku fontu nie mamy. Kształty liter są odrysowane 1:1 z próbki i leżą w `assets/font/glyphs.json`: wysokość litery 155 jednostek, `tracking` 6, szerokość spacji 50, dla każdej wielkiej litery A–Z szerokość `w` i ścieżka SVG `d`. Napisz mały moduł `js/glyphs.js`, który składa słowo z liter w jeden inline `<svg>` (`fill: currentColor`, `role="img"`, `aria-label` z tekstem) i skaluje je do zadanej wysokości. Tylko wielkie litery; znaki spoza A–Z i spacji pomiń z ostrzeżeniem w konsoli. Prawdziwy tekst ma być w HTML (np. `<h1>` z ukrytym tekstem albo `aria-label`), żeby strona była czytelna dla wyszukiwarki i czytnika ekranu.
 - **Tekst:** Manrope (OFL). Pobierz woff2 do `vendor/fonts/` z plikiem licencji, `@font-face` w `css/tokens.css`, `font-display: swap`. Grenze Gotisch, Archivo, Inter i JetBrains Mono usuń, jeśli nic ich nie używa.
@@ -36,15 +51,15 @@ Wszystko, czego nie ma w tym briefie: nawigacja, intro z rakietą, kosmos i stac
 Jedno płótno Three.js `position: fixed` pod treścią, jedna pętla na tickerze GSAP. W scenie:
 
 1. **Tło „budyń”.** Czarna płaszczyzna na cały ekran, siatka ok. 120 × 70 wierzchołków. Kursor wgniata powierzchnię jak łyżeczka (promień ok. 140 px, głębokość ok. 30 px). Każdy wierzchołek wraca do spoczynku jak sprężyna z tłumieniem (powrót ok. 1,5 s, lekkie przeregulowanie i drganie). Fizyka w shaderze albo na CPU na rzadkiej siatce, wynik jako tekstura przemieszczeń.
-2. **Napis w powierzchni.** Imię „HUBERT SKONIECZNY” z hero jest teksturą na tej samej płaszczyźnie, więc ugina się razem z budyniem. Pod kursorem napis rozmywa się z rozszczepieniem RGB (przesunięcie kanałów do ok. 12 px, rozmycie do ok. 6 px, w promieniu ok. 180 px), jak na dorianlods.com przy najechaniu na imię. Napis w DOM zostaje dla dostępności (ukryty wizualnie, gdy WebGL działa).
-3. **Światło za kursorem.** Fioletowa poświata (`#6B4FD8`, średnica ok. 560 px, miękka) podąża za kursorem z opóźnieniem ok. 0,15 s. Poza nią tło zostaje czarne.
+2. **Napis w powierzchni.** Imię „HUBERT SKONIECZNY” z hero jest teksturą na tej samej płaszczyźnie, więc ugina się razem z budyniem. Pod kursorem napis rozmywa się z rozszczepieniem w kolorach kryształu (przesunięcie kanałów do ok. 12 px, rozmycie do ok. 6 px, w promieniu ok. 180 px), jak na dorianlods.com przy najechaniu na imię. Napis w DOM zostaje dla dostępności (ukryty wizualnie, gdy WebGL działa).
+3. **Światło za kursorem.** Poświata w kolorach kryształu (sekcja 2, średnica ok. 560 px, miękka) podąża za kursorem z opóźnieniem ok. 0,15 s. Poza nią tło zostaje czarne.
 4. **Kryształ.** Szklany ośmiościan, opis w sekcji 5.
 
 Telefon i dotyk: budyń reaguje na palec tylko podczas przesuwania, światło stoi w miejscu kryształu. Brak WebGL albo `prefers-reduced-motion`: czarne tło z jedną statyczną poświatą CSS, kryształ jako obrazek PNG, napisy jako SVG, bez ruchu.
 
 ## 5. Kryształ
 
-- Model: `assets/crystal/crystal.glb` (adres do pobrania w zadaniu 17). Z modelu bierzemy **tylko kształt**. Materiał robi kod: `MeshPhysicalMaterial` z `transmission: 1`, `thickness` ok. 1,2, `ior` 1,5, `roughness` 0,05, `dispersion` ok. 5, lekka `iridescence`, mapa otoczenia z miękkimi fioletowymi i ciepłymi plamami światła. Ma przypominać zdjęcie referencyjne: przezroczyste szkło, tęczowe krawędzie, ciepłe światło w dolnych ścianach.
+- Model: `assets/crystal/crystal.glb` (adres do pobrania w zadaniu 17). Z modelu bierzemy **tylko kształt**. Materiał robi kod: `MeshPhysicalMaterial` z `transmission: 1`, `thickness` ok. 1,2, `ior` 1,5, `roughness` 0,05, `dispersion` ok. 5, lekka `iridescence`, mapa otoczenia z plamami światła w kolorach z sekcji 2 (fiolet, błękit, bursztyn). Ma przypominać zdjęcie referencyjne: przezroczyste szkło, tęczowe krawędzie, ciepłe światło w dolnych ścianach.
 - Jeśli GLB jest zepsuty, krzywy albo ma więcej niż 8 wyraźnych ścian, użyj `THREE.OctahedronGeometry` i wpisz to do raportu.
 - Stale obraca się wokół własnej osi, ok. 1 obrót na 12 s. Na desktopie lekko reaguje na kursor (pochylenie do ±6°).
 - **Ściany i projekty:** ściana 1 to Basko Clean, 2 Livingroom, 3 Agata Patelka (strona psycholożki), 4 KSK Pretor, ściany 5–8 wolne.
@@ -69,7 +84,7 @@ Telefon i dotyk: budyń reaguje na palec tylko podczas przesuwania, światło st
 - „HUBERT” i „SKONIECZNY” fontem z glifów, wysokość liter 96, wyśrodkowane w poziomie, góra pierwszej linii na y = 300, odstęp między liniami 18.
 - Podpis pod imieniem, 34 px niżej, Manrope Bold 13, wyśrodkowany, dwie linie:
   „A Poland-based web designer building immersive, AI-powered websites / for brands that want to be remembered.”
-- Kryształ na orbicie (sekcja 6). Poświata ok. 560 px w okolicy (780–1340, 260–820).
+- Kryształ na orbicie (sekcja 6). Poświata w kolorach kryształu ok. 560 px w okolicy (780–1340, 260–820).
 
 ### 02 Selected Works
 - „SELECTED” i „WORKS” fontem z glifów, wysokość 34, wyrównane do lewej na x = 330, y = 300 i 342.

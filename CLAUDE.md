@@ -20,7 +20,7 @@ Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup
 ## Czego nie zmieniać (zamrożone)
 
 1. **Projekt z briefu 16.** Układ, wymiary, teksty i ruch są zatwierdzone w Figmie. Zmiany tylko na prośbę Huberta.
-2. **Paleta.** Czerń `#0A0A0C`, beż `#ECE6DC`, galaktyczny fiolet `#6B4FD8`, szary `#9A94A8`. Wartości tylko w `css/tokens.css`.
+2. **Paleta.** Czerń `#0A0A0C`, beż `#ECE6DC`, galaktyczny fiolet `#6B4FD8`, szary `#9A94A8`. Wszystkie akcenty świetlne w kolorach kryształu (tokeny `--light-*` w briefie 16, sekcja 2). Wartości tylko w `css/tokens.css`.
 3. **Napisy ekspozycyjne** tylko z glifów `assets/font/glyphs.json` (odrysowane z próbki fontu Huberta). Nie podmieniaj ich na inny font.
 
 ## Twarde zasady treści
