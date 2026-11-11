@@ -9,7 +9,7 @@
 }
 
 :root {
-  --bg: #0A0A0C;
+  --bg: #050506;   /* ciemniej, bliżej czerni (11.11) */
   --ink: #ECE6DC;
   --ink-2: #9A94A8;
   --violet: #6B4FD8;

@@ -59,10 +59,10 @@ const BG_FRAG = /* glsl */`
     vec2 d = px - uLight;
     float g = exp(-dot(d, d) / (2. * sig * sig));
     float shade = clamp(.85 + 1.2 * dot(n.xy, -normalize(d + .001)) * smoothstep(0., 60., length(d)), .5, 1.5);
-    vec3 c = crystalLight(d, .25 * span) * g * .09 * shade;
+    vec3 c = crystalLight(d, .25 * span) * g * .05 * shade;
     vec2 d2 = px - uGlow;
     float s2 = .5 * span;
-    c += crystalLight(d2, .3 * span) * exp(-dot(d2, d2) / (2. * s2 * s2)) * .05 * uGlowA;
+    c += crystalLight(d2, .3 * span) * exp(-dot(d2, d2) / (2. * s2 * s2)) * .028 * uGlowA;
     gl_FragColor = vec4(uBg + c, 1.);
     #include <colorspace_fragment>
   }`;
