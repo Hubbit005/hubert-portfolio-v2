@@ -12,7 +12,7 @@ initLang();
 await renderGlyphs();
 
 // Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
-const back = document.querySelector(`.works__list a[href="work/${new URLSearchParams(location.search).get('w')}.html"]`);
+const back = document.querySelector(`.works__list a[href="work/${CSS.escape(new URLSearchParams(location.search).get('w') ?? '')}.html"]`);
 back?.classList.add('is-active');
 const moved = (fn) => addEventListener('pointermove', function h(e) {
   if (!e.movementX && !e.movementY) return; // przeglądarka wysyła też sztuczne ruchy po zmianie układu
