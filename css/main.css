@@ -92,3 +92,8 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .socials__links { top: calc(460 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
+
+/* ===== Scena WebGL (js/scene.js) ===== */
+canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+html.gl .glow { display: none; }
+html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
