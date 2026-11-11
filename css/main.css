@@ -97,3 +97,9 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
 html.gl .glow { display: none; }
 html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
+
+/* ===== Ruch: jedna sekcja na ekran (js/main.js) ===== */
+html.motion main { height: 560vh; } /* 4 sekcje: 3 przejścia po 1 ekranie + 4 postoje po 0,4 */
+html.motion .sec { position: fixed; inset: 0; height: auto; will-change: opacity, transform; }
+html.motion .sec + .sec { opacity: 0; }
+html.crystal .crystal-img { display: none; }

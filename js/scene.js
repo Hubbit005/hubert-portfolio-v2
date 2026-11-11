@@ -32,7 +32,7 @@ const LIGHT = /* glsl */`
     float k = smoothstep(-sig, sig, dot(d, dir)) * (1. - .45 * uWarm);
     vec3 c = mix(uViolet, uBlue, k);
     float warm = smoothstep(.1 * sig, -1.3 * sig, d.y) * (.35 + .65 * uWarm);
-    return mix(c, uAmber, warm * .75);
+    return mix(c, uAmber, warm * .55);
   }`;
 
 const BG_FRAG = /* glsl */`
@@ -50,10 +50,10 @@ const BG_FRAG = /* glsl */`
     vec2 d = px - uLight;
     float g = exp(-dot(d, d) / (2. * sig * sig)) * smoothstep(280., 120., length(d)); // średnica ok. 560 px
     float shade = clamp(.8 + 1.4 * dot(n.xy, -normalize(d + .001)) * smoothstep(0., 60., length(d)), .45, 1.6);
-    vec3 c = crystalLight(d, sig) * g * .42 * shade;
+    vec3 c = crystalLight(d, sig) * g * .28 * shade;
     vec2 d2 = px - uGlow;
     float s2 = 150.;
-    c += crystalLight(d2, s2) * exp(-dot(d2, d2) / (2. * s2 * s2)) * smoothstep(300., 120., length(d2)) * .32 * uGlowA;
+    c += crystalLight(d2, s2) * exp(-dot(d2, d2) / (2. * s2 * s2)) * smoothstep(300., 120., length(d2)) * .2 * uGlowA;
     gl_FragColor = vec4(uBg + c, 1.);
     #include <colorspace_fragment>
   }`;
@@ -158,7 +158,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     camera.far = camera.position.z - BG_Z + 100;
     camera.updateProjectionMatrix();
     text.scale.set(W, H, 1);
-    const k = (camera.position.z - BG_Z) / camera.position.z;
+    const k = (camera.position.z - BG_Z) / camera.position.z * 1.15; // zapas, żeby wgniecenie przy krawędzi nie odsłaniało brzegu
     bg.scale.set(W * k, H * k, 1);
     shared.uRes.value.set(W, H);
     if (text.visible) drawText();
