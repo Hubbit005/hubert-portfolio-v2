@@ -133,32 +133,31 @@ html.motion .sec + .sec { opacity: 0; }
 html.crystal .crystal-img { display: none; }
 
 /* ===== Strony projektów (work/*.html, js/work.js) ===== */
-.project { position: fixed; left: 0; right: 0; top: 50%; height: calc(900 * var(--u)); transform: translateY(-50%); }
-/* Proporcje jak u Doriana: kolumna tekstu ok. 20% szerokości, karta od 29% szerokości, 8–91% wysokości */
-.panel { position: absolute; left: calc(63 * var(--u)); top: calc(232 * var(--u)); width: calc(300 * var(--u)); }
+/* Lewa kolumna ok. 35% przypięta, prawa ok. 65%: zwarta siatka obrazów na jednolitym tle */
+body.work .glow { display: none; }
+.project { display: grid; grid-template-columns: 35fr 65fr; align-items: start; column-gap: calc(48 * var(--u)); padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
+.panel { position: sticky; top: calc(232 * var(--u)); max-width: calc(360 * var(--u)); }
 .panel__title { --gh: 46; display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
 .panel__desc { margin-top: calc(34 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); }
 .panel__meta { margin: calc(28 * var(--u)) 0 0; font-size: calc(12 * var(--u)); }
 .panel__meta div { display: flex; }
 .panel__meta dt { flex: none; width: calc(70 * var(--u)); font-weight: 700; }
 .panel__meta dd { margin: 0; font-weight: 500; }
-.strip { position: absolute; top: calc(79 * var(--u)); left: calc(420 * var(--u)); right: 0; height: calc(737 * var(--u)); display: flex; gap: calc(40 * var(--u)); padding-right: calc(63 * var(--u)); overflow-x: auto; overscroll-behavior-x: contain; }
-html.js .strip { scrollbar-width: none; }
-html.js .strip::-webkit-scrollbar { display: none; }
-/* Karta: stała rama 1075 x 737, materiał w środku w całości (bez ucinania), jak u Doriana */
-.card { flex: none; width: calc(1075 * var(--u)); height: 100%; border-radius: calc(24 * var(--u)); overflow: hidden; display: flex; align-items: center; justify-content: center; padding: calc(70 * var(--u)) calc(130 * var(--u)); background: radial-gradient(120% 90% at 50% 40%, color-mix(in srgb, var(--light-violet) 16%, var(--bg)), color-mix(in srgb, var(--ink) 4%, var(--bg)) 70%); }
+/* Poziome i kwadratowe na całą szerokość, pionowe po dwa obok siebie (dense dobiera parę) */
+.strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 20px; }
+.card { grid-column: 1 / -1; }
+.card--p { grid-column: auto; }
 .card picture { display: contents; }
-.card img, .card video { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: calc(10 * var(--u)); }
+.card img, .card video { display: block; width: 100%; height: auto; }
 .close { --gh: 22; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
 
-@media (max-width: 767px) {
-  .project { position: static; transform: none; height: auto; padding: calc(96 * var(--u)) 0 40px; }
-  .panel { position: static; width: auto; margin: 0 calc(30 * var(--u)); }
+@media (max-width: 899px) {
+  .project { grid-template-columns: 1fr; row-gap: 32px; padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
+  .panel { position: static; max-width: none; }
   .panel__title { --gh: 48; gap: calc(8 * var(--u)); }
   .panel__desc { margin-top: 24px; font-size: 15px; }
   .panel__meta { margin-top: 24px; font-size: 14px; }
   .panel__meta dt { width: 76px; }
-  .strip { position: static; margin-top: 32px; height: 470px; gap: 16px; padding: 0 calc(30 * var(--u)); scroll-snap-type: x mandatory; scroll-padding: 0 calc(30 * var(--u)); }
-  .card { width: 300px; padding: 16px; border-radius: 20px; scroll-snap-align: start; }
+  .strip { gap: 16px; }
   .close { --gh: 16; top: 28px; right: 24px; }
 }

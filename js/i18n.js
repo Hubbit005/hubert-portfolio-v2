@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261111';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261123';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -11,7 +11,7 @@ const PL = {
     'Web designer z Polski. Tworzę immersyjne strony z AI <br>dla marek, które chcą zostać zapamiętane.',
   // lista prac
   '// WEBSITE + MOTION': '// STRONA + ANIMACJE', '// RESTAURANT WEBSITE': '// STRONA RESTAURACJI',
-  '// BOOKING + PAYMENTS': '// REZERWACJE + PŁATNOŚCI', '// AI AGENT': '// AGENT AI',
+  '// BOOKING + PAYMENTS': '// REZERWACJE + PŁATNOŚCI', '// AI AGENT': '// AGENT AI', '// BARBERSHOP WEBSITE': '// STRONA BARBERSHOPU',
   // usługi
   'WEBSITES': 'STRONY INTERNETOWE', 'Design and code, from the first sketch to launch.': 'Projekt i kod, od pierwszego szkicu do startu.',
   'AI CHAT AGENTS': 'AGENCI AI NA STRONĘ', 'An assistant on your site that answers clients day and night.': 'Asystent na stronie, który odpowiada klientom o każdej porze.',
@@ -37,6 +37,9 @@ const PL = {
     'Strona psycholożki z pakietami sesji, koszykiem i rezerwacją wizyt. Zaprojektowałem całą ścieżkę zakupu i ustawiłem rezerwacje w osadzonym kalendarzu Cal.com. Projekt jest w trakcie realizacji.',
   'A shooting range and event venue in Racław near Gorzów. I work on its marketing, its growth in Germany and its digital tools. I built AI agent prototypes in Botpress and created promotional films and graphics.':
     'Strzelnica i miejsce eventów w Racławiu pod Gorzowem. Odpowiadam za marketing, rozwój na rynku niemieckim i narzędzia cyfrowe. Zbudowałem prototypy agentów AI w Botpress oraz filmy i grafiki promocyjne.',
+  'I designed and built a website concept for Casanova Barbershop in Gorzów Wielkopolski. The site takes visitors from the salon\'s atmosphere straight to Booksy booking and works on phone, tablet and desktop.':
+    'Zaprojektowałem i zbudowałem koncept strony dla barbershopu Casanova w Gorzowie Wielkopolskim. Strona prowadzi klienta od klimatu salonu do rezerwacji przez Booksy i działa na telefonie, tablecie i komputerze.',
+  '// Concept, design, code': '// Koncept, projekt, kod',
   'CLIENT': 'KLIENT', 'SCOPE': 'ZAKRES', 'STACK': 'NARZĘDZIA',
   '// Agata Patelka, psychologist': '// Agata Patelka, psycholożka',
   '// Basko Clean, B2B industrial cleaning': '// Basko Clean, sprzątanie przemysłowe B2B',
