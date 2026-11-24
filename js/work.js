@@ -1,7 +1,7 @@
 // Strona projektu: kolumna z opisem, panele (na desktopie tor poziomy z js/work-track.js), wideo, CLOSE i Esc.
-import { renderGlyphs } from './glyphs.js?v=20261124';
-import { initLang } from './i18n.js?v=20261124';
-import { initTrack } from './work-track.js?v=20261124';
+import { renderGlyphs } from './glyphs.js?v=20261125';
+import { initLang } from './i18n.js?v=20261125';
+import { initTrack } from './work-track.js?v=20261125';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;

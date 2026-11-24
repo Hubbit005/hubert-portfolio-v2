@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261124';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261125';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -56,7 +56,7 @@ const PL = {
   'Gift voucher: haircut plus Nº1': 'Bon podarunkowy: strzyżenie i Nº1',
   'About page: Barbershop headline, salons and the barbers section': 'Strona O nas: nagłówek Barbershop, salony i sekcja barberów',
   'Casanova Nº2 Noir bottle above its plinth': 'Flakon Casanova Nº2 Noir nad postumentem',
-  'Homepage in three iterations, from mockup to final site': 'Strona główna w trzech wersjach, od makiety do gotowej strony',
+  'Reviews page: layout draft with content placeholders next to the final version': 'Podstrona opinii: szkic układu z miejscami na treść obok wersji finalnej',
   'Barber illustrations used on the services page': 'Ilustracje barberów ze strony usług',
   'Salon picker with ratings and opening hours': 'Wybór salonu z ocenami i godzinami otwarcia',
   'Services page with illustrations appearing on hover': 'Strona usług z ilustracjami, które pojawiają się po najechaniu',

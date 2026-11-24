@@ -1,6 +1,6 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261124';
-import { initLang } from './i18n.js?v=20261124';
+import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261125';
+import { initLang } from './i18n.js?v=20261125';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -69,15 +69,17 @@ function startMotion() {
   });
 
   // Bez sceny sekcje i tak przechodzą jedna w drugą.
-  let gl = null, crystal = null;
+  let gl = null, crystal = null, resetWorks = null;
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261124');
+    const { createScene } = await import('./scene.js?v=20261125');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); return; }
     html.classList.add('gl');
+    if (!touch) html.classList.add('gl-titles');
     const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
+    let shown = 0, shownEls = titleSvgs;
     // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
     let tb = null;
     const titleBox = (f, live) => {
@@ -96,8 +98,14 @@ function startMotion() {
       crystal?.update(dt);
       const { H } = gl.size();
       gl.lightAt = { x, y: H - y };
-      const hero = +secs[0].style.opacity;
-      gl.textUniforms.uAlpha.value = hero;
+      // napis widocznej sekcji z falą i rozmyciem jak w hero (na dotyku tylko hero)
+      const vis = secs.findIndex((s) => +s.style.opacity > 0);
+      if (vis >= 0 && (vis !== shown || (shownEls.length && !shownEls[0].isConnected))) { // isConnected: inny język = nowe SVG
+        shown = vis; shownEls = touch && vis ? [] : [...secs[vis].querySelectorAll('h1 svg, h2 svg')];
+        gl.setText(shownEls);
+      }
+      gl.textUniforms.uAlpha.value = vis >= 0 ? +secs[vis].style.opacity : 0;
+      if (active !== 1) resetWorks?.(); // poza „Wybranymi pracami” kryształ zawsze w wyglądzie domyślnym
       // poświata sekcji: w hero stała plama (780–1340, 260–820), dalej przy krysztale
       const hx = 1060 * f.u, hy = 540 * f.u + f.top, a = Math.min(1, p / STEP);
       gl.bgUniforms.uGlow.value.set(hx + (x - hx) * a, H - (hy + (y - hy) * a));
@@ -105,7 +113,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261124');
+    const { addCrystal } = await import('./crystal.js?v=20261125');
     crystal = await addCrystal(gl);
     html.classList.add('crystal');
     if (!touch) addEventListener('pointermove', (e) => crystal.tilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1), { passive: true });
@@ -114,30 +122,27 @@ function startMotion() {
   afterFirstPaint(start);
 
   // Hover na projekcie: kryształ obraca się ścianą projektu, zdjęcie widać tylko przez szkło.
+  // Tryb projektu trwa do zjechania z całej listy. Telefon: kryształ zawsze w wyglądzie domyślnym.
   function bindWorks() {
+    if (touch) return;
+    const list = document.querySelector('.works__list');
     let current = null;
     const show = (a) => {
       if (current === a) return;
       current?.classList.remove('is-active');
       current = a;
-      if (!a) return crystal.face(-1);
-      if (touch) a.classList.add('is-active');
-      crystal.face(+a.dataset.face, a.dataset.img);
+      crystal.face(a ? +a.dataset.face : -1, a?.dataset.img);
     };
     for (const a of links) {
-      if (!touch) {
-        a.addEventListener('pointerenter', () => show(a));
-        a.addEventListener('pointerleave', () => show(null));
-        a.addEventListener('focus', () => show(a));
-        a.addEventListener('blur', () => show(null));
-      }
-      // Telefon: pierwsze tapnięcie obraca kryształ, drugie otwiera stronę projektu.
-      a.addEventListener('click', (e) => { if (touch && !a.classList.contains('is-active')) { e.preventDefault(); show(null); show(a); } });
+      a.addEventListener('pointerenter', () => show(a));
+      a.addEventListener('focus', () => show(a));
     }
-    if (touch) document.addEventListener('click', (e) => { if (!e.target.closest('.works__list a')) show(null); });
+    list.addEventListener('pointerleave', () => show(null));
+    list.addEventListener('focusout', (e) => { if (!list.contains(e.relatedTarget)) show(null); });
+    resetWorks = () => show(null);
     if (back?.classList.contains('is-active')) {
       show(back); back.classList.add('is-active');
-      moved((e) => { if (current === back && !back.contains(e.target)) show(null); });
+      moved((e) => { if (current === back && !list.contains(e.target)) show(null); });
     }
   }
 }
