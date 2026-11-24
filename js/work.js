@@ -8,10 +8,13 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const strip = document.querySelector('.strip');
 const close = document.querySelector('.close');
 
+addEventListener('keydown', (e) => { if (e.key === 'Escape') location.href = close.href; });
+
 // Klasę .track ustawia skrypt w <head> (ten sam warunek). Przejście przez próg = nowy układ.
 // shortcut: przeładowanie strony zamiast przebudowy układu w locie; wystarczy, bo próg mija się rzadko.
 matchMedia('(min-width: 900px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').onchange = () => location.reload();
-if (html.classList.contains('track')) initTrack(strip);
+// GSAP albo Lenis się nie wczytał: zostaje układ pionowy.
+if (html.classList.contains('track')) initTrack(strip).catch(() => { html.classList.remove('track'); strip.parentElement.style.height = ''; });
 
 // Wideo: lżejszy plik na telefonie i przy oszczędzaniu danych / wolnym łączu; plik wybierany przed ustawieniem src.
 const conn = navigator.connection;
@@ -36,5 +39,3 @@ document.addEventListener('visibilitychange', () => seen.forEach((v) => (documen
 
 initLang('../');
 await renderGlyphs(document, '../');
-
-addEventListener('keydown', (e) => { if (e.key === 'Escape') location.href = close.href; });
