@@ -1,10 +1,14 @@
 // Tor poziomy strony projektu (desktop): pionowy scroll przez Lenis przesuwa panele w lewo,
 // obraz w panelu jedzie wolniej (parallax), panel spoza ekranu wchodzi raz przy pierwszym pojawieniu.
-// Wszystko w tickerze GSAP, tylko transform.
-export function initTrack(strip) {
+// Wszystko w tickerze GSAP, tylko transform. GSAP i Lenis pobierane dopiero tutaj: telefon ich nie ładuje.
+const load = (f) => new Promise((ok, err) => document.head.append(Object.assign(document.createElement('script'),
+  { src: new URL(`../vendor/js/${f}`, import.meta.url).href, onload: ok, onerror: err })));
+
+export async function initTrack(strip) {
+  const libs = Promise.all([load('gsap.min.js'), load('lenis.min.js')]);
   const project = strip.parentElement;
   const boxes = [...strip.querySelectorAll('.card:not(.card--s), .card--s > div')]
-    .map((el) => ({ el, m: el.querySelector('img, video') }));
+    .map((el) => ({ el, m: [...el.querySelectorAll('img, video')] }));
   let top = 0, L = 0, x = -1;
 
   const measure = () => {
@@ -24,6 +28,7 @@ export function initTrack(strip) {
   const x0 = scrollY - top;
   for (const c of strip.children) if (c.offsetLeft - x0 >= innerWidth) { c.classList.add('pre'); io.observe(c); }
 
+  await libs;
   const lenis = new Lenis({ autoRaf: false, lerp: .08, wheelMultiplier: 1, gestureOrientation: 'both' });
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
@@ -36,7 +41,7 @@ export function initTrack(strip) {
     for (const b of boxes) {
       // -1 (panel wychodzi z lewej) … 1 (wchodzi z prawej)
       const r = Math.min(1, Math.max(-1, (b.left - x + b.w / 2 - h) / (h + b.w / 2)));
-      b.m.style.transform = `translate3d(${-r * .06 * b.w}px, 0, 0)`;
+      for (const m of b.m) m.style.transform = `translate3d(${-r * .06 * b.w}px, 0, 0)`;
     }
   });
 }

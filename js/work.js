@@ -24,7 +24,14 @@ const play = (v) => document.hidden || v.play().catch(() => {});
 const io = new IntersectionObserver((es) => es.forEach(({ target: v, isIntersecting }) => {
   if (isIntersecting) { seen.add(v); play(v); } else { seen.delete(v); v.pause(); }
 }), { threshold: .35 });
-for (const v of strip.querySelectorAll('video')) reduce ? (v.controls = true) : io.observe(v);
+// Plakat leży pod wideo jako leniwy <img>; z kontrolkami wideo zasłania go, więc dostaje go jako poster po wczytaniu.
+const poster = (v) => {
+  const p = v.previousElementSibling;
+  if (p?.tagName !== 'IMG') return;
+  const set = () => (v.poster = p.currentSrc);
+  p.complete && p.naturalWidth ? set() : p.addEventListener('load', set, { once: true });
+};
+for (const v of strip.querySelectorAll('video')) reduce ? ((v.controls = true), poster(v)) : io.observe(v);
 document.addEventListener('visibilitychange', () => seen.forEach((v) => (document.hidden ? v.pause() : play(v))));
 
 initLang('../');

@@ -148,6 +148,9 @@ body.work .glow { display: none; }
 .card:not(.card--s), .card--s > div { overflow: hidden; border-radius: 18px; background: var(--card-bg); }
 .card picture { display: contents; }
 .card img, .card video { width: 100%; height: auto; }
+/* Plakat wideo jako leniwy <img> pod <video> bez atrybutu poster (plakaty nie ładują się przy starcie strony) */
+.card:has(> img + video) { position: relative; }
+.card > img + video { position: absolute; inset: 0; height: 100%; object-fit: cover; }
 .close { --gh: 22; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
 
 @media (max-width: 899px) {
