@@ -180,3 +180,5 @@ html.track .card:not(.card--s), html.track .card--s > div { border-radius: calc(
 html.track .card.pre { opacity: 0; transform: translate3d(calc(120 * var(--u)), 0, 0); } /* przed pierwszym wejściem */
 /* Parallax: obraz 12% szerszy od panelu, przesuwany o maks. ±6% szerokości panelu */
 html.track .card img, html.track .card video { width: 112%; max-width: none; height: 100%; margin-left: -6%; object-fit: cover; }
+/* Plansze z tekstem (card--static): bez parallaxu, w całości, bez powiększenia i przycinania */
+html.track .card--static img { width: 100%; margin-left: 0; object-fit: contain; }

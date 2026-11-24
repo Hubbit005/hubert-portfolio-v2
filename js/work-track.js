@@ -7,7 +7,7 @@ const load = (f) => new Promise((ok, err) => document.head.append(Object.assign(
 export async function initTrack(strip) {
   const libs = Promise.all([load('gsap.min.js'), load('lenis.min.js')]);
   const project = strip.parentElement;
-  const boxes = [...strip.querySelectorAll('.card:not(.card--s), .card--s > div')]
+  const boxes = [...strip.querySelectorAll('.card:not(.card--s, .card--static), .card--s > div')]
     .map((el) => ({ el, m: [...el.querySelectorAll('img, video')] }));
   let top = 0, L = 0, x = -1;
 
