@@ -13,6 +13,7 @@
   --ink: #ECE6DC;
   --ink-2: #9A94A8;
   --violet: #6B4FD8;
+  --card-bg: #0B0B0B; /* tło panelu na stronie projektu, zanim wczyta się obraz */
 
   /* Światło w kolorach kryształu */
   --light-violet: #7A5CF0;

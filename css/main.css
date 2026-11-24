@@ -132,32 +132,48 @@ html.motion .sec { position: fixed; inset: 0; height: auto; will-change: opacity
 html.motion .sec + .sec { opacity: 0; }
 html.crystal .crystal-img { display: none; }
 
-/* ===== Strony projektów (work/*.html, js/work.js) ===== */
-/* Lewa kolumna ok. 35% przypięta, prawa ok. 65%: zwarta siatka obrazów na jednolitym tle */
+/* ===== Strony projektów (work/*.html, js/work.js, js/work-track.js) ===== */
+/* Układ podstawowy (telefon, tablet, reduced motion, bez JS): tekst nad panelami, panele jeden pod drugim. */
 body.work .glow { display: none; }
-.project { display: grid; grid-template-columns: 35fr 65fr; align-items: start; column-gap: calc(48 * var(--u)); padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
-.panel { position: sticky; top: calc(232 * var(--u)); max-width: calc(360 * var(--u)); }
+.project { padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
+.panel { max-width: calc(360 * var(--u)); }
 .panel__title { --gh: 46; display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
 .panel__desc { margin-top: calc(34 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); }
 .panel__meta { margin: calc(28 * var(--u)) 0 0; font-size: calc(12 * var(--u)); }
 .panel__meta div { display: flex; }
 .panel__meta dt { flex: none; width: calc(70 * var(--u)); font-weight: 700; }
 .panel__meta dd { margin: 0; font-weight: 500; }
-/* Poziome i kwadratowe na całą szerokość, pionowe po dwa obok siebie (dense dobiera parę) */
-.strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 20px; }
-.card { grid-column: 1 / -1; }
-.card--p { grid-column: auto; }
+.strip { margin-top: calc(48 * var(--u)); display: grid; gap: 16px; }
+.card--s { display: grid; gap: 16px; } /* para: dwa osobne panele */
+.card:not(.card--s), .card--s > div { overflow: hidden; border-radius: 18px; background: var(--card-bg); }
 .card picture { display: contents; }
-.card img, .card video { display: block; width: 100%; height: auto; }
+.card img, .card video { width: 100%; height: auto; }
 .close { --gh: 22; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
 
 @media (max-width: 899px) {
-  .project { grid-template-columns: 1fr; row-gap: 32px; padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
-  .panel { position: static; max-width: none; }
-  .panel__title { --gh: 48; gap: calc(8 * var(--u)); }
+  .project { padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
+  .panel { max-width: none; }
+  .panel__title { --gh: 48; }
   .panel__desc { margin-top: 24px; font-size: 15px; }
   .panel__meta { margin-top: 24px; font-size: 14px; }
   .panel__meta dt { width: 76px; }
-  .strip { gap: 16px; }
+  .strip { margin-top: 32px; }
   .close { --gh: 16; top: 28px; right: 24px; }
 }
+
+/* Tor poziomy (desktop, klasa .track z <head>): przypięta sekcja, scroll przesuwa panele w lewo.
+   Wysokość .project = długość toru + ekran, ustawia js/work-track.js. Panele: wysokość 81vh, góra 9,5vh. */
+html.track .project { height: 100vh; padding: 0; overflow-x: clip; }
+html.track .panel { position: fixed; z-index: 1; top: calc(232 * var(--u)); left: calc(63 * var(--u)); width: calc(360 * var(--u)); }
+html.track .panel::before { content: ""; position: fixed; z-index: -1; inset: 0 auto 0 0; width: calc(554 * var(--u)); background: linear-gradient(90deg, var(--bg) calc(100% - 60 * var(--u)), transparent); } /* panele chowają się pod kolumną */
+html.track .strip { --ph: 81vh; --gap: calc(30 * var(--u)); position: sticky; top: 0; width: max-content; height: 100vh; margin: 0; display: flex; align-items: flex-start; gap: var(--gap); padding: 9.5vh calc(63 * var(--u)) 0 calc(554 * var(--u)); will-change: transform; }
+html.track .card { flex: none; height: var(--ph); aspect-ratio: 16 / 9; transition: opacity .6s, transform .6s cubic-bezier(.2, .7, .2, 1); }
+html.track .card--p { aspect-ratio: 1350 / 2080; }
+html.track .card--n { aspect-ratio: 1 / 2; }
+html.track .card--sq { aspect-ratio: 1; }
+html.track .card--s { aspect-ratio: auto; width: calc((var(--ph) - var(--gap)) / 2 * 1280 / 1010); display: flex; flex-direction: column; gap: var(--gap); }
+html.track .card--s > div { flex: 1; }
+html.track .card:not(.card--s), html.track .card--s > div { border-radius: calc(30 * var(--u)); }
+html.track .card.pre { opacity: 0; transform: translate3d(calc(120 * var(--u)), 0, 0); } /* przed pierwszym wejściem */
+/* Parallax: obraz 12% szerszy od panelu, przesuwany o maks. ±6% szerokości panelu */
+html.track .card img, html.track .card video { width: 112%; max-width: none; height: 100%; margin-left: -6%; object-fit: cover; }
