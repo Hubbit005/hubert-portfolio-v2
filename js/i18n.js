@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261123';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261124';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -47,6 +47,21 @@ const PL = {
   '// Livingroom restaurant, Gorzów Wielkopolski': '// Restauracja Livingroom, Gorzów Wielkopolski',
   '// Design and build': '// Projekt i wdrożenie', '// Design, code, video, social media': '// Projekt, kod, wideo, social media',
   '// Idea, design, build': '// Pomysł, projekt, wdrożenie', '// Strategy, marketing, video, 3D, AI agent': '// Strategia, marketing, wideo, 3D, agent AI',
+  // opisy obrazów i wideo na stronie Casanovy (alt / aria-label)
+  'Casanova Nº1 Barber perfume bottle on the product page': 'Flakon perfum Casanova Nº1 Barber na stronie produktu',
+  'Casanova homepage hero scrolling into the salon picker': 'Hero strony głównej Casanovy przewijane do wyboru salonu',
+  'Typography: Bodoni Moda and Inter': 'Typografia: Bodoni Moda i Inter',
+  'Casanova perfume collection, three bottles on marble plinths': 'Kolekcja perfum Casanova, trzy flakony na marmurowych postumentach',
+  'Fragrance notes for Nº1 Barber': 'Nuty zapachowe Nº1 Barber',
+  'Gift voucher: haircut plus Nº1': 'Bon podarunkowy: strzyżenie i Nº1',
+  'About page: Barbershop headline, salons and the barbers section': 'Strona O nas: nagłówek Barbershop, salony i sekcja barberów',
+  'Casanova Nº2 Noir bottle above its plinth': 'Flakon Casanova Nº2 Noir nad postumentem',
+  'Homepage in three iterations, from mockup to final site': 'Strona główna w trzech wersjach, od makiety do gotowej strony',
+  'Barber illustrations used on the services page': 'Ilustracje barberów ze strony usług',
+  'Salon picker with ratings and opening hours': 'Wybór salonu z ocenami i godzinami otwarcia',
+  'Services page with illustrations appearing on hover': 'Strona usług z ilustracjami, które pojawiają się po najechaniu',
+  'Casanova colour palette and wordmark': 'Paleta kolorów i logotyp Casanovy',
+  'Hairstyle finder in three steps': 'Dobór fryzury w trzech krokach',
 };
 
 const SEL = '.hero__sub, .works__list span, .services__list b, .services__list span, .story__text p, .panel__desc, .panel__meta dt, .panel__meta dd, [data-glyph]';
@@ -64,6 +79,12 @@ function apply(base) {
       if (el.querySelector('svg')) loadGlyphs(base).then((f) => el.replaceChildren(glyphSVG(f, t.toUpperCase())));
       else el.textContent = t;
     } else el.innerHTML = t;
+  }
+  // opisy obrazów i wideo w panelach: ten sam słownik, tekst angielski zapamiętany w data-en
+  for (const el of document.querySelectorAll('.card img, .card video[aria-label]')) {
+    const a = el.tagName === 'IMG' ? 'alt' : 'aria-label';
+    el.dataset.en ??= el.getAttribute(a);
+    el.setAttribute(a, lang === 'pl' ? PL[el.dataset.en] ?? el.dataset.en : el.dataset.en);
   }
   for (const b of document.querySelectorAll('.lang button')) b.setAttribute('aria-pressed', b.dataset.l === lang);
 }
