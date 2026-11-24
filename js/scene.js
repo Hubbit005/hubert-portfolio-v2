@@ -206,6 +206,8 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     textUniforms: text.material.uniforms, bgUniforms: bg.material.uniforms,
     lightAt: null,          // touch: punkt światła (px, y w górę), ustawia main.js
     size: () => ({ W, H }),
+    // Napis w powierzchni sceny: main.js podmienia go na napis widocznej sekcji (sekcje nigdy nie są widoczne naraz).
+    setText(els) { textEls = els; text.visible = els.length > 0; if (text.visible) drawText(); },
     update(dt, time) {
       shared.uTime.value = time;
       // „palec” z bezwładnością: goni kursor sprężyną, po zatrzymaniu jeszcze przejeżdża i wraca
