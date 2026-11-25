@@ -1,6 +1,6 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261125';
-import { initLang } from './i18n.js?v=20261125';
+import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261126';
+import { initLang } from './i18n.js?v=20261126';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -73,7 +73,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261125');
+    const { createScene } = await import('./scene.js?v=20261126');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); return; }
     html.classList.add('gl');
@@ -113,7 +113,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261125');
+    const { addCrystal } = await import('./crystal.js?v=20261126');
     crystal = await addCrystal(gl);
     html.classList.add('crystal');
     if (!touch) addEventListener('pointermove', (e) => crystal.tilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1), { passive: true });
