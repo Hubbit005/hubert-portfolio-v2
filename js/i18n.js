@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261130';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261201';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
