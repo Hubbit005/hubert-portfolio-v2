@@ -145,7 +145,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     blending: THREE.CustomBlending, // zostaje w kolejce nieprzezroczystej, więc widać go też przez szkło
     uniforms: {
       ...shared, uText: { value: textTex }, uMouse: { value: new THREE.Vector2(-999, -999) },
-      uAlpha: { value: 1 }, uShift: { value: 0 }, uHover: { value: touch ? 0 : 1 },
+      uAlpha: { value: 1 }, uShift: { value: 0 }, uHover: { value: 1 },
       uInk: { value: col('--ink') }, uBlurMap: { value: blurTex },
     },
   }));
@@ -193,9 +193,12 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const fp = { x: -999, y: -999, vx: 0, vy: 0 };
   const ptr = { x: -999, y: -999, active: false }, light = new THREE.Vector2(-999, -999);
   const at = (e, on) => { ptr.x = e.clientX; ptr.y = H - e.clientY; ptr.active = on; };
-  if (touch) { // palec wgniata tylko w ruchu (także podczas przewijania)
-    addEventListener('touchmove', (e) => at(e.touches[0], true), { passive: true });
-    addEventListener('touchend', () => { ptr.active = false; }, { passive: true });
+  if (touch) { // palec działa jak kursor: wgniata i rozmywa napis (także podczas przewijania); passive, bez preventDefault
+    const tp = (e) => { if (e.pointerType === 'touch') at(e, true); };
+    addEventListener('pointerdown', tp, { passive: true });
+    addEventListener('pointermove', tp, { passive: true });
+    addEventListener('touchmove', (e) => at(e.touches[0], true), { passive: true }); // zapas: po starcie przewijania przeglądarka przerywa zdarzenia pointer
+    for (const ev of ['touchend', 'touchcancel']) addEventListener(ev, (e) => { if (!e.touches.length) ptr.active = false; }, { passive: true });
   } else {
     addEventListener('pointermove', (e) => at(e, true), { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { ptr.active = false; });
@@ -241,7 +244,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
         const cy = (j + .5) / GY * H;
         for (let k = 0; k < GX; k++, i++) {
           let target = 0;
-          if (ptr.active && !touch) {
+          if (ptr.active) {
             const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
             if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
           }

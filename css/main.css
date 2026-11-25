@@ -82,33 +82,44 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .socials__links a { text-decoration: underline 1px; text-underline-offset: .25em; }
 .socials .crystal-img { --cx: 675; --cy: 280; --cs: 90; }
 
-/* ===== Telefon (projekt 390 x 844, tekst w stałych px) ===== */
-@media (max-width: 767px) {
+/* ===== Telefon i wąskie okno < 900 px (projekt 390 x 844, tekst w stałych px) =====
+   Sekcja to kolumna flex w normalnym przepływie: treść wyśrodkowana w pionie i poziomie,
+   górny i dolny margines zostawia miejsce na przełącznik języka. Kryształ-obrazek zostaje absolutny (względem sekcji). */
+@media (max-width: 899px) {
   /* kryształ leży pod tekstem: ciemna otoczka trzyma kontrast AA */
   .frame p, .frame li, .frame h1, .frame h2 { text-shadow: 0 0 6px var(--bg), 0 0 14px var(--bg); }
   .frame .g svg { filter: drop-shadow(0 0 8px var(--bg)); }
-  .hero__title { --gh: 54; top: calc(300 * var(--u)); gap: calc(6 * var(--u)); }
-  .hero__sub { top: calc(430 * var(--u)); width: calc(330 * var(--u)); margin: 0 auto; font-size: 12px; }
+
+  .sec { display: flex; flex-direction: column; justify-content: center; height: auto; min-height: 100vh; min-height: 100svh; padding-block: 72px; }
+  .frame { position: static; height: auto; transform: none; display: flex; flex-direction: column; align-items: center; }
+  .frame > :not(.crystal-img) { position: relative; inset: auto; }
+
+  /* Hero: SKONIECZNY (5,6 x wysokość) mieści się z marginesem ok. 6% po bokach od 320 do 900 px */
+  .hero { --hh: clamp(44px, 15.5vw, 140px); }
+  .hero__title { gap: calc(var(--hh) * .11); }
+  .hero__title .g { font-size: calc(var(--hh) * 1.36); }
+  .hero__title .g svg { height: var(--hh); }
+  .hero__sub { margin-top: calc(var(--hh) * .3); width: min(calc(330 * var(--u)), 88vw); font-size: 12px; }
   .hero__sub br { display: none; }
   .hero .crystal-img { --cx: 235; --cy: 255; --cs: 200; }
 
-  .works__title { --gh: 44; top: calc(90 * var(--u)); left: calc(40 * var(--u)); gap: calc(6 * var(--u)); }
-  .works__list { top: calc(230 * var(--u)); left: 0; right: 0; text-align: center; font-size: 16px; line-height: calc(28 * var(--u)); }
+  .works__title { --gh: 44; align-self: flex-start; margin-left: calc(40 * var(--u)); gap: calc(6 * var(--u)); }
+  .works__list { align-self: stretch; margin-top: calc(46 * var(--u)); text-align: center; font-size: 16px; line-height: calc(28 * var(--u)); }
   .works .crystal-img { --cx: 225; --cy: 150; --cs: 420; }
 
-  .services__title { --gh: 44; top: calc(110 * var(--u)); }
-  .services__list { top: calc(190 * var(--u)); width: calc(330 * var(--u)); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
+  .services__title { --gh: 44; }
+  .services__list { margin-top: calc(36 * var(--u)); width: calc(330 * var(--u)); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
   .services__list li { padding-top: 10px; }
   .services__list b { font-size: 14px; }
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
-  .story__title { --gh: 44; top: calc(250 * var(--u)); }
-  .story__text { top: calc(320 * var(--u)); width: calc(330 * var(--u)); font-size: 14px; }
+  .story__title { --gh: 44; }
+  .story__text { margin-top: calc(26 * var(--u)); width: calc(330 * var(--u)); font-size: 14px; }
   .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
 
-  .socials__title { --gh: 44; top: calc(400 * var(--u)); }
-  .socials__links { top: calc(460 * var(--u)); font-size: 16px; }
+  .socials__title { --gh: 44; }
+  .socials__links { margin-top: calc(16 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
 
@@ -119,7 +130,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .lang button[aria-pressed="true"] { opacity: 1; }
 .lang button:hover, .lang button:focus-visible { opacity: 1; }
 .lang button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
-@media (max-width: 767px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
+@media (max-width: 899px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
 
 /* ===== Scena WebGL (js/scene.js) ===== */
 canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }

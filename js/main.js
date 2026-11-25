@@ -1,14 +1,14 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261129';
-import { hideLoader } from './loader.js?v=20261129';
-import { initLang } from './i18n.js?v=20261129';
-import { addInertia } from './inertia.js?v=20261129';
+import { renderGlyphs } from './glyphs.js?v=20261130';
+import { hideLoader } from './loader.js?v=20261130';
+import { initLang } from './i18n.js?v=20261130';
+import { addInertia } from './inertia.js?v=20261130';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const weak = navigator.hardwareConcurrency <= 2 || navigator.deviceMemory <= 2;
 const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
-const phone = matchMedia('(max-width: 767px)');
+const phone = matchMedia('(max-width: 899px)'); // układ telefonu (css: .home do 899 px)
 
 initLang();
 await renderGlyphs();
@@ -100,11 +100,11 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261129');
+    const { createScene } = await import('./scene.js?v=20261130');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
-    if (!touch) html.classList.add('gl-titles');
+    html.classList.add('gl-titles'); // napisy sekcji w scenie także na dotyku (rozmycie pod palcem)
     const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
     let shown = 0, shownEls = titleSvgs;
     // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
@@ -116,6 +116,7 @@ function startMotion() {
       }
       return tb;
     };
+    addEventListener('resize', () => { tb = null; }); // zmiana rozmiaru i obrót ekranu: nowy prostokąt napisu
     const pose = crystalPath(STEP, HOLD, titleBox);
     gl.beforeRender = (dt) => {
       const f = frame(), p = progress(), st = sections(p, f);
@@ -125,10 +126,10 @@ function startMotion() {
       crystal?.update(dt);
       const { H } = gl.size();
       gl.lightAt = { x, y: H - y };
-      // napis widocznej sekcji z falą i rozmyciem jak w hero (na dotyku tylko hero)
+      // napis widocznej sekcji z falą i rozmyciem jak w hero (kursor albo palec)
       const vis = secs.findIndex((s) => +s.style.opacity > 0);
       if (vis >= 0 && (vis !== shown || (shownEls.length && !shownEls[0].isConnected))) { // isConnected: inny język = nowe SVG
-        shown = vis; shownEls = touch && vis ? [] : [...secs[vis].querySelectorAll('h1 svg, h2 svg')];
+        shown = vis; shownEls = [...secs[vis].querySelectorAll('h1 svg, h2 svg')];
         gl.setText(shownEls);
       }
       gl.textUniforms.uAlpha.value = vis >= 0 ? +secs[vis].style.opacity * (vis ? 1 : intro.v) : 0;
@@ -140,7 +141,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261129');
+    const { addCrystal } = await import('./crystal.js?v=20261130');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
@@ -190,11 +191,13 @@ function crystalPath(STEP, HOLD, titleBox) {
   let orbit = 0;
   const hero = (m, f, live) => {
     const box = titleBox(f, live) ?? (m ? { x: 40, y: 300, w: 310, h: 120 } : { x: 284, y: 250, w: 873, h: 322 });
-    const th = orbit / LOOP * Math.PI * 2;
-    const ex = .5 * box.w * Math.cos(th), ey = .44 * box.h * Math.sin(th);
+    const th = orbit / LOOP * Math.PI * 2, s = m ? 64 : 140;
+    // telefon: owal dookoła napisu (nad i pod liniami), w poziomie najwyżej do krawędzi ekranu (390 px projektu)
+    const rx = m ? Math.min(box.w / 2 + .3 * s, 195 - .45 * s) : .5 * box.w, ry = m ? box.h / 2 + .55 * s : .44 * box.h;
+    const ex = rx * Math.cos(th), ey = ry * Math.sin(th);
     const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
     const x = cx + ex * Math.cos(TILT_O) - ey * Math.sin(TILT_O), y = cy + ex * Math.sin(TILT_O) + ey * Math.cos(TILT_O);
-    return { x, y, s: (m ? 64 : 140) * (1 + .1 * Math.sin(th)), z: 60 }; // zawsze przed literami
+    return { x, y, s: s * (1 + .1 * Math.sin(th)), z: 60 }; // zawsze przed literami
   };
   return (p, { k, t }, dt, f) => {
     if (p <= HOLD) orbit += dt;
