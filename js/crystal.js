@@ -50,6 +50,8 @@ export async function addCrystal(gl, base = '') {
   mesh.add(edges);
   const group = new THREE.Group();
   group.add(mesh);
+  // Sygnał dla loadera: scena wyrenderowała kryształ pierwszy raz.
+  const ready = new Promise((r) => { mesh.onAfterRender = () => { mesh.onAfterRender = () => {}; r(); }; });
   scene.add(group);
 
   // Zdjęcie projektu za kryształem: rysowane tylko w przebiegu transmisji, więc widać je wyłącznie przez szkło.
@@ -80,17 +82,22 @@ export async function addCrystal(gl, base = '') {
   const spinQ = new THREE.Quaternion(), q = new THREE.Quaternion(), tiltQ = new THREE.Quaternion();
   const base0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(.18, 0, .08));
   const e = new THREE.Euler();
-  let tween, size = 140;
+  let tween, size = 140, pose = { x: 0, y: 0, s: 0 };
   const FADE = .6; // s: wejście i wyjście trybu projektu, także zmiana pracy
 
   return {
     group,
+    ready,
+    // Dla loadera: środek i wysokość kryształu na ekranie (px, z perspektywą kamery) oraz kąt obrotu.
+    screen: () => ({ ...pose, angle: state.angle }),
     // Pozycja w px ekranu (y w dół), rozmiar w px, z w px (dodatnie = bliżej widza).
     set(x, y, s, z = 0) {
       const { W, H } = gl.size();
       size = s;
       group.position.set(x - W / 2, H / 2 - y, z);
       group.scale.setScalar(s / (2 * EXT[1]));
+      const k = 1 / (1 - z * 2 * Math.tan(Math.PI / 12) / H); // kamera z fov 30° w odległości H/2/tan(15°) (js/scene.js)
+      pose = { x: W / 2 + (x - W / 2) * k, y: H / 2 + (y - H / 2) * k, s: s * k };
       for (const m of imgs) {
         m.position.set(group.position.x, group.position.y, z - s * 1.2);
         m.scale.set(s * 1.5 * (m.userData.aspect ?? 1), s * 1.5, 1);

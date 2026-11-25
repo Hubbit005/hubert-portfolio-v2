@@ -188,3 +188,7 @@ html.track .card.pre { opacity: 0; transform: translate3d(calc(120 * var(--u)), 
 html.track .card img, html.track .card video { width: 112%; max-width: none; height: 100%; margin-left: -6%; object-fit: cover; }
 /* Plansze z tekstem i pary (card--static): bez parallaxu, w całości, bez powiększenia i przycinania */
 html.track .card--static img { width: 100%; margin-left: 0; object-fit: contain; }
+
+/* ===== Przejście między stronami (js/loader.js): zaciemnienie 0,3 s przed wyjściem. Loader: CSS inline w <head> ===== */
+html.leaving body::after { content: ""; position: fixed; inset: 0; z-index: 1001; background: var(--bg); animation: leave .3s ease-in both; }
+@keyframes leave { from { opacity: 0; } }

@@ -1,14 +1,15 @@
 // Strona projektu: kolumna z opisem, panele (na desktopie tor poziomy z js/work-track.js), wideo, CLOSE i Esc.
-import { renderGlyphs } from './glyphs.js?v=20261127';
-import { initLang } from './i18n.js?v=20261127';
-import { initTrack } from './work-track.js?v=20261127';
+import { renderGlyphs } from './glyphs.js?v=20261128';
+import { initLang } from './i18n.js?v=20261128';
+import { initTrack } from './work-track.js?v=20261128';
+import { hideLoader } from './loader.js?v=20261128';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const strip = document.querySelector('.strip');
 const close = document.querySelector('.close');
 
-addEventListener('keydown', (e) => { if (e.key === 'Escape') location.href = close.href; });
+addEventListener('keydown', (e) => { if (e.key === 'Escape') close.click(); });
 
 // Klasę .track ustawia skrypt w <head> (ten sam warunek). Przejście przez próg = nowy układ.
 // shortcut: przeładowanie strony zamiast przebudowy układu w locie; wystarczy, bo próg mija się rzadko.
@@ -43,3 +44,4 @@ document.addEventListener('visibilitychange', () => seen.forEach((v) => (documen
 
 initLang('../');
 await renderGlyphs(document, '../');
+hideLoader({ enter: [[document.querySelector('.panel'), -40], [strip, 80]] });
