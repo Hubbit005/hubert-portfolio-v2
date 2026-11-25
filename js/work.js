@@ -19,7 +19,11 @@ if (html.classList.contains('track')) initTrack(strip).catch(() => { html.classL
 // Wideo: lżejszy plik na telefonie i przy oszczędzaniu danych / wolnym łączu; plik wybierany przed ustawieniem src.
 const conn = navigator.connection;
 const small = matchMedia('(max-width: 899px), (pointer: coarse)').matches || conn?.saveData || /2g|3g/.test(conn?.effectiveType ?? '');
-for (const v of strip.querySelectorAll('video[data-src]')) v.src = `${v.dataset.src}-${small ? 960 : 1850}.mp4`;
+// data-sizes="mały duży" (szerokość pliku), domyślnie 960 i 1850.
+for (const v of strip.querySelectorAll('video[data-src]')) {
+  const [lo, hi] = (v.dataset.sizes ?? '960 1850').split(' ');
+  v.src = `${v.dataset.src}-${small ? lo : hi}.mp4`;
+}
 
 // Gra bez dźwięku tylko na ekranie i przy widocznej karcie; przy reduced motion stoi na plakacie z kontrolkami.
 const seen = new Set();
