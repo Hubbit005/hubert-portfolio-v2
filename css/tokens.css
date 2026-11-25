@@ -35,3 +35,7 @@
 @media (max-width: 767px) {
   :root { --u: var(--m); --frame-h: 844; }
 }
+/* Strona główna: układ telefonu do 899 px (strony projektów bez zmian) */
+@media (max-width: 899px) {
+  .home { --u: var(--m); --frame-h: 844; }
+}
