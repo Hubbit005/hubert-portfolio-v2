@@ -1,3 +1,4 @@
+import { addInertia } from './inertia.js?v=20261129';
 // Tor poziomy strony projektu (desktop): pionowy scroll przez Lenis przesuwa panele w lewo,
 // obraz w panelu jedzie wolniej (parallax), panel spoza ekranu wchodzi raz przy pierwszym pojawieniu.
 // Wszystko w tickerze GSAP, tylko transform. GSAP i Lenis pobierane dopiero tutaj: telefon ich nie ładuje.
@@ -32,6 +33,7 @@ export async function initTrack(strip) {
   const lenis = new Lenis({ autoRaf: false, lerp: .08, wheelMultiplier: 1, gestureOrientation: 'both' });
   gsap.ticker.add((t) => lenis.raf(t * 1000));
   gsap.ticker.lagSmoothing(0);
+  addInertia(lenis, () => innerWidth); // tor: 1 px scrolla = 1 px przesuwu w poziomie
   gsap.ticker.add(() => {
     const nx = Math.min(Math.max(lenis.scroll - top, 0), L);
     if (nx === x) return;

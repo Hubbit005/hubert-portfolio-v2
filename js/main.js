@@ -1,7 +1,8 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261128';
-import { hideLoader } from './loader.js?v=20261128';
-import { initLang } from './i18n.js?v=20261128';
+import { renderGlyphs } from './glyphs.js?v=20261129';
+import { hideLoader } from './loader.js?v=20261129';
+import { initLang } from './i18n.js?v=20261129';
+import { addInertia } from './inertia.js?v=20261129';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -50,6 +51,18 @@ function startMotion() {
   const progress = () => lenis.scroll / Math.max(1, maxScroll()) * END;
   const goTo = (k, immediate = true) => lenis.scrollTo(k * STEP / END * maxScroll(), { immediate, force: true });
 
+  // Bezwładność kółka: dojazd kończy się na najbliższej sekcji w kierunku ruchu (nie w połowie przejścia)
+  // i nie przeskakuje żadnej sekcji. Postój sekcji k: od k * STEP do k * STEP + HOLD (w ekranach przewijania).
+  addInertia(lenis, () => innerHeight, (to, from, dir) => {
+    const u = maxScroll() / END, p0 = from / u, p1 = to / u;
+    if (dir > 0) {
+      const n = Math.floor(p0 / STEP) + 1; // następna sekcja
+      return n > secs.length - 1 || p1 <= (n - 1) * STEP + HOLD ? to : n * STEP * u;
+    }
+    const k = Math.ceil((p0 - HOLD) / STEP) - 1; // poprzednia sekcja
+    return k < 0 || p1 >= (k + 1) * STEP ? to : (k * STEP + HOLD) * u;
+  });
+
   // Skala projektu: 1440 x 900 albo 390 x 844, ramka wyśrodkowana w pionie.
   const frame = () => {
     const m = phone.matches, u = innerWidth / (m ? 390 : 1440), fh = (m ? 844 : 900) * u;
@@ -87,7 +100,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261128');
+    const { createScene } = await import('./scene.js?v=20261129');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
@@ -127,7 +140,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261128');
+    const { addCrystal } = await import('./crystal.js?v=20261129');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
