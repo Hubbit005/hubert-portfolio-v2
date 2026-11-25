@@ -49,7 +49,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 
 /* 02 Selected Works */
 .works__title { --gh: 50; top: calc(280 * var(--u)); left: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
-.works__list { top: calc(420 * var(--u)); left: calc(330 * var(--u)); font-size: calc(14 * var(--u)); line-height: calc(22 * var(--u)); }
+.works__list { top: calc(420 * var(--u)); left: calc(330 * var(--u)); font-size: calc(14 * var(--u)); line-height: 24px; }
 .works__list li { line-height: inherit; }
 .works__list b { font-weight: 700; }
 .works__list span { font-weight: 500; }
