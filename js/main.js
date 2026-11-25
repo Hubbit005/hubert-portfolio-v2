@@ -1,8 +1,8 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261130';
-import { hideLoader } from './loader.js?v=20261130';
-import { initLang } from './i18n.js?v=20261130';
-import { addInertia } from './inertia.js?v=20261130';
+import { renderGlyphs } from './glyphs.js?v=20261201';
+import { hideLoader } from './loader.js?v=20261201';
+import { initLang } from './i18n.js?v=20261201';
+import { addInertia } from './inertia.js?v=20261201';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,7 +100,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261130');
+    const { createScene } = await import('./scene.js?v=20261201');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
@@ -141,7 +141,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261130');
+    const { addCrystal } = await import('./crystal.js?v=20261201');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');

@@ -103,19 +103,21 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .hero__sub br { display: none; }
   .hero .crystal-img { --cx: 235; --cy: 255; --cs: 200; }
 
-  .works__title { --gh: 44; align-self: flex-start; margin-left: calc(40 * var(--u)); gap: calc(6 * var(--u)); }
-  .works__list { align-self: stretch; margin-top: calc(46 * var(--u)); text-align: center; font-size: 16px; line-height: calc(28 * var(--u)); }
+  /* Prace, Oferta, O mnie: jedna lewa linia z przełącznikiem EN / PL (24 px), tekst od lewej, w pionie dalej środek */
+  :is(.works, .services, .story) .frame { align-items: flex-start; padding-inline: 24px; }
+  .works__title { --gh: 44; gap: calc(6 * var(--u)); }
+  .works__list { margin-top: calc(46 * var(--u)); text-align: left; font-size: 16px; line-height: calc(28 * var(--u)); }
   .works .crystal-img { --cx: 225; --cy: 150; --cs: 420; }
 
   .services__title { --gh: 44; }
-  .services__list { margin-top: calc(36 * var(--u)); width: calc(330 * var(--u)); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
+  .services__list { margin: calc(36 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
   .services__list li { padding-top: 10px; }
   .services__list b { font-size: 14px; }
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
   .story__title { --gh: 44; }
-  .story__text { margin-top: calc(26 * var(--u)); width: calc(330 * var(--u)); font-size: 14px; }
+  .story__text { margin: calc(26 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); text-align: left; font-size: 14px; }
   .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
 
   .socials__title { --gh: 44; }
