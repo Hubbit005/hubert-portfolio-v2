@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261126';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261127';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -76,7 +76,21 @@ const PL = {
   'How we work, step by step': 'Jak pracujemy, krok po kroku',
   'Benefits and key numbers': 'Korzyści i najważniejsze liczby',
   'Mobile version, three screens': 'Wersja mobilna, trzy ekrany',
-  'Story: quote in 24 hours': 'Relacja: kosztorys w 24 godziny',
+  'Story: quote in 24 hours': 'Relacja: kosztorys w 24 godziny',  // opisy obrazów i wideo na stronie KSK Pretor
+  'KSK Pretor promo film for the German market': 'Film promocyjny KSK Pretor na rynek niemiecki',
+  'Reel: how to get a firearms licence in five steps': 'Rolka: jak zdobyć pozwolenie na broń w pięciu krokach',
+  'Shooting packages, German and Polish versions': 'Pakiety strzeleckie, wersja niemiecka i polska',
+  'KSK Pretor logo': 'Logo KSK Pretor',
+  'MG42 history carousel': 'Karuzela o historii MG42',
+  'Instructor with a participant on the range': 'Instruktor z uczestnikiem na strzelnicy',
+  'Instagram post: first time at a shooting range': 'Post na Instagramie: pierwszy raz na strzelnicy',
+  'Four Instagram stories': 'Cztery relacje na Instagramie',
+  'Vertical logo outro for reels': 'Pionowe zakończenie z logo do rolek',
+  'German market entry plan, selected pages': 'Plan wejścia na rynek niemiecki, wybrane strony',
+  'Event hall': 'Sala eventowa',
+  'Pistol wall': 'Ściana z pistoletami',
+  'Group briefing before shooting': 'Odprawa grupy przed strzelaniem',
+  'Story: new week, pick your weapon': 'Relacja: nowy tydzień, wybierz broń',
 };
 
 const SEL = '.hero__sub, .works__list span, .services__list b, .services__list span, .story__text p, .panel__desc, .panel__meta dt, .panel__meta dd, [data-glyph]';
