@@ -99,9 +99,9 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .hero__title { gap: calc(var(--hh) * .11); }
   .hero__title .g { font-size: calc(var(--hh) * 1.36); }
   .hero__title .g svg { height: var(--hh); }
-  .hero__sub { margin-top: calc(var(--hh) * .3); width: min(calc(330 * var(--u)), 88vw); font-size: 12px; }
+  .hero__sub { margin-top: calc(var(--hh) * .6); width: min(calc(330 * var(--u)), 88vw); font-size: 12px; }
   .hero__sub br { display: none; }
-  .hero .crystal-img { --cx: 235; --cy: 255; --cs: 200; }
+  .hero .crystal-img { --cx: 255; --cy: 275; --cs: 160; } /* 80%, ten sam środek */
 
   /* Prace, Oferta, O mnie: jedna lewa linia z przełącznikiem EN / PL (24 px), tekst od lewej, w pionie dalej środek */
   :is(.works, .services, .story) .frame { align-items: flex-start; padding-inline: 24px; }
@@ -135,7 +135,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 @media (max-width: 899px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
 
 /* ===== Scena WebGL (js/scene.js) ===== */
-canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+canvas.stage { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
 html.gl .glow { display: none; }
 html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
 html.gl-titles :is(.works__title, .services__title, .story__title, .socials__title) svg { opacity: 0; } /* desktop: napisy sekcji też w scenie */

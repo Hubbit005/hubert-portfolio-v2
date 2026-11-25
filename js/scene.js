@@ -16,13 +16,14 @@ const css = getComputedStyle(document.documentElement);
 const col = (n) => new THREE.Color(css.getPropertyValue(n).trim());
 const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
 
-const VERT = /* glsl */`
-  uniform sampler2D uDisp; uniform float uDepth;
+// local: napis na dotyku ugina się tylko pod palcem (waga z mapy rozmycia), poza nim stoi w miejscu
+const VERT = (local = false) => /* glsl */`
+  uniform sampler2D uDisp; uniform float uDepth;${local ? ' uniform sampler2D uBlurMap;' : ''}
   varying vec2 vUv;
   void main() {
     vUv = uv;
     vec3 p = position;
-    p.z += (texture2D(uDisp, uv).r * 255. - 128.) / 100. * uDepth;
+    p.z += (texture2D(uDisp, uv).r * 255. - 128.) / 100. * uDepth${local ? ' * texture2D(uBlurMap, uv).r' : ''};
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.);
   }`;
 
@@ -77,11 +78,17 @@ const TEXT_FRAG = /* glsl */`
     vec2 px = vUv * uRes;
     // siła rozmycia z mapy na CPU: narasta powoli i wraca ok. 4 s po zejściu kursora
     float a = texture2D(uBlurMap, vUv).r * uHover;
+    float t0 = tx(px);
+    if (a == 0.) { // spoczynek: sama tekstura 1:1, ostra jak zwykły tekst
+      if (t0 * uAlpha < .02) discard;
+      gl_FragColor = vec4(uInk, t0 * uAlpha);
+      #include <colorspace_fragment>
+      return;
+    }
     a = a * a * (3. - 2. * a);
     vec2 dir = normalize(vec2(1., .16));
     vec2 o = dir * 18. * a;
     float r = 9. * a;
-    float t0 = tx(px);
     float tr = blur(px + o, dir, r), ta = blur(px, dir, r), tb = blur(px - o, dir, r);
     // beż w środku, czerwona podszewka z przodu, chłodny błękit z tyłu (premultiplied)
     vec3 pm = uInk * ta + uRed * max(tr - ta, 0.) * 1.1 + uBlue * max(tb - ta, 0.) * .7;
@@ -105,7 +112,9 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     throw new Error('programowy WebGL');
   }
   document.body.prepend(canvas);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, touch ? 1 : 1.5));
+  // pełna gęstość ekranu (limit 3): przy 1–1,5 napisy w scenie były rozciągane i wyglądały na rozmyte
+  const PR = Math.min(devicePixelRatio, 3);
+  renderer.setPixelRatio(PR);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 10, 6000);
@@ -131,7 +140,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const grid = new THREE.PlaneGeometry(1, 1, 120, 70);
 
   const bg = new THREE.Mesh(grid, new THREE.ShaderMaterial({
-    vertexShader: VERT, fragmentShader: BG_FRAG,
+    vertexShader: VERT(), fragmentShader: BG_FRAG,
     uniforms: { ...shared, uBg: { value: col('--bg') }, uLight: { value: new THREE.Vector2(-999, -999) }, uGlow: { value: new THREE.Vector2() }, uGlowA: { value: 0 } },
   }));
   bg.position.z = BG_Z;
@@ -141,7 +150,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const textCanvas = document.createElement('canvas');
   const textTex = new THREE.CanvasTexture(textCanvas);
   const text = new THREE.Mesh(grid, new THREE.ShaderMaterial({
-    vertexShader: VERT, fragmentShader: TEXT_FRAG,
+    vertexShader: VERT(touch), fragmentShader: TEXT_FRAG,
     blending: THREE.CustomBlending, // zostaje w kolejce nieprzezroczystej, więc widać go też przez szkło
     uniforms: {
       ...shared, uText: { value: textTex }, uMouse: { value: new THREE.Vector2(-999, -999) },
@@ -153,9 +162,9 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   text.visible = textEls.length > 0;
   scene.add(text);
 
-  let W = 0, H = 0, textTop0 = 0;
+  let W = 0, H = 0, textTop0 = 0, lastShift = 0;
   async function drawText() {
-    const r = Math.min(devicePixelRatio, 1.5); // jak renderer; większa tekstura przekracza limit części kart
+    const max = renderer.capabilities.maxTextureSize, r = Math.min(PR, max / W, max / H); // jak bufor sceny, w limicie karty
     textCanvas.width = W * r; textCanvas.height = H * r;
     const ctx = textCanvas.getContext('2d');
     ctx.fillStyle = '#fff';
@@ -175,7 +184,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
 
   function resize() {
     W = innerWidth; H = innerHeight;
-    renderer.setSize(W, H, false);
+    renderer.setSize(W, H); // także styl canvasu: 100vh na telefonie jest wyższe niż innerHeight i rozciągało napis w dół
     camera.aspect = W / H;
     camera.position.z = H / 2 / Math.tan(THREE.MathUtils.degToRad(15));
     camera.far = camera.position.z - BG_Z + 100;
@@ -236,7 +245,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
         }
         for (let i = 0; i < hgt.length; i++) hgt[i] += vel[i] * h;
       }
-      for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, 128 + hgt[i] * 100));
+      for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, Math.round(128 + hgt[i] * 100))); // round: w spoczynku dokładnie 128
       disp.needsUpdate = true;
       // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s
       const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
@@ -263,8 +272,10 @@ export function createScene({ textEls = [], crystal = true } = {}) {
       shared.uWarm.value += ((W ? light.x / W : .5) - shared.uWarm.value) * Math.min(1, dt * 2);
       text.material.uniforms.uMouse.value.set(ptr.x, ptr.y);
       if (text.visible) {
-        const top = textEls[0].getBoundingClientRect().top;
-        text.material.uniforms.uShift.value = textTop0 - top;
+        let shift = textTop0 - textEls[0].getBoundingClientRect().top;
+        // napis stoi z przesunięciem ułamkowym: przerysuj go w miejscu, żeby tekstura trafiała w piksele 1:1
+        if (shift && shift === lastShift) { drawText(); shift = 0; }
+        text.material.uniforms.uShift.value = lastShift = shift;
       }
       api.beforeRender?.(dt, time);
       renderer.render(scene, camera);

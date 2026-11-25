@@ -1,8 +1,8 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261201';
-import { hideLoader } from './loader.js?v=20261201';
-import { initLang } from './i18n.js?v=20261201';
-import { addInertia } from './inertia.js?v=20261201';
+import { renderGlyphs } from './glyphs.js?v=20261202';
+import { hideLoader } from './loader.js?v=20261202';
+import { initLang } from './i18n.js?v=20261202';
+import { addInertia } from './inertia.js?v=20261202';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,7 +100,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261201');
+    const { createScene } = await import('./scene.js?v=20261202');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
@@ -141,7 +141,7 @@ function startMotion() {
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261201');
+    const { addCrystal } = await import('./crystal.js?v=20261202');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
@@ -197,7 +197,7 @@ function crystalPath(STEP, HOLD, titleBox) {
     const ex = rx * Math.cos(th), ey = ry * Math.sin(th);
     const cx = box.x + box.w / 2, cy = box.y + box.h / 2;
     const x = cx + ex * Math.cos(TILT_O) - ey * Math.sin(TILT_O), y = cy + ex * Math.sin(TILT_O) + ey * Math.cos(TILT_O);
-    return { x, y, s: s * (1 + .1 * Math.sin(th)), z: 60 }; // zawsze przed literami
+    return { x, y, s: (m ? .8 : 1) * s * (1 + .1 * Math.sin(th)), z: 60 }; // zawsze przed literami; telefon: kryształ 80%, owal bez zmian
   };
   return (p, { k, t }, dt, f) => {
     if (p <= HOLD) orbit += dt;
