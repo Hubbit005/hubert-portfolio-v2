@@ -42,6 +42,7 @@ export async function renderGlyphs(root = document, base = '') {
     el.replaceChildren(glyphSVG(f, el.textContent.trim().toUpperCase()));
   }
   document.documentElement.classList.add('glyphs');
+  window.loader?.done('glyphs');
 }
 
 // Ciężkie rzeczy (scena WebGL) po pierwszym malowaniu: pierwszy ruch użytkownika albo 1,5 s po load.

@@ -1,6 +1,7 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs, afterFirstPaint } from './glyphs.js?v=20261127';
-import { initLang } from './i18n.js?v=20261127';
+import { renderGlyphs } from './glyphs.js?v=20261128';
+import { hideLoader } from './loader.js?v=20261128';
+import { initLang } from './i18n.js?v=20261128';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -20,7 +21,20 @@ const moved = (fn) => addEventListener('pointermove', function h(e) {
 });
 if (back) moved((e) => { if (!back.contains(e.target)) back.classList.remove('is-active'); });
 
-if (!reduce && !weak) startMotion();
+// Loader: kopia kryształu zjeżdża na kryształ z hero, w trakcie zjazdu wchodzi napis i światło sceny.
+const intro = { v: reduce ? 1 : 0 };
+let crystal3d = null, fly = null, box = null;
+if (!reduce && !weak) startMotion(); else window.loader?.done('scene');
+hideLoader({
+  onFly() {
+    fly = crystal3d;
+    if (fly) fly.group.visible = false;
+    else { const r = document.querySelector('.hero .crystal-img img').getBoundingClientRect(); box = { x: r.left + r.width / 2, y: r.top + r.height / 2, s: r.height }; }
+    if (!reduce) gsap.to(intro, { v: 1, duration: 1.4, ease: 'power2.out' });
+  },
+  target: () => fly ? fly.screen() : box,
+  onLand() { if (fly) fly.group.visible = true; },
+});
 
 function startMotion() {
   html.classList.add('motion');
@@ -73,9 +87,9 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261127');
+    const { createScene } = await import('./scene.js?v=20261128');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
-    catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); return; }
+    catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
     if (!touch) html.classList.add('gl-titles');
     const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
@@ -104,22 +118,23 @@ function startMotion() {
         shown = vis; shownEls = touch && vis ? [] : [...secs[vis].querySelectorAll('h1 svg, h2 svg')];
         gl.setText(shownEls);
       }
-      gl.textUniforms.uAlpha.value = vis >= 0 ? +secs[vis].style.opacity : 0;
+      gl.textUniforms.uAlpha.value = vis >= 0 ? +secs[vis].style.opacity * (vis ? 1 : intro.v) : 0;
       if (active !== 1) resetWorks?.(); // poza „Wybranymi pracami” kryształ zawsze w wyglądzie domyślnym
       // poświata sekcji: w hero stała plama (780–1340, 260–820), dalej przy krysztale
       const hx = 1060 * f.u, hy = 540 * f.u + f.top, a = Math.min(1, p / STEP);
       gl.bgUniforms.uGlow.value.set(hx + (x - hx) * a, H - (hy + (y - hy) * a));
-      gl.bgUniforms.uGlowA.value = f.m ? .5 : 1;
+      gl.bgUniforms.uGlowA.value = (f.m ? .5 : 1) * intro.v;
     };
     gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261127');
-    crystal = await addCrystal(gl);
+    const { addCrystal } = await import('./crystal.js?v=20261128');
+    crystal = crystal3d = await addCrystal(gl);
+    crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
     if (!touch) addEventListener('pointermove', (e) => crystal.tilt(e.clientX / innerWidth * 2 - 1, e.clientY / innerHeight * 2 - 1), { passive: true });
     bindWorks();
   };
-  afterFirstPaint(start);
+  start(); // od razu: loader zasłania pierwszy ekran i czeka na pierwszą klatkę sceny
 
   // Hover na projekcie: kryształ obraca się ścianą projektu, zdjęcie widać tylko przez szkło.
   // Tryb projektu trwa do zjechania z całej listy. Telefon: kryształ zawsze w wyglądzie domyślnym.
