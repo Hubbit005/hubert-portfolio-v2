@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261202';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261203';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -120,9 +120,8 @@ function apply(base) {
 
 // Wywołać przed renderGlyphs: ustawia teksty i dokłada przełącznik.
 export function initLang(base = '') {
-  const nav = document.createElement('div');
+  const nav = document.createElement('nav'); // punkt orientacyjny: przełącznik nie wisi poza regionami (axe: region)
   nav.className = 'lang';
-  nav.setAttribute('role', 'group');
   nav.setAttribute('aria-label', 'Language');
   nav.innerHTML = '<button type="button" data-l="en">EN</button><span aria-hidden="true">/</span><button type="button" data-l="pl">PL</button>';
   nav.addEventListener('click', (e) => {

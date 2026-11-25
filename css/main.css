@@ -205,3 +205,7 @@ html.track .card--static img { width: 100%; margin-left: 0; object-fit: contain;
 /* ===== Przejście między stronami (js/loader.js): zaciemnienie 0,3 s przed wyjściem. Loader: CSS inline w <head> ===== */
 html.leaving body::after { content: ""; position: fixed; inset: 0; z-index: 1001; background: var(--bg); animation: leave .3s ease-in both; }
 @keyframes leave { from { opacity: 0; } }
+
+/* ===== Napisy z glifów: tekst zastępczy niewidoczny pod loaderem (bez przeskoku układu, CLS) =====
+   Tylko z JS i tylko dopóki jest loader; bez glifów loader znika sam i wraca zwykły tekst. */
+html.js:not(.glyphs) .loader ~ * .g { visibility: hidden; }
