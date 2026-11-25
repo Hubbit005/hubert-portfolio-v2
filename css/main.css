@@ -168,9 +168,14 @@ body.work .glow { display: none; }
 /* Tor poziomy (desktop, klasa .track z <head>): przypięta sekcja, scroll przesuwa panele w lewo.
    Wysokość .project = długość toru + ekran, ustawia js/work-track.js. Panele: wysokość 81vh, góra 9,5vh. */
 html.track .project { height: 100vh; padding: 0; overflow-x: clip; }
-html.track .panel { position: fixed; z-index: 1; top: calc(232 * var(--u)); left: calc(63 * var(--u)); width: calc(360 * var(--u)); }
-html.track .panel::before { content: ""; position: fixed; z-index: -1; inset: 0 auto 0 0; width: calc(554 * var(--u)); background: linear-gradient(90deg, var(--bg) calc(100% - 60 * var(--u)), transparent); } /* panele chowają się pod kolumną */
-html.track .strip { --ph: 81vh; --gap: calc(30 * var(--u)); position: sticky; top: 0; width: max-content; height: 100vh; margin: 0; display: flex; align-items: flex-start; gap: var(--gap); padding: 9.5vh calc(63 * var(--u)) 0 calc(554 * var(--u)); will-change: transform; }
+html.track .panel { position: fixed; z-index: 1; top: calc(232 * var(--u)); left: calc(63 * var(--u)); width: calc(260 * var(--u)); }
+/* Węższa kolumna (ok. 26% okna): tytuł i meta mniejsze, opis zawija się w więcej linii */
+html.track .panel__title { --gh: 33; gap: calc(6 * var(--u)); }
+html.track .panel__desc { margin-top: calc(26 * var(--u)); }
+html.track .panel__meta { margin-top: calc(20 * var(--u)); font-size: calc(10 * var(--u)); }
+html.track .panel__meta dt { width: calc(58 * var(--u)); }
+html.track .panel::before { content: ""; position: fixed; z-index: -1; inset: 0 auto 0 0; width: calc(374 * var(--u)); background: linear-gradient(90deg, var(--bg) calc(100% - 30 * var(--u)), transparent); } /* panele chowają się pod kolumną */
+html.track .strip { --ph: 81vh; --gap: calc(30 * var(--u)); position: sticky; top: 0; width: max-content; height: 100vh; margin: 0; display: flex; align-items: flex-start; gap: var(--gap); padding: 9.5vh calc(63 * var(--u)) 0 calc(374 * var(--u)); will-change: transform; }
 html.track .card { flex: none; height: var(--ph); aspect-ratio: 16 / 9; transition: opacity .6s, transform .6s cubic-bezier(.2, .7, .2, 1); }
 html.track .card--p { aspect-ratio: 1350 / 2080; }
 html.track .card--n { aspect-ratio: 1 / 2; }
