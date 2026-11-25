@@ -62,6 +62,21 @@ const PL = {
   'Services page with illustrations appearing on hover': 'Strona usług z ilustracjami, które pojawiają się po najechaniu',
   'Casanova colour palette and wordmark': 'Paleta kolorów i logotyp Casanovy',
   'Hairstyle finder in three steps': 'Dobór fryzury w trzech krokach',
+  // opisy obrazów i wideo na stronie Basko Clean
+  'Basko Clean homepage hero with the free quote form': 'Hero strony głównej Basko Clean z formularzem darmowej wyceny',
+  'Basko Clean promo reel': 'Rolka promocyjna Basko Clean',
+  'Services carousel': 'Karuzela usług',
+  'Basko Clean mascot logo': 'Logo Basko Clean z maskotką',
+  'Instagram highlight icons': 'Ikony wyróżnionych relacji na Instagramie',
+  'Before and after slider on the website': 'Suwak przed i po na stronie',
+  'Instagram post: roof drain before and after': 'Post na Instagramie: odpływ dachowy przed i po',
+  'Instagram highlight stories: services, before/after, quote steps': 'Wyróżnione relacje na Instagramie: usługi, przed/po, kroki wyceny',
+  'Animated story: what the client gets': 'Animowana relacja: co dostaje klient',
+  'Clients section with the foam mountain': 'Sekcja klientów z górą piany',
+  'How we work, step by step': 'Jak pracujemy, krok po kroku',
+  'Benefits and key numbers': 'Korzyści i najważniejsze liczby',
+  'Mobile version, three screens': 'Wersja mobilna, trzy ekrany',
+  'Story: quote in 24 hours': 'Relacja: kosztorys w 24 godziny',
 };
 
 const SEL = '.hero__sub, .works__list span, .services__list b, .services__list span, .story__text p, .panel__desc, .panel__meta dt, .panel__meta dd, [data-glyph]';
