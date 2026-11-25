@@ -1,8 +1,8 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261202';
-import { hideLoader } from './loader.js?v=20261202';
-import { initLang } from './i18n.js?v=20261202';
-import { addInertia } from './inertia.js?v=20261202';
+import { renderGlyphs } from './glyphs.js?v=20261204';
+import { hideLoader } from './loader.js?v=20261204';
+import { initLang } from './i18n.js?v=20261204';
+import { addInertia } from './inertia.js?v=20261204';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,7 +100,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261202');
+    const { createScene } = await import('./scene.js?v=20261204');
     try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
@@ -139,9 +139,10 @@ function startMotion() {
       gl.bgUniforms.uGlow.value.set(hx + (x - hx) * a, H - (hy + (y - hy) * a));
       gl.bgUniforms.uGlowA.value = (f.m ? .5 : 1) * intro.v;
     };
-    gsap.ticker.add((t, dt) => gl.update(Math.min(dt, 50) / 1000, t));
+    // karta w tle: bez renderu (rAF i tak zwykle stoi, to gwarancja także dla przeglądarek, które go nie wstrzymują)
+    gsap.ticker.add((t, dt) => document.hidden || gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261202');
+    const { addCrystal } = await import('./crystal.js?v=20261204');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
