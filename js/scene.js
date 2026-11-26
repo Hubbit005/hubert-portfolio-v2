@@ -183,9 +183,22 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     drawn = textEls;
   }
 
+  // Dotyk: canvas na wysokość dużego viewportu (100lvh, bufor też), więc chowanie paska adresu nic nie odsłania.
+  // Canvas zaczyna się u góry ekranu, więc y w px od góry jest ten sam przy każdej wysokości okna.
+  const probe = touch ? document.createElement('div') : null;
+  if (probe) { probe.style.cssText = 'position:fixed;top:0;width:0;height:100lvh;visibility:hidden;pointer-events:none'; probe.setAttribute('aria-hidden', 'true'); document.body.append(probe); }
   function resize() {
-    W = innerWidth; H = innerHeight;
-    renderer.setSize(W, H); // także styl canvasu: 100vh na telefonie jest wyższe niż innerHeight i rozciągało napis w dół
+    const lvh = probe?.offsetHeight ?? 0, w = innerWidth, h = Math.max(innerHeight, lvh);
+    // sama wysokość (pasek adresu, < 150 px) albo mniejsze okno tej samej szerokości: bez resize i przerysowania.
+    // Bez obsługi lvh bufor rośnie raz do największej wysokości okna.
+    if (touch && W && w === W && (h <= H || (lvh && h - H < 150))) return;
+    W = w; H = h;
+    if (touch) {
+      renderer.setSize(W, H, false);
+      canvas.style.width = '100%';
+      canvas.style.height = H + 'px';
+      canvas.style.height = '100lvh'; // bez obsługi lvh zostają px
+    } else renderer.setSize(W, H); // także styl canvasu: 100vh na telefonie jest wyższe niż innerHeight i rozciągało napis w dół
     camera.aspect = W / H;
     camera.position.z = H / 2 / Math.tan(THREE.MathUtils.degToRad(15));
     camera.far = camera.position.z - BG_Z + 100;
@@ -214,6 +227,26 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     addEventListener('pointermove', (e) => at(e, true), { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { ptr.active = false; });
   }
+
+  // Kolor tła sceny na środku dolnej krawędzi: BG_FRAG policzony na CPU (płaski budyń: shade = .85).
+  let bgT = -1, bgS = '';
+  const out = new THREE.Color(), mixC = new THREE.Color();
+  const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const crystalLight = (dx, dy, sig, k0) => {
+    const t = shared.uTime.value * Math.PI * 2 / 12, cx = Math.cos(t), cy = Math.sin(t), u = shared;
+    const k = sstep(-sig, sig, dx * cx + dy * cy) * (1 - .45 * u.uWarm.value);
+    mixC.copy(u.uViolet.value).lerp(u.uBlue.value, k);
+    mixC.lerp(u.uRed.value, sstep(.15 * sig, 1.3 * sig, -(dx * cx + dy * cy)) * .45);
+    mixC.lerp(u.uRed.value, sstep(.1 * sig, -1.3 * sig, dy) * (.35 + .65 * u.uWarm.value) * .4);
+    return mixC.multiplyScalar(k0);
+  };
+  const bottomColor = () => {
+    const u = bg.material.uniforms, span = Math.hypot(W, H), px = W / 2;
+    const sig = .42 * span, dx = px - u.uLight.value.x, dy = -u.uLight.value.y;
+    out.copy(u.uBg.value).add(crystalLight(dx, dy, .25 * span, Math.exp(-(dx * dx + dy * dy) / (2 * sig * sig)) * .05 * .85));
+    const s2 = .5 * span, ex = px - u.uGlow.value.x, ey = -u.uGlow.value.y;
+    return out.add(crystalLight(ex, ey, .3 * span, Math.exp(-(ex * ex + ey * ey) / (2 * s2 * s2)) * .028 * u.uGlowA.value));
+  };
 
   const api = {
     THREE, scene, camera, renderer, shared,
@@ -298,6 +331,11 @@ export function createScene({ textEls = [], crystal = true } = {}) {
         text.material.uniforms.uShift.value = Math.round(shift * PR) / PR;
       }
       renderer.render(scene, camera);
+      if (touch && time - bgT > .25) { // tło strony w kolorze dołu sceny: żadna szczelina nie jest czarna
+        bgT = time;
+        const c = bottomColor().getStyle();
+        if (c !== bgS) document.documentElement.style.backgroundColor = bgS = c;
+      }
     },
   };
   return api;

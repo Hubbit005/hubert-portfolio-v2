@@ -1,4 +1,4 @@
-import { addInertia } from './inertia.js?v=20261207';
+import { addInertia } from './inertia.js?v=20261208';
 // Tor poziomy strony projektu (desktop): pionowy scroll przez Lenis przesuwa panele w lewo,
 // obraz w panelu jedzie wolniej (parallax), panel spoza ekranu wchodzi raz przy pierwszym pojawieniu.
 // Wszystko w tickerze GSAP, tylko transform. GSAP i Lenis pobierane dopiero tutaj: telefon ich nie ładuje.

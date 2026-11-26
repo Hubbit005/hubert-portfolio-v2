@@ -71,7 +71,12 @@ export function initHeroBlur() {
 
   const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 300));
   idle(() => phone.matches && stale && render());
-  addEventListener('resize', () => { stale = true; if (title.classList.contains('is-blur')) render(); }); // także obrót ekranu
+  let lastW = innerWidth; // pasek adresu zmienia tylko wysokość: bez przeliczania
+  addEventListener('resize', () => {
+    if (innerWidth === lastW) return;
+    lastW = innerWidth; stale = true;
+    if (title.classList.contains('is-blur')) render();
+  }); // także obrót ekranu
 
   title.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' || !phone.matches) return;
