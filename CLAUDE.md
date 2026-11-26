@@ -23,7 +23,7 @@ Kopie poprzednich wersji: gałęzie `backup/przed-kosmosem-2026-11-10` i `backup
 
 1. **Projekt z briefu 16 z poprawkami z pliku 18.** Układ, wymiary, teksty i ruch są zatwierdzone. Zmiany tylko na prośbę Huberta.
 2. **Paleta.** Czerń `#050506`, beż `#ECE6DC`, galaktyczny fiolet `#6B4FD8`, szary `#9A94A8`. Wszystkie akcenty świetlne w kolorach kryształu (tokeny `--light-*` w briefie 16, sekcja 2). Wartości tylko w `css/tokens.css`.
-3. **Napisy ekspozycyjne** tylko z glifów `assets/font/glyphs.json` (font Candle Shlop, wersja demo: przed publikacją potrzebna licencja komercyjna). Nie podmieniaj ich na inny font.
+3. **Napisy ekspozycyjne** tylko z glifów `assets/font/glyphs.json` (font Dirtyline 36daysoftype 2022, licencja desktop i web, komercyjna: `assets/font/LICENSE-dirtyline.txt`; generator: `tools/font-to-glyphs.py`). Nie podmieniaj ich na inny font.
 
 ## Twarde zasady treści
 

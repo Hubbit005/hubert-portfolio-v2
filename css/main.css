@@ -34,7 +34,8 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .frame { position: absolute; left: 0; right: 0; top: 50%; height: calc(var(--frame-h) * var(--u)); transform: translateY(-50%); }
 .frame > * { position: absolute; }
 
-/* Napisy z glifów (js/glyphs.js); bez JS zwykły tekst o podobnej wysokości */
+/* Napisy z glifów (js/glyphs.js, font Dirtyline); bez JS zwykły tekst o podobnej wysokości.
+   Dirtyline jest ok. 1,4 x szerszy niż Candle Shlop: --gh dobrane tak, żeby szerokość tytułów została jak przy Candle Shlop. */
 .g { display: block; line-height: .74; font-weight: 800; font-size: calc(var(--gh) * var(--u) * 1.36); white-space: nowrap; }
 .g svg { display: block; height: calc(var(--gh) * var(--u)); width: auto; fill: currentColor; overflow: visible; }
 
@@ -43,12 +44,12 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .crystal-img img { width: 100%; height: auto; }
 
 /* 01 Hero */
-.hero__title { --gh: 156; top: calc(250 * var(--u)); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); }
+.hero__title { --gh: 105; top: calc(302 * var(--u)); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: calc(7 * var(--u)); }
 .hero__sub { top: calc(612 * var(--u)); left: 0; right: 0; text-align: center; font-weight: 700; font-size: calc(13 * var(--u)); }
 .hero .crystal-img { --cx: 1125; --cy: 325; --cs: 140; }
 
 /* 02 Selected Works */
-.works__title { --gh: 50; top: calc(280 * var(--u)); left: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
+.works__title { --gh: 36.5; top: calc(309 * var(--u)); left: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(6 * var(--u)); }
 .works__list { top: calc(420 * var(--u)); left: calc(330 * var(--u)); font-size: calc(14 * var(--u)); line-height: max(24px, calc(22 * var(--u))); }
 .works__list li { line-height: inherit; }
 .works__list b { font-weight: 700; }
@@ -62,7 +63,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .works .crystal-img { --cx: 800; --cy: 280; --cs: 300; }
 
 /* 03 Services: minimalnie, bez kart i ikon. Siatka 3 x 2, cienka linia nad każdą usługą. */
-.services__title { --gh: 50; top: calc(250 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.services__title { --gh: 34; top: calc(266 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .services__list { top: calc(390 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(1000 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); column-gap: calc(40 * var(--u)); row-gap: calc(44 * var(--u)); }
 .services__list li { padding-top: calc(14 * var(--u)); border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
 .services__list b { display: block; font-weight: 700; font-size: calc(14 * var(--u)); }
@@ -70,14 +71,14 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
 
 /* 04 My Story */
-.story__title { --gh: 58; top: calc(330 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.story__title { --gh: 42; top: calc(346 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .story__text { top: calc(410 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(720 * var(--u)); text-align: center; font-weight: 500; font-size: calc(13 * var(--u)); }
 .story__text p + p { margin-top: calc(14 * var(--u)); }
 .story__text a { text-decoration: underline 1px; text-underline-offset: .25em; }
 .story .crystal-img { --cx: 660; --cy: 170; --cs: 120; }
 
 /* 05 Socials */
-.socials__title { --gh: 50; top: calc(396 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.socials__title { --gh: 36; top: calc(410 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .socials__links { top: calc(474 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; gap: calc(28 * var(--u)); font-weight: 700; font-size: calc(14 * var(--u)); }
 .socials__links a { text-decoration: underline 1px; text-underline-offset: .25em; }
 .socials .crystal-img { --cx: 675; --cy: 280; --cs: 90; }
@@ -96,31 +97,31 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 
   /* Hero: SKONIECZNY (5,6 x wysokość) mieści się z marginesem ok. 6% po bokach od 320 do 900 px */
   .hero { --hh: clamp(44px, 15.5vw, 140px); }
-  .hero__title { gap: calc(var(--hh) * .11); }
+  .hero__title { gap: calc(var(--hh) * .074); }
   .hero__title .g { font-size: calc(var(--hh) * 1.36); }
-  .hero__title .g svg { height: var(--hh); }
+  .hero__title .g svg { height: calc(var(--hh) * .674); }
   .hero__sub { margin-top: calc(var(--hh) * .6); width: min(calc(330 * var(--u)), 88vw); font-size: 12px; }
   .hero__sub br { display: none; }
   .hero .crystal-img { --cx: 255; --cy: 275; --cs: 160; } /* 80%, ten sam środek */
 
   /* Prace, Oferta, O mnie: jedna lewa linia z przełącznikiem EN / PL (24 px), tekst od lewej, w pionie dalej środek */
   :is(.works, .services, .story) .frame { align-items: flex-start; padding-inline: 24px; }
-  .works__title { --gh: 44; gap: calc(6 * var(--u)); }
+  .works__title { --gh: 32; gap: calc(4 * var(--u)); }
   .works__list { margin-top: calc(46 * var(--u)); text-align: left; font-size: 16px; line-height: calc(28 * var(--u)); }
   .works .crystal-img { --cx: 225; --cy: 150; --cs: 420; }
 
-  .services__title { --gh: 44; }
+  .services__title { --gh: 30; }
   .services__list { margin: calc(36 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
   .services__list li { padding-top: 10px; }
   .services__list b { font-size: 14px; }
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
-  .story__title { --gh: 44; }
+  .story__title { --gh: 32; }
   .story__text { margin: calc(26 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); text-align: left; font-size: 14px; }
   .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
 
-  .socials__title { --gh: 44; }
+  .socials__title { --gh: 32; }
   .socials__links { margin-top: calc(16 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
@@ -172,7 +173,7 @@ html.crystal .crystal-img { display: none; }
 body.work .glow { display: none; }
 .project { padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
 .panel { max-width: calc(360 * var(--u)); }
-.panel__title { --gh: 46; display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
+.panel__title { --gh: 32; display: flex; flex-direction: column; gap: calc(6 * var(--u)); }
 .panel__desc { margin-top: calc(34 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); }
 .panel__meta { margin: calc(28 * var(--u)) 0 0; font-size: calc(12 * var(--u)); }
 .panel__meta div { display: flex; }
@@ -186,17 +187,17 @@ body.work .glow { display: none; }
 /* Plakat wideo jako leniwy <img> pod <video> bez atrybutu poster (plakaty nie ładują się przy starcie strony) */
 .card:has(> img + video) { position: relative; }
 .card > img + video { position: absolute; inset: 0; height: 100%; object-fit: cover; }
-.close { --gh: 22; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
+.close { --gh: 16; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
 
 @media (max-width: 899px) {
   .project { padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
   .panel { max-width: none; }
-  .panel__title { --gh: 48; }
+  .panel__title { --gh: 33; }
   .panel__desc { margin-top: 24px; font-size: 15px; }
   .panel__meta { margin-top: 24px; font-size: 14px; }
   .panel__meta dt { width: 76px; }
   .strip { margin-top: 32px; }
-  .close { --gh: 16; top: 28px; right: 24px; }
+  .close { --gh: 11.5; top: 28px; right: 24px; }
 }
 
 /* Tor poziomy (desktop, klasa .track z <head>): przypięta sekcja, scroll przesuwa panele w lewo.
@@ -204,7 +205,7 @@ body.work .glow { display: none; }
 html.track .project { height: 100vh; padding: 0; overflow-x: clip; }
 html.track .panel { position: fixed; z-index: 1; top: calc(232 * var(--u)); left: calc(63 * var(--u)); width: calc(260 * var(--u)); }
 /* Węższa kolumna (ok. 26% okna): tytuł i meta mniejsze, opis zawija się w więcej linii */
-html.track .panel__title { --gh: 33; gap: calc(6 * var(--u)); }
+html.track .panel__title { --gh: 23; gap: calc(4 * var(--u)); }
 html.track .panel__desc { margin-top: calc(26 * var(--u)); }
 html.track .panel__meta { margin-top: calc(20 * var(--u)); font-size: calc(10 * var(--u)); }
 html.track .panel__meta dt { width: calc(58 * var(--u)); }
