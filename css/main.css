@@ -125,13 +125,26 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
 
-/* ===== Telefon, hero: rozmycie całego napisu po dotknięciu (js/hero-blur.js) =====
-   Rozmyta wersja to gotowy canvas nad ostrym SVG; animujemy tylko opacity: wejście 0,6 s, powrót 4 s. */
-.hero__blur { position: absolute; pointer-events: none; opacity: 0; }
-.hero__title.has-blur svg, .hero__blur { transition: opacity 4s ease-in-out; }
-.hero__title.is-blur svg { opacity: 0; }
-.hero__title.is-blur .hero__blur { opacity: 1; }
-.hero__title.is-blur svg, .hero__title.is-blur .hero__blur { transition: opacity .6s ease-out; }
+/* ===== Telefon, hero: fala rozmycia po dotknięciu napisu (js/hero-blur.js) =====
+   Rozmyty canvas leży nad ostrym SVG. Dwa pasma (środki --l i --r w px napisu, szerokość --b, siła --a)
+   odsłaniają canvas i w tym samym miejscu chowają SVG. --ox: lewa krawędź elementu w osiach napisu. */
+.hero__blur { position: absolute; pointer-events: none; visibility: hidden; }
+.hero__title.is-wave :is(svg, .hero__blur) {
+  --c1: calc(var(--l) - var(--ox, 0px)); --c2: calc(var(--r) - var(--ox, 0px));
+  -webkit-mask-image: var(--g1), var(--g2); mask-image: var(--g1), var(--g2);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.hero__title.is-wave .hero__blur {
+  visibility: visible; --m: rgb(0 0 0 / var(--a));
+  --g1: linear-gradient(90deg, transparent calc(var(--c1) - var(--b) * .6), var(--m) calc(var(--c1) - var(--b) * .2), var(--m) calc(var(--c1) + var(--b) * .2), transparent calc(var(--c1) + var(--b) * .6));
+  --g2: linear-gradient(90deg, transparent calc(var(--c2) - var(--b) * .6), var(--m) calc(var(--c2) - var(--b) * .2), var(--m) calc(var(--c2) + var(--b) * .2), transparent calc(var(--c2) + var(--b) * .6));
+}
+.hero__title.is-wave svg {
+  --m: rgb(0 0 0 / calc(1 - var(--a)));
+  --g1: linear-gradient(90deg, #000 calc(var(--c1) - var(--b) * .6), var(--m) calc(var(--c1) - var(--b) * .2), var(--m) calc(var(--c1) + var(--b) * .2), #000 calc(var(--c1) + var(--b) * .6));
+  --g2: linear-gradient(90deg, #000 calc(var(--c2) - var(--b) * .6), var(--m) calc(var(--c2) - var(--b) * .2), var(--m) calc(var(--c2) + var(--b) * .2), #000 calc(var(--c2) + var(--b) * .6));
+  -webkit-mask-composite: source-in; mask-composite: intersect; /* SVG widać tylko poza oboma pasmami */
+}
 
 /* ===== Przełącznik języka (js/i18n.js): lewy górny róg, minimalnie ===== */
 .lang { position: fixed; z-index: 3; top: calc(40 * var(--u)); left: calc(63 * var(--u)); display: flex; align-items: center; gap: .5em; font: 700 calc(12 * var(--u)) / 1 var(--font); letter-spacing: .08em; }
