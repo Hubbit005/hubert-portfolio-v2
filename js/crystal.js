@@ -131,8 +131,8 @@ export async function addCrystal(gl, base = '') {
       fade(imgs[cur ^ 1], 0);
     },
     tilt(nx, ny) { state.tiltX = ny * TILT; state.tiltY = nx * TILT; },
-    update(dt) {
-      if (state.mix === 0) state.angle += dt * Math.PI * 2 / TURN;
+    update(dt, speed = 1) { // speed: mnożnik obrotu (telefon w hero: wolniej)
+      if (state.mix === 0) state.angle += dt * Math.PI * 2 / TURN * speed;
       spinQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), state.angle).premultiply(base0);
       if (state.mix === 0) q.copy(spinQ);
       else q.copy(state.leaving ? spinQ : state.from).slerp(faceQ[state.face], state.mix);
