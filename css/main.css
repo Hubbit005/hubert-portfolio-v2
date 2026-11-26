@@ -69,12 +69,19 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .services__list span { display: block; margin-top: calc(6 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); color: var(--ink-2); }
 .services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
 
-/* 04 My Story */
-.story__title { --gh: 58; top: calc(330 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
-.story__text { top: calc(410 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(720 * var(--u)); text-align: center; font-weight: 500; font-size: calc(13 * var(--u)); }
-.story__text p + p { margin-top: calc(14 * var(--u)); }
+/* 04 My Story (jak „about” u Doriana): nagłówek z listą specjalizacji, pod nim kolumna akapitów.
+   Tu elementy idą w normalnym przepływie, więc tekst zawsze zaczyna się pod ostatnią linią nagłówka. */
+.story .frame { display: flex; flex-direction: column; align-items: center; padding-top: calc(90 * var(--u)); }
+.story .frame > :not(.crystal-img) { position: relative; }
+.story__title { --gh: 62; width: calc(900 * var(--u)); }
+.story__title .g { display: flex; flex-wrap: wrap; justify-content: center; column-gap: calc(var(--gh) * var(--u) * .245); white-space: normal; text-align: center; }
+.story__title .g svg { margin-bottom: calc(var(--gh) * var(--u) * -.1); } /* wiersz ciasno, prawie na wysokość liter */
+.story__text { margin-top: calc(40 * var(--u)); width: calc(560 * var(--u)); text-align: center; font-weight: 500; font-size: calc(11 * var(--u)); }
+.frame .story__text p { line-height: 1.45; }
+.story__text p + p { margin-top: calc(12 * var(--u)); }
+.story__text b { font-weight: 700; }
 .story__text a { text-decoration: underline 1px; text-underline-offset: .25em; }
-.story .crystal-img { --cx: 660; --cy: 170; --cs: 120; }
+.story .crystal-img { --cx: 1135; --cy: 555; --cs: 130; }
 
 /* 05 Socials */
 .socials__title { --gh: 50; top: calc(396 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
@@ -103,9 +110,13 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
-  .story__title { --gh: 44; top: calc(250 * var(--u)); }
-  .story__text { top: calc(320 * var(--u)); width: calc(330 * var(--u)); font-size: 14px; }
-  .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
+  /* 7 akapitów przy 13px nie mieści się na 844: tekst 12px (minimum), ciaśniejsze odstępy */
+  .story .frame { align-items: flex-start; padding: calc(60 * var(--u)) calc(20 * var(--u)) 0; }
+  .story__title { --gh: 28; width: calc(300 * var(--u)); } /* węższy, żeby wyszło 6–7 linii */
+  .story__title .g { justify-content: flex-start; text-align: left; }
+  .story__text { margin-top: calc(20 * var(--u)); width: 100%; text-align: left; font-size: 12px; }
+  .story__text p + p { margin-top: 8px; }
+  .story .crystal-img { --cx: 325; --cy: -25; --cs: 110; }
 
   .socials__title { --gh: 44; top: calc(400 * var(--u)); }
   .socials__links { top: calc(460 * var(--u)); font-size: 16px; }

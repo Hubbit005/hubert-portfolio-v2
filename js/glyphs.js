@@ -35,11 +35,18 @@ export function glyphSVG(f, text) {
   return svg;
 }
 
+// data-glyph="wrap": lista po przecinkach, jeden <svg> na pozycję, żeby nagłówek łamał się na linie.
+export function glyphNodes(f, text, el) {
+  if (el.dataset.glyph !== 'wrap') return [glyphSVG(f, text)];
+  const items = text.split(', ');
+  return items.map((t, i) => glyphSVG(f, i < items.length - 1 ? t + ',' : t));
+}
+
 // Podmienia tekst każdego [data-glyph] na SVG (tekst zostaje w aria-label).
 export async function renderGlyphs(root = document, base = '') {
   const f = await loadGlyphs(base);
   for (const el of root.querySelectorAll('[data-glyph]')) {
-    el.replaceChildren(glyphSVG(f, el.textContent.trim().toUpperCase()));
+    el.replaceChildren(...glyphNodes(f, el.textContent.trim().toUpperCase(), el));
   }
   document.documentElement.classList.add('glyphs');
 }

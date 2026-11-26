@@ -1,6 +1,6 @@
 // Strona projektu: przypięty panel, siatka obrazów przewijana zwykłym scrollem, CLOSE i Esc.
-import { renderGlyphs } from './glyphs.js?v=20261123';
-import { initLang } from './i18n.js?v=20261123';
+import { renderGlyphs } from './glyphs.js?v=20261126';
+import { initLang } from './i18n.js?v=20261126';
 
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const strip = document.querySelector('.strip');
