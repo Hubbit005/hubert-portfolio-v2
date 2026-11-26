@@ -1,9 +1,9 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261206';
-import { hideLoader } from './loader.js?v=20261206';
-import { initLang } from './i18n.js?v=20261206';
-import { addInertia } from './inertia.js?v=20261206';
-import { initTouchBlur } from './touch-blur.js?v=20261206';
+import { renderGlyphs } from './glyphs.js?v=20261207';
+import { hideLoader } from './loader.js?v=20261207';
+import { initLang } from './i18n.js?v=20261207';
+import { addInertia } from './inertia.js?v=20261207';
+import { initHeroBlur } from './hero-blur.js?v=20261207';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -13,7 +13,7 @@ const phone = matchMedia('(max-width: 899px)'); // układ telefonu (css: .home d
 
 initLang();
 await renderGlyphs();
-initTouchBlur();
+initHeroBlur();
 
 // Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
 const back = document.querySelector(`.works__list a[href="work/${CSS.escape(new URLSearchParams(location.search).get('w') ?? '')}.html"]`);
@@ -102,13 +102,13 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261206');
+    const { createScene } = await import('./scene.js?v=20261207');
     // dotyk: tytuły zostają jako SVG w DOM (ostre natywnie), w scenie tylko tło i kryształ
     try { gl = createScene({ textEls: touch ? [] : [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
     if (!touch) html.classList.add('gl-titles'); // desktop: napisy w scenie (fala i rozmycie pod kursorem)
-    const titleSvgs = [...document.querySelectorAll('.hero__title .g > *')]; // svg słowa albo .gw z literami (dotyk)
+    const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
     let shown = 0, shownEls = titleSvgs;
     // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
     let tb = null;
@@ -155,7 +155,7 @@ function startMotion() {
       acc = 0;
     });
 
-    const { addCrystal } = await import('./crystal.js?v=20261206');
+    const { addCrystal } = await import('./crystal.js?v=20261207');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
