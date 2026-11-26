@@ -137,8 +137,8 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 /* ===== Scena WebGL (js/scene.js) ===== */
 canvas.stage { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
 html.gl .glow { display: none; }
-html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
-html.gl-titles :is(.works__title, .services__title, .story__title, .socials__title) svg { opacity: 0; } /* desktop: napisy sekcji też w scenie */
+/* desktop: napisy żyją w powierzchni sceny, SVG zostaje dla czytnika. Dotyk: zwykłe SVG w DOM. */
+html.gl-titles :is(.hero__title, .works__title, .services__title, .story__title, .socials__title) svg { opacity: 0; }
 
 /* ===== Ruch: jedna sekcja na ekran (js/main.js) ===== */
 html.motion .home main { height: 700vh; } /* 5 sekcji: 4 przejścia po 1 ekranie + 5 postojów po 0,4 + 1 ekran */
