@@ -70,12 +70,19 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .services__list span { display: block; margin-top: calc(6 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); color: var(--ink-2); }
 .services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
 
-/* 04 My Story */
-.story__title { --gh: 42; top: calc(346 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
-.story__text { top: calc(410 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(720 * var(--u)); text-align: center; font-weight: 500; font-size: calc(13 * var(--u)); }
-.story__text p + p { margin-top: calc(14 * var(--u)); }
+/* 04 My Story (jak „about” u Doriana): nagłówek z listą specjalizacji, pod nim kolumna akapitów.
+   Elementy w normalnym przepływie: tekst zawsze zaczyna się pod ostatnią linią nagłówka. */
+.story .frame { display: flex; flex-direction: column; align-items: center; padding-top: calc(90 * var(--u)); }
+.story .frame > :not(.crystal-img) { position: relative; }
+.story__title { --gh: 46; width: calc(900 * var(--u)); } /* Dirtyline: 5 linii w EN i PL */
+.story__title .g { display: flex; flex-wrap: wrap; justify-content: center; column-gap: calc(var(--gh) * var(--u) * .335); white-space: normal; text-align: center; }
+.story__title .g svg { margin-bottom: calc(var(--gh) * var(--u) * -.1); } /* wiersz ciasno, prawie na wysokość liter */
+.story__text { margin-top: calc(40 * var(--u)); width: calc(560 * var(--u)); text-align: center; font-weight: 500; font-size: calc(11 * var(--u)); }
+.frame .story__text p { line-height: 1.45; }
+.story__text p + p { margin-top: calc(12 * var(--u)); }
+.story__text b { font-weight: 700; }
 .story__text a { text-decoration: underline 1px; text-underline-offset: .25em; }
-.story .crystal-img { --cx: 660; --cy: 170; --cs: 120; }
+.story .crystal-img { --cx: 1135; --cy: 555; --cs: 130; }
 
 /* 05 Socials */
 .socials__title { --gh: 36; top: calc(410 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
@@ -117,9 +124,22 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
-  .story__title { --gh: 32; }
-  .story__text { margin: calc(26 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); text-align: left; font-size: 14px; }
-  .story .crystal-img { --cx: 240; --cy: 120; --cs: 300; }
+  /* O mnie: całość ma się zmieścić w 100svh (390 x 844 z paskami przeglądarki), tekst 12px (minimum), ciasne odstępy */
+  .story { padding-block: 50px 12px; }
+  .story .frame { padding-top: 0; }
+  .story__title { --gh: 21; width: 100%; } /* 6 linii w EN i PL */
+  .story__title .g { justify-content: flex-start; text-align: left; }
+  .story__text { margin: 12px 0 0; width: 100%; text-align: left; font-size: 12px; }
+  .story__text p + p { margin-top: 6px; }
+  .story .crystal-img { --cx: 325; --cy: -20; --cs: 90; }
+}
+/* Niski ekran (Safari z paskami: 390 x 844 daje ok. 664 px svh): ciaśniej, bez skracania tekstu i bez schodzenia poniżej 12px */
+@media (max-width: 899px) and (max-height: 780px) {
+  .story { padding-block: 44px 8px; }
+  .story__title { --gh: 20; }
+  .story__text { margin-top: 8px; }
+  .frame .story__text p { line-height: 1.25; }
+  .story__text p + p { margin-top: 4px; }
 
   .socials__title { --gh: 32; }
   .socials__links { margin-top: calc(16 * var(--u)); font-size: 16px; }

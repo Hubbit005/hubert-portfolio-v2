@@ -1,11 +1,13 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261210';
+import { loadGlyphs, glyphNodes } from './glyphs.js?v=20261211';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
+const IG = '<a href="https://www.instagram.com/jzf_designe/" target="_blank" rel="noopener">';
+const LI = '<a href="https://www.linkedin.com/in/hubert-j%C3%B3zef-skonieczny-50436544a/" target="_blank" rel="noopener">';
 const PL = {
   // napisy z glifów (font demo nie ma polskich liter, więc słowa bez ogonków)
-  'SELECTED': 'WYBRANE', 'WORKS': 'PRACE', 'SERVICES': 'OFERTA', 'MY STORY': 'O MNIE', 'SOCIALS': 'KONTAKT', 'CLOSE': 'ZAMKNIJ',
+  'SELECTED': 'WYBRANE', 'WORKS': 'PRACE', 'SERVICES': 'OFERTA', 'My story': 'O mnie', 'SOCIALS': 'KONTAKT', 'CLOSE': 'ZAMKNIJ',
   // hero
   'A Poland-based web designer building immersive, AI-powered websites <br>for brands that want to be remembered.':
     'Web designer z Polski. Tworzę immersyjne strony z AI <br>dla marek, które chcą zostać zapamiętane.',
@@ -19,15 +21,23 @@ const PL = {
   'SOCIAL MEDIA': 'SOCIAL MEDIA', 'Instagram posts, reels and motion ads.': 'Posty na Instagram, rolki i reklamy z animacją.',
   'BUSINESS CARDS': 'WIZYTÓWKI', 'Print-ready cards that match your brand.': 'Wizytówki gotowe do druku, spójne z marką.',
   'BROCHURES': 'BROSZURY', 'Brochures and leaflets designed for print.': 'Broszury i ulotki zaprojektowane do druku.',
-  // o mnie
-  "I'm a web designer who designs and builds immersive websites and AI chat agents for small businesses.":
-    'Jestem web designerem. Projektuję i buduję immersyjne strony oraz czatboty AI dla małych firm.',
-  'Every site I ship is designed, written and coded by me, from the first sketch to the live launch.':
-    'Każdą stronę sam projektuję, piszę i koduję, od pierwszego szkicu po start.',
-  'Before the web, I spent years in athletics and coaching. I bring the same discipline to every project.':
-    'Zanim zająłem się stronami, przez lata trenowałem lekkoatletykę i pracowałem jako trener. Tę samą dyscyplinę wnoszę do każdego projektu.',
-  [`If you want to work together, ${MAIL}send me an email</a>. I'm always open to new projects.`]:
-    `Jeśli chcesz współpracować, ${MAIL}napisz do mnie</a>. Chętnie podejmuję nowe projekty.`,
+  // o mnie (nagłówek z glifów bez polskich liter)
+  'WEB DESIGN, 3D WEBSITES, WEBGL, UI/UX, AI AGENTS, AI VIDEO, MOTION ADS, 3D MODELS, POSTERS, BUSINESS CARDS':
+    'WEB DESIGN, STRONY 3D, WEBGL, UI/UX, AGENCI AI, WIDEO AI, REKLAMY MOTION, MODELE 3D, PLAKATY, WIZYTOWKI',
+  "I'm a <b>web designer, creative developer and AI builder</b>. I design and build <b>immersive websites with 3D and motion</b> for <b>local businesses</b>, and I find the right idea for almost any brand.":
+    'Jestem <b>web designerem, creative developerem i twórcą rozwiązań AI</b>. Projektuję i buduję <b>immersyjne strony z 3D i animacją</b> dla <b>lokalnych firm</b> i dla prawie każdej marki znajdę właściwy pomysł.',
+  'Right now I work as a <b>freelancer</b> while studying. Besides websites, I create <b>AI chat agents, AI video, 3D models and marketing strategies</b>, as well as posters and business cards.':
+    'Obecnie pracuję jako <b>freelancer</b> i studiuję. Poza stronami tworzę <b>agentów AI, wideo AI, modele 3D i strategie marketingowe</b>, a także plakaty i wizytówki.',
+  "I've worked with <b>KSK Pretor, Basko Clean and Agata Patelka</b>, and created a concept for <b>Casanova Barbershop</b>. My daily tools: <b>Claude Code, Three.js, WebGL, GSAP, Higgsfield, Botpress, Figma and Penpot</b>.":
+    'Współpracowałem z <b>KSK Pretor, Basko Clean i Agatą Patelką</b>, a dla <b>Casanova Barbershop</b> stworzyłem koncept. Na co dzień pracuję w <b>Claude Code, Three.js, WebGL, GSAP, Higgsfield, Botpress, Figmie i Penpocie</b>.',
+  'What makes me different: <b>one person from the first sketch to launch</b>. Design, copy, code, AI agent and promo video. You get <b>agency-level 3D and motion on a small-business budget</b>, with one point of contact.':
+    'Czym się wyróżniam: <b>jedna osoba od pierwszego szkicu do startu strony</b>. Projekt, teksty, kod, agent AI i film promocyjny. Dostajesz <b>efekty 3D i animacje na poziomie agencji w budżecie małej firmy</b> i jeden kontakt.',
+  "What I love most is imagining something that doesn't exist yet and then building it. No fixed templates, just <b>creative problem solving</b> and <b>new AI tools</b> I test every week.":
+    'Najbardziej lubię wymyślić coś, czego jeszcze nie ma, a potem to zbudować. Bez sztywnych szablonów: <b>kreatywne rozwiązywanie problemów</b> i <b>nowe narzędzia AI</b>, które testuję co tydzień.',
+  'Before the web, I worked as a <b>personal trainer</b>. Powerlifting, skiing, water polo and climbing taught me the discipline I bring to every project.':
+    'Zanim zająłem się stronami, pracowałem jako <b>trener personalny</b>. Trójbój, narciarstwo, piłka wodna i wspinaczka nauczyły mnie dyscypliny, którą wnoszę do każdego projektu.',
+  [`If you want to work together, <b>send me an email</b> at ${MAIL}hubert.austria2025@gmail.com</a> or find me on ${IG}Instagram</a> and ${LI}LinkedIn</a>.`]:
+    `Jeśli chcesz współpracować, <b>napisz do mnie</b> na ${MAIL}hubert.austria2025@gmail.com</a> albo znajdź mnie na ${IG}Instagramie</a> i ${LI}LinkedInie</a>.`,
   // strony projektów
   'I designed and built the website for an industrial cleaning company from Szczecin, and I keep it up to date. I also created its visual system and a motion-graphic ad for Instagram.':
     'Zaprojektowałem i zbudowałem stronę firmy sprzątania przemysłowego ze Szczecina i dbam o jej aktualność. Stworzyłem też jej system wizualny i animowaną reklamę na Instagram.',
@@ -105,7 +115,7 @@ function apply(base) {
     if (el.dataset.cur === t) continue; // bez zmiany (np. imię w hero, które żyje też w scenie WebGL)
     el.dataset.cur = t;
     if (el.hasAttribute('data-glyph')) {
-      if (el.querySelector('svg')) loadGlyphs(base).then((f) => el.replaceChildren(glyphSVG(f, t.toUpperCase())));
+      if (el.querySelector('svg')) loadGlyphs(base).then((f) => el.replaceChildren(...glyphNodes(f, t.toUpperCase(), el)));
       else el.textContent = t;
     } else el.innerHTML = t;
   }
@@ -114,6 +124,10 @@ function apply(base) {
     const a = el.tagName === 'IMG' ? 'alt' : 'aria-label';
     el.dataset.en ??= el.getAttribute(a);
     el.setAttribute(a, lang === 'pl' ? PL[el.dataset.en] ?? el.dataset.en : el.dataset.en);
+  }
+  for (const el of document.querySelectorAll('[data-i18n-label]')) {
+    el.dataset.enLabel ??= el.getAttribute('aria-label');
+    el.setAttribute('aria-label', lang === 'pl' ? PL[el.dataset.enLabel] ?? el.dataset.enLabel : el.dataset.enLabel);
   }
   for (const b of document.querySelectorAll('.lang button')) b.setAttribute('aria-pressed', b.dataset.l === lang);
 }

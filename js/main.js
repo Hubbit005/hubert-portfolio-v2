@@ -1,9 +1,9 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261210';
-import { hideLoader } from './loader.js?v=20261210';
-import { initLang } from './i18n.js?v=20261210';
-import { addInertia } from './inertia.js?v=20261210';
-import { initHeroBlur } from './hero-blur.js?v=20261210';
+import { renderGlyphs } from './glyphs.js?v=20261211';
+import { hideLoader } from './loader.js?v=20261211';
+import { initLang } from './i18n.js?v=20261211';
+import { addInertia } from './inertia.js?v=20261211';
+import { initHeroBlur } from './hero-blur.js?v=20261211';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -102,7 +102,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261210');
+    const { createScene } = await import('./scene.js?v=20261211');
     // dotyk: tytuły zostają jako SVG w DOM (ostre natywnie), w scenie tylko tło i kryształ
     try { gl = createScene({ textEls: touch ? [] : [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
@@ -155,7 +155,7 @@ function startMotion() {
       acc = 0;
     });
 
-    const { addCrystal } = await import('./crystal.js?v=20261210');
+    const { addCrystal } = await import('./crystal.js?v=20261211');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
@@ -198,8 +198,8 @@ const TILT_O = -6 * Math.PI / 180;     // pochylenie owalu
 
 function crystalPath(STEP, HOLD, titleBox) {
   // sekcje: hero, Selected Works, Services, My Story, Socials
-  const D = [null, { x: 950, y: 430, s: 300 }, { x: 1250, y: 170, s: 110 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
-  const M = [null, { x: 435, y: 360, s: 420 }, { x: 380, y: 120, s: 240 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
+  const D = [null, { x: 950, y: 430, s: 300 }, { x: 1250, y: 170, s: 110 }, { x: 1200, y: 620, s: 130 }, { x: 720, y: 325, s: 90 }];
+  const M = [null, { x: 435, y: 360, s: 420 }, { x: 380, y: 120, s: 240 }, { x: 370, y: 60, s: 90 }, { x: 370, y: 310, s: 260 }];
   const MID = { x: 1090, y: 450 };
   // telefon z dotykiem: w hero bez orbity, duży (jak w Selected Works) po lewej, za krawędzią ekranu;
   // przejście do Selected Works to przejazd w poziomie na prawo (lustro M[1])

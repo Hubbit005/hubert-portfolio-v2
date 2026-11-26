@@ -7,7 +7,7 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 
 CAP, TOP, HEIGHT = 131, 2, 155            # jak w glifach Candle Shlop
-CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÓ'     # polskie znaki poza Ó: zastępstwo w js/glyphs.js
+CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÓ3,/'      # 3 , /: nagłówek sekcji story; polskie znaki poza Ó: zastępstwo w js/glyphs.js
 
 
 font = TTFont(sys.argv[1])
