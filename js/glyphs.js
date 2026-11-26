@@ -1,20 +1,30 @@
-// Napisy ekspozycyjne z glifów odrysowanych z próbki fontu Huberta (assets/font/glyphs.json).
+// Napisy ekspozycyjne z glifów fontu Dirtyline 36daysoftype 2022 (assets/font/glyphs.json, generator: tools/font-to-glyphs.py).
 // Słowo -> jeden inline <svg> (fill: currentColor), wysokość ustawia CSS (--gh).
 
 let font;
 export const loadGlyphs = (base = '') =>
-  font ??= fetch(base + 'assets/font/glyphs.json').then((r) => r.json());
+  font ??= fetch(base + 'assets/font/glyphs.json?v=20261210').then((r) => r.json());
 
-// Zwraca { d: [{ d, x }], w, h } dla tekstu; znaki spoza A–Z i spacji pomija z ostrzeżeniem.
+// Font nie ma polskich znaków poza Ó: brakujący znak rysuje litera bazowa (Ł -> L, Ą -> A ...).
+const fallback = (ch) => ({ Ł: 'L' })[ch] ?? ch.normalize('NFD')[0];
+
+// Zwraca { d: [{ d, x }], w, h } dla tekstu; z kerningiem (f.kern). Znaki bez glifu i bez litery bazowej pomija z ostrzeżeniem.
 export function layout(f, text) {
   const out = [];
-  let x = 0;
-  for (const ch of text) {
-    if (ch === ' ') { x += f.space; continue; }
+  let x = 0, prev = '';
+  for (let ch of text) {
+    if (ch === ' ') { x += f.space; prev = ''; continue; }
+    if (!f.glyphs[ch]) {
+      const b = fallback(ch);
+      console.warn(`glyphs: brak znaku "${ch}" w "${text}"` + (f.glyphs[b] ? `, rysuję "${b}"` : ''));
+      ch = b;
+    }
     const g = f.glyphs[ch];
-    if (!g) { console.warn(`glyphs: brak znaku "${ch}" w "${text}"`); continue; }
+    if (!g) continue;
+    x += f.kern?.[prev + ch] ?? 0;
     out.push({ d: g.d, x });
     x += g.w + f.tracking;
+    prev = ch;
   }
   return { paths: out, w: Math.max(0, x - f.tracking), h: f.height };
 }

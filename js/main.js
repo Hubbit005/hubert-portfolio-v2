@@ -1,9 +1,9 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261209';
-import { hideLoader } from './loader.js?v=20261209';
-import { initLang } from './i18n.js?v=20261209';
-import { addInertia } from './inertia.js?v=20261209';
-import { initHeroBlur } from './hero-blur.js?v=20261209';
+import { renderGlyphs } from './glyphs.js?v=20261210';
+import { hideLoader } from './loader.js?v=20261210';
+import { initLang } from './i18n.js?v=20261210';
+import { addInertia } from './inertia.js?v=20261210';
+import { initHeroBlur } from './hero-blur.js?v=20261210';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -102,7 +102,7 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261209');
+    const { createScene } = await import('./scene.js?v=20261210');
     // dotyk: tytuły zostają jako SVG w DOM (ostre natywnie), w scenie tylko tło i kryształ
     try { gl = createScene({ textEls: touch ? [] : [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
@@ -155,7 +155,7 @@ function startMotion() {
       acc = 0;
     });
 
-    const { addCrystal } = await import('./crystal.js?v=20261209');
+    const { addCrystal } = await import('./crystal.js?v=20261210');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
