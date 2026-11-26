@@ -88,7 +88,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 @media (max-width: 899px) {
   /* kryształ leży pod tekstem: ciemna otoczka trzyma kontrast AA */
   .frame p, .frame li, .frame h1, .frame h2 { text-shadow: 0 0 6px var(--bg), 0 0 14px var(--bg); }
-  .frame .g svg { filter: drop-shadow(0 0 8px var(--bg)); }
+  .frame .g > * { filter: drop-shadow(0 0 8px var(--bg)); } /* svg słowa albo .gw z literami (dotyk) */
 
   .sec { display: flex; flex-direction: column; justify-content: center; height: auto; min-height: 100vh; min-height: 100svh; padding-block: 72px; }
   .frame { position: static; height: auto; transform: none; display: flex; flex-direction: column; align-items: center; }
@@ -124,6 +124,13 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
   .socials__links { margin-top: calc(16 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
 }
+
+/* ===== Dotyk: rozmycie liter pod palcem (js/touch-blur.js, litery z js/glyphs.js) =====
+   Jak shader desktopu: beż w środku, czerwień z przodu, błękit z tyłu. Wejście 0,4 s, powrót 4 s. */
+.gw { display: flex; }
+.gl { transition: filter 4s cubic-bezier(.2, .7, .2, 1); }
+.gl.is-on { will-change: filter; }
+.gl.is-blur { filter: blur(3px) drop-shadow(-4px 1px 1px var(--light-red)) drop-shadow(4px -1px 1px var(--light-blue)); transition-duration: .4s; }
 
 /* ===== Przełącznik języka (js/i18n.js): lewy górny róg, minimalnie ===== */
 .lang { position: fixed; z-index: 3; top: calc(40 * var(--u)); left: calc(63 * var(--u)); display: flex; align-items: center; gap: .5em; font: 700 calc(12 * var(--u)) / 1 var(--font); letter-spacing: .08em; }

@@ -19,27 +19,50 @@ export function layout(f, text) {
   return { paths: out, w: Math.max(0, x - f.tracking), h: f.height };
 }
 
+const ns = 'http://www.w3.org/2000/svg';
+const pathEl = (p) => {
+  const el = document.createElementNS(ns, 'path');
+  el.setAttribute('d', p.d);
+  el.setAttribute('transform', `translate(${p.x} 0)`);
+  return el;
+};
+
 export function glyphSVG(f, text) {
   const { paths, w, h } = layout(f, text);
-  const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
   svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', text);
-  for (const p of paths) {
-    const el = document.createElementNS(ns, 'path');
-    el.setAttribute('d', p.d);
-    el.setAttribute('transform', `translate(${p.x} 0)`);
-    svg.append(el);
-  }
+  for (const p of paths) svg.append(pathEl(p));
   return svg;
+}
+
+// Dotyk: tytuły sekcji litera po literze (osobne <svg class="gl">), bo Safari nie nakłada CSS filter
+// na elementy wewnątrz SVG. Wygląd ten sam: szerokość litery = odstęp do następnej. Rozmycie: js/touch-blur.js.
+const split = matchMedia('(hover: none), (pointer: coarse)').matches;
+export function glyphNode(f, text, el) {
+  if (!split || !el.closest('.sec')) return glyphSVG(f, text);
+  const { paths, w, h } = layout(f, text);
+  const box = document.createElement('span');
+  box.className = 'gw';
+  box.setAttribute('role', 'img');
+  box.setAttribute('aria-label', text);
+  paths.forEach((p, i) => {
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'gl');
+    svg.setAttribute('viewBox', `${p.x} 0 ${(paths[i + 1]?.x ?? w) - p.x} ${h}`);
+    svg.setAttribute('aria-hidden', 'true');
+    svg.append(pathEl(p));
+    box.append(svg);
+  });
+  return box;
 }
 
 // Podmienia tekst każdego [data-glyph] na SVG (tekst zostaje w aria-label).
 export async function renderGlyphs(root = document, base = '') {
   const f = await loadGlyphs(base);
   for (const el of root.querySelectorAll('[data-glyph]')) {
-    el.replaceChildren(glyphSVG(f, el.textContent.trim().toUpperCase()));
+    el.replaceChildren(glyphNode(f, el.textContent.trim().toUpperCase(), el));
   }
   document.documentElement.classList.add('glyphs');
   window.loader?.done('glyphs');

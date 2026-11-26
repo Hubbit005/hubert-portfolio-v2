@@ -111,8 +111,8 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     throw new Error('programowy WebGL');
   }
   document.body.prepend(canvas);
-  // Desktop: limit 2 (napisy w scenie ostre). Dotyk: limit 1,5, tytuły są w DOM, w scenie tylko tło i kryształ.
-  let PR = Math.min(devicePixelRatio, touch ? 1.5 : 2);
+  // Desktop: limit 2 (napisy w scenie ostre). Dotyk: limit 1,25, tytuły są w DOM, w scenie tylko tło i kryształ.
+  let PR = Math.min(devicePixelRatio, touch ? 1.25 : 2);
   renderer.setPixelRatio(PR);
 
   const scene = new THREE.Scene();
@@ -222,10 +222,12 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     size: () => ({ W, H }),
     // Napis w powierzchni sceny: main.js podmienia go na napis widocznej sekcji (sekcje nigdy nie są widoczne naraz).
     setText(els) { textEls = els; drawn = null; if (els.length) drawText(); },
-    update(dt, time) {
+    // measure = false: celowo rzadsze klatki (spoczynek na dotyku, 30 kl./s), bez pomiaru płynności
+    update(dt, time, measure = true) {
       shared.uTime.value = time;
       // zabezpieczenie: średnia klatka > 25 ms przez 1 s = gęstość pikseli niżej o 0,25 (minimum 1)
-      if (fpsT0 < 0) fpsT0 = time + 2; // pierwsze 2 s (start, kompilacja shaderów) bez pomiaru
+      if (!measure) { if (fpsT0 >= 0) fpsT0 = time; fpsSum = fpsN = 0; }
+      else if (fpsT0 < 0) fpsT0 = time + 2; // pierwsze 2 s (start, kompilacja shaderów) bez pomiaru
       else if (time >= fpsT0) {
         fpsSum += dt; fpsN++;
         if (time - fpsT0 >= 1) {

@@ -1,8 +1,9 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261205';
-import { hideLoader } from './loader.js?v=20261205';
-import { initLang } from './i18n.js?v=20261205';
-import { addInertia } from './inertia.js?v=20261205';
+import { renderGlyphs } from './glyphs.js?v=20261206';
+import { hideLoader } from './loader.js?v=20261206';
+import { initLang } from './i18n.js?v=20261206';
+import { addInertia } from './inertia.js?v=20261206';
+import { initTouchBlur } from './touch-blur.js?v=20261206';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -12,6 +13,7 @@ const phone = matchMedia('(max-width: 899px)'); // układ telefonu (css: .home d
 
 initLang();
 await renderGlyphs();
+initTouchBlur();
 
 // Powrót ze strony projektu (?w=): ten projekt „pod kursorem”, dopóki kursor się nie ruszy.
 const back = document.querySelector(`.works__list a[href="work/${CSS.escape(new URLSearchParams(location.search).get('w') ?? '')}.html"]`);
@@ -100,13 +102,13 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261205');
+    const { createScene } = await import('./scene.js?v=20261206');
     // dotyk: tytuły zostają jako SVG w DOM (ostre natywnie), w scenie tylko tło i kryształ
     try { gl = createScene({ textEls: touch ? [] : [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
     if (!touch) html.classList.add('gl-titles'); // desktop: napisy w scenie (fala i rozmycie pod kursorem)
-    const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
+    const titleSvgs = [...document.querySelectorAll('.hero__title .g > *')]; // svg słowa albo .gw z literami (dotyk)
     let shown = 0, shownEls = titleSvgs;
     // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
     let tb = null;
@@ -124,7 +126,7 @@ function startMotion() {
       const c = pose(p, st, dt, f);
       const x = c.x * f.u, y = c.y * f.u + f.top, s = c.s * f.u;
       crystal?.set(x, y, s, c.z * f.u);
-      crystal?.update(dt);
+      crystal?.update(dt, touch && f.m && st.k === 0 ? .6 + .4 * st.t : 1); // telefon, hero: 1 obrót / 20 s zamiast 12 s
       const { H } = gl.size();
       gl.lightAt = { x, y: H - y };
       // desktop: napis widocznej sekcji z falą i rozmyciem jak w hero
@@ -141,9 +143,19 @@ function startMotion() {
       gl.bgUniforms.uGlowA.value = (f.m ? .5 : 1) * intro.v;
     };
     // karta w tle: bez renderu (rAF i tak zwykle stoi, to gwarancja także dla przeglądarek, które go nie wstrzymują)
-    gsap.ticker.add((t, dt) => document.hidden || gl.update(Math.min(dt, 50) / 1000, t));
+    // Dotyk: w spoczynku (0,5 s bez przewijania i dotyku) scena w 30 kl./s, przy ruchu pełna płynność.
+    let busy = 0, acc = 0;
+    if (touch) for (const ev of ['touchstart', 'touchmove', 'scroll']) addEventListener(ev, () => { busy = performance.now() + 500; }, { passive: true });
+    gsap.ticker.add((t, dt) => {
+      if (document.hidden) return;
+      acc += dt;
+      const idle = touch && performance.now() > busy;
+      if (idle && acc < 30) return;
+      gl.update(Math.min(acc, 50) / 1000, t, !idle);
+      acc = 0;
+    });
 
-    const { addCrystal } = await import('./crystal.js?v=20261205');
+    const { addCrystal } = await import('./crystal.js?v=20261206');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');
@@ -189,6 +201,9 @@ function crystalPath(STEP, HOLD, titleBox) {
   const D = [null, { x: 950, y: 430, s: 300 }, { x: 1250, y: 170, s: 110 }, { x: 720, y: 230, s: 120 }, { x: 720, y: 325, s: 90 }];
   const M = [null, { x: 435, y: 360, s: 420 }, { x: 380, y: 120, s: 240 }, { x: 390, y: 270, s: 300 }, { x: 370, y: 310, s: 260 }];
   const MID = { x: 1090, y: 450 };
+  // telefon z dotykiem: w hero bez orbity, duży (jak w Selected Works) po lewej, za krawędzią ekranu;
+  // przejście do Selected Works to przejazd w poziomie na prawo (lustro M[1])
+  const HERO_M = { x: 390 - M[1].x, y: M[1].y, s: M[1].s, z: 0 };
   const ease = (t) => t * t * (3 - 2 * t);
   let orbit = 0;
   const hero = (m, f, live) => {
@@ -204,7 +219,7 @@ function crystalPath(STEP, HOLD, titleBox) {
   return (p, { k, t }, dt, f) => {
     if (p <= HOLD) orbit += dt;
     const P = f.m ? M : D;
-    const from = k === 0 ? hero(f.m, f, p <= HOLD && t === 0) : { ...P[k], z: 0 };
+    const from = k === 0 ? (touch && f.m ? HERO_M : hero(f.m, f, p <= HOLD && t === 0)) : { ...P[k], z: 0 };
     if (t === 0 || k >= P.length - 1) return from;
     const to = { ...P[k + 1], z: 0 }, e = ease(t);
     const lerp = (a, b) => a + (b - a) * e;
