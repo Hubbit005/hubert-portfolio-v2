@@ -34,7 +34,8 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .frame { position: absolute; left: 0; right: 0; top: 50%; height: calc(var(--frame-h) * var(--u)); transform: translateY(-50%); }
 .frame > * { position: absolute; }
 
-/* Napisy z glifów (js/glyphs.js); bez JS zwykły tekst o podobnej wysokości */
+/* Napisy z glifów (js/glyphs.js, font Dirtyline); bez JS zwykły tekst o podobnej wysokości.
+   Dirtyline jest ok. 1,4 x szerszy niż Candle Shlop: --gh dobrane tak, żeby szerokość tytułów została jak przy Candle Shlop. */
 .g { display: block; line-height: .74; font-weight: 800; font-size: calc(var(--gh) * var(--u) * 1.36); white-space: nowrap; }
 .g svg { display: block; height: calc(var(--gh) * var(--u)); width: auto; fill: currentColor; overflow: visible; }
 
@@ -43,13 +44,13 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .crystal-img img { width: 100%; height: auto; }
 
 /* 01 Hero */
-.hero__title { --gh: 156; top: calc(250 * var(--u)); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: calc(10 * var(--u)); }
+.hero__title { --gh: 105; top: calc(302 * var(--u)); left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: calc(7 * var(--u)); }
 .hero__sub { top: calc(612 * var(--u)); left: 0; right: 0; text-align: center; font-weight: 700; font-size: calc(13 * var(--u)); }
 .hero .crystal-img { --cx: 1125; --cy: 325; --cs: 140; }
 
 /* 02 Selected Works */
-.works__title { --gh: 50; top: calc(280 * var(--u)); left: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
-.works__list { top: calc(420 * var(--u)); left: calc(330 * var(--u)); font-size: calc(14 * var(--u)); line-height: calc(22 * var(--u)); }
+.works__title { --gh: 36.5; top: calc(309 * var(--u)); left: calc(330 * var(--u)); display: flex; flex-direction: column; gap: calc(6 * var(--u)); }
+.works__list { top: calc(420 * var(--u)); left: calc(330 * var(--u)); font-size: calc(14 * var(--u)); line-height: max(24px, calc(22 * var(--u))); }
 .works__list li { line-height: inherit; }
 .works__list b { font-weight: 700; }
 .works__list span { font-weight: 500; }
@@ -62,7 +63,7 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .works .crystal-img { --cx: 800; --cy: 280; --cs: 300; }
 
 /* 03 Services: minimalnie, bez kart i ikon. Siatka 3 x 2, cienka linia nad każdą usługą. */
-.services__title { --gh: 50; top: calc(250 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.services__title { --gh: 34; top: calc(266 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .services__list { top: calc(390 * var(--u)); left: 0; right: 0; margin: 0 auto; width: calc(1000 * var(--u)); display: grid; grid-template-columns: repeat(3, 1fr); column-gap: calc(40 * var(--u)); row-gap: calc(44 * var(--u)); }
 .services__list li { padding-top: calc(14 * var(--u)); border-top: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); }
 .services__list b { display: block; font-weight: 700; font-size: calc(14 * var(--u)); }
@@ -70,11 +71,11 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .services .crystal-img { --cx: 1195; --cy: 115; --cs: 110; }
 
 /* 04 My Story (jak „about” u Doriana): nagłówek z listą specjalizacji, pod nim kolumna akapitów.
-   Tu elementy idą w normalnym przepływie, więc tekst zawsze zaczyna się pod ostatnią linią nagłówka. */
+   Elementy w normalnym przepływie: tekst zawsze zaczyna się pod ostatnią linią nagłówka. */
 .story .frame { display: flex; flex-direction: column; align-items: center; padding-top: calc(90 * var(--u)); }
 .story .frame > :not(.crystal-img) { position: relative; }
-.story__title { --gh: 62; width: calc(900 * var(--u)); }
-.story__title .g { display: flex; flex-wrap: wrap; justify-content: center; column-gap: calc(var(--gh) * var(--u) * .245); white-space: normal; text-align: center; }
+.story__title { --gh: 46; width: calc(900 * var(--u)); } /* Dirtyline: 5 linii w EN i PL */
+.story__title .g { display: flex; flex-wrap: wrap; justify-content: center; column-gap: calc(var(--gh) * var(--u) * .335); white-space: normal; text-align: center; }
 .story__title .g svg { margin-bottom: calc(var(--gh) * var(--u) * -.1); } /* wiersz ciasno, prawie na wysokość liter */
 .story__text { margin-top: calc(40 * var(--u)); width: calc(560 * var(--u)); text-align: center; font-weight: 500; font-size: calc(11 * var(--u)); }
 .frame .story__text p { line-height: 1.45; }
@@ -84,43 +85,86 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .story .crystal-img { --cx: 1135; --cy: 555; --cs: 130; }
 
 /* 05 Socials */
-.socials__title { --gh: 50; top: calc(396 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
+.socials__title { --gh: 36; top: calc(410 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; }
 .socials__links { top: calc(474 * var(--u)); left: 0; right: 0; display: flex; justify-content: center; gap: calc(28 * var(--u)); font-weight: 700; font-size: calc(14 * var(--u)); }
 .socials__links a { text-decoration: underline 1px; text-underline-offset: .25em; }
 .socials .crystal-img { --cx: 675; --cy: 280; --cs: 90; }
 
-/* ===== Telefon (projekt 390 x 844, tekst w stałych px) ===== */
-@media (max-width: 767px) {
+/* ===== Telefon i wąskie okno < 900 px (projekt 390 x 844, tekst w stałych px) =====
+   Sekcja to kolumna flex w normalnym przepływie: treść wyśrodkowana w pionie i poziomie,
+   górny i dolny margines zostawia miejsce na przełącznik języka. Kryształ-obrazek zostaje absolutny (względem sekcji). */
+@media (max-width: 899px) {
   /* kryształ leży pod tekstem: ciemna otoczka trzyma kontrast AA */
   .frame p, .frame li, .frame h1, .frame h2 { text-shadow: 0 0 6px var(--bg), 0 0 14px var(--bg); }
   .frame .g svg { filter: drop-shadow(0 0 8px var(--bg)); }
-  .hero__title { --gh: 54; top: calc(300 * var(--u)); gap: calc(6 * var(--u)); }
-  .hero__sub { top: calc(430 * var(--u)); width: calc(330 * var(--u)); margin: 0 auto; font-size: 12px; }
-  .hero__sub br { display: none; }
-  .hero .crystal-img { --cx: 235; --cy: 255; --cs: 200; }
 
-  .works__title { --gh: 44; top: calc(90 * var(--u)); left: calc(40 * var(--u)); gap: calc(6 * var(--u)); }
-  .works__list { top: calc(230 * var(--u)); left: 0; right: 0; text-align: center; font-size: 16px; line-height: calc(28 * var(--u)); }
+  .sec { display: flex; flex-direction: column; justify-content: center; height: auto; min-height: 100vh; min-height: 100svh; padding-block: 72px; }
+  .frame { position: static; height: auto; transform: none; display: flex; flex-direction: column; align-items: center; }
+  .frame > :not(.crystal-img) { position: relative; inset: auto; }
+
+  /* Hero: SKONIECZNY (5,6 x wysokość) mieści się z marginesem ok. 6% po bokach od 320 do 900 px */
+  .hero { --hh: clamp(44px, 15.5vw, 140px); }
+  .hero__title { gap: calc(var(--hh) * .074); }
+  .hero__title .g { font-size: calc(var(--hh) * 1.36); }
+  .hero__title .g svg { height: calc(var(--hh) * .674); }
+  .hero__sub { margin-top: calc(var(--hh) * .6); width: min(calc(330 * var(--u)), 88vw); font-size: 12px; }
+  .hero__sub br { display: none; }
+  .hero .crystal-img { --cx: 255; --cy: 275; --cs: 160; } /* 80%, ten sam środek */
+
+  /* Prace, Oferta, O mnie: jedna lewa linia z przełącznikiem EN / PL (24 px), tekst od lewej, w pionie dalej środek */
+  :is(.works, .services, .story) .frame { align-items: flex-start; padding-inline: 24px; }
+  .works__title { --gh: 32; gap: calc(4 * var(--u)); }
+  .works__list { margin-top: calc(46 * var(--u)); text-align: left; font-size: 16px; line-height: calc(28 * var(--u)); }
   .works .crystal-img { --cx: 225; --cy: 150; --cs: 420; }
 
-  .services__title { --gh: 44; top: calc(110 * var(--u)); }
-  .services__list { top: calc(190 * var(--u)); width: calc(330 * var(--u)); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
+  .services__title { --gh: 30; }
+  .services__list { margin: calc(36 * var(--u)) 0 0; width: min(calc(330 * var(--u)), 100%); grid-template-columns: 1fr; row-gap: 18px; text-align: left; }
   .services__list li { padding-top: 10px; }
   .services__list b { font-size: 14px; }
   .services__list span { font-size: 12px; margin-top: 4px; }
   .services .crystal-img { --cx: 260; --cy: 0; --cs: 240; }
 
-  /* 7 akapitów przy 13px nie mieści się na 844: tekst 12px (minimum), ciaśniejsze odstępy */
-  .story .frame { align-items: flex-start; padding: calc(60 * var(--u)) calc(20 * var(--u)) 0; }
-  .story__title { --gh: 28; width: calc(300 * var(--u)); } /* węższy, żeby wyszło 6–7 linii */
+  /* O mnie: całość ma się zmieścić w 100svh (390 x 844 z paskami przeglądarki), tekst 12px (minimum), ciasne odstępy */
+  .story { padding-block: 50px 12px; }
+  .story .frame { padding-top: 0; }
+  .story__title { --gh: 21; width: 100%; } /* 6 linii w EN i PL */
   .story__title .g { justify-content: flex-start; text-align: left; }
-  .story__text { margin-top: calc(20 * var(--u)); width: 100%; text-align: left; font-size: 12px; }
-  .story__text p + p { margin-top: 8px; }
-  .story .crystal-img { --cx: 325; --cy: -25; --cs: 110; }
+  .story__text { margin: 12px 0 0; width: 100%; text-align: left; font-size: 12px; }
+  .story__text p + p { margin-top: 6px; }
+  .story .crystal-img { --cx: 325; --cy: -20; --cs: 90; }
+}
+/* Niski ekran (Safari z paskami: 390 x 844 daje ok. 664 px svh): ciaśniej, bez skracania tekstu i bez schodzenia poniżej 12px */
+@media (max-width: 899px) and (max-height: 780px) {
+  .story { padding-block: 44px 8px; }
+  .story__title { --gh: 20; }
+  .story__text { margin-top: 8px; }
+  .frame .story__text p { line-height: 1.25; }
+  .story__text p + p { margin-top: 4px; }
 
-  .socials__title { --gh: 44; top: calc(400 * var(--u)); }
-  .socials__links { top: calc(460 * var(--u)); font-size: 16px; }
+  .socials__title { --gh: 32; }
+  .socials__links { margin-top: calc(16 * var(--u)); font-size: 16px; }
   .socials .crystal-img { --cx: 240; --cy: 180; --cs: 260; }
+}
+
+/* ===== Telefon, hero: fala rozmycia po dotknięciu napisu (js/hero-blur.js) =====
+   Rozmyty canvas leży nad ostrym SVG. Dwa pasma (środki --l i --r w px napisu, szerokość --b, siła --a)
+   odsłaniają canvas i w tym samym miejscu chowają SVG. --ox: lewa krawędź elementu w osiach napisu. */
+.hero__blur { position: absolute; pointer-events: none; visibility: hidden; }
+.hero__title.is-wave :is(svg, .hero__blur) {
+  --c1: calc(var(--l) - var(--ox, 0px)); --c2: calc(var(--r) - var(--ox, 0px));
+  -webkit-mask-image: var(--g1), var(--g2); mask-image: var(--g1), var(--g2);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.hero__title.is-wave .hero__blur {
+  visibility: visible; --m: rgb(0 0 0 / var(--a));
+  --g1: linear-gradient(90deg, transparent calc(var(--c1) - var(--b) * .6), var(--m) calc(var(--c1) - var(--b) * .2), var(--m) calc(var(--c1) + var(--b) * .2), transparent calc(var(--c1) + var(--b) * .6));
+  --g2: linear-gradient(90deg, transparent calc(var(--c2) - var(--b) * .6), var(--m) calc(var(--c2) - var(--b) * .2), var(--m) calc(var(--c2) + var(--b) * .2), transparent calc(var(--c2) + var(--b) * .6));
+}
+.hero__title.is-wave svg {
+  --m: rgb(0 0 0 / calc(1 - var(--a)));
+  --g1: linear-gradient(90deg, #000 calc(var(--c1) - var(--b) * .6), var(--m) calc(var(--c1) - var(--b) * .2), var(--m) calc(var(--c1) + var(--b) * .2), #000 calc(var(--c1) + var(--b) * .6));
+  --g2: linear-gradient(90deg, #000 calc(var(--c2) - var(--b) * .6), var(--m) calc(var(--c2) - var(--b) * .2), var(--m) calc(var(--c2) + var(--b) * .2), #000 calc(var(--c2) + var(--b) * .6));
+  -webkit-mask-composite: source-in; mask-composite: intersect; /* SVG widać tylko poza oboma pasmami */
 }
 
 /* ===== Przełącznik języka (js/i18n.js): lewy górny róg, minimalnie ===== */
@@ -130,12 +174,13 @@ a:focus-visible { background-size: 100% 2px; text-decoration-color: transparent;
 .lang button[aria-pressed="true"] { opacity: 1; }
 .lang button:hover, .lang button:focus-visible { opacity: 1; }
 .lang button:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
-@media (max-width: 767px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
+@media (max-width: 899px) { .lang { top: 28px; left: 24px; font-size: 12px; } }
 
 /* ===== Scena WebGL (js/scene.js) ===== */
-canvas.stage { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; }
+canvas.stage { position: fixed; top: 0; left: 0; z-index: -1; pointer-events: none; }
 html.gl .glow { display: none; }
-html.gl .hero__title svg { opacity: 0; } /* napis żyje w powierzchni sceny; SVG zostaje dla czytnika */
+/* desktop: napisy żyją w powierzchni sceny, SVG zostaje dla czytnika. Dotyk: zwykłe SVG w DOM. */
+html.gl-titles :is(.hero__title, .works__title, .services__title, .story__title, .socials__title) svg { opacity: 0; }
 
 /* ===== Ruch: jedna sekcja na ekran (js/main.js) ===== */
 html.motion .home main { height: 700vh; } /* 5 sekcji: 4 przejścia po 1 ekranie + 5 postojów po 0,4 + 1 ekran */
@@ -143,32 +188,66 @@ html.motion .sec { position: fixed; inset: 0; height: auto; will-change: opacity
 html.motion .sec + .sec { opacity: 0; }
 html.crystal .crystal-img { display: none; }
 
-/* ===== Strony projektów (work/*.html, js/work.js) ===== */
-/* Lewa kolumna ok. 35% przypięta, prawa ok. 65%: zwarta siatka obrazów na jednolitym tle */
+/* ===== Strony projektów (work/*.html, js/work.js, js/work-track.js) ===== */
+/* Układ podstawowy (telefon, tablet, reduced motion, bez JS): tekst nad panelami, panele jeden pod drugim. */
 body.work .glow { display: none; }
-.project { display: grid; grid-template-columns: 35fr 65fr; align-items: start; column-gap: calc(48 * var(--u)); padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
-.panel { position: sticky; top: calc(232 * var(--u)); max-width: calc(360 * var(--u)); }
-.panel__title { --gh: 46; display: flex; flex-direction: column; gap: calc(8 * var(--u)); }
+.project { padding: calc(110 * var(--u)) calc(63 * var(--u)) calc(80 * var(--u)); }
+.panel { max-width: calc(360 * var(--u)); }
+.panel__title { --gh: 32; display: flex; flex-direction: column; gap: calc(6 * var(--u)); }
 .panel__desc { margin-top: calc(34 * var(--u)); font-weight: 500; font-size: calc(12 * var(--u)); }
 .panel__meta { margin: calc(28 * var(--u)) 0 0; font-size: calc(12 * var(--u)); }
 .panel__meta div { display: flex; }
 .panel__meta dt { flex: none; width: calc(70 * var(--u)); font-weight: 700; }
 .panel__meta dd { margin: 0; font-weight: 500; }
-/* Poziome i kwadratowe na całą szerokość, pionowe po dwa obok siebie (dense dobiera parę) */
-.strip { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; grid-auto-flow: dense; gap: 20px; }
-.card { grid-column: 1 / -1; }
-.card--p { grid-column: auto; }
+.strip { margin-top: calc(48 * var(--u)); display: grid; gap: 16px; }
+.card--s { display: grid; gap: 16px; } /* para: dwa osobne panele */
+.card:not(.card--s), .card--s > div { overflow: hidden; border-radius: 18px; background: var(--card-bg); }
 .card picture { display: contents; }
-.card img, .card video { display: block; width: 100%; height: auto; }
-.close { --gh: 22; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
+.card img, .card video { width: 100%; height: auto; }
+/* Plakat wideo jako leniwy <img> pod <video> bez atrybutu poster (plakaty nie ładują się przy starcie strony) */
+.card:has(> img + video) { position: relative; }
+.card > img + video { position: absolute; inset: 0; height: 100%; object-fit: cover; }
+.close { --gh: 16; position: fixed; z-index: 2; top: calc(40 * var(--u)); right: calc(63 * var(--u)); padding: 4px 0; }
 
 @media (max-width: 899px) {
-  .project { grid-template-columns: 1fr; row-gap: 32px; padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
-  .panel { position: static; max-width: none; }
-  .panel__title { --gh: 48; gap: calc(8 * var(--u)); }
+  .project { padding: calc(96 * var(--u)) calc(30 * var(--u)) 40px; }
+  .panel { max-width: none; }
+  .panel__title { --gh: 33; }
   .panel__desc { margin-top: 24px; font-size: 15px; }
   .panel__meta { margin-top: 24px; font-size: 14px; }
   .panel__meta dt { width: 76px; }
-  .strip { gap: 16px; }
-  .close { --gh: 16; top: 28px; right: 24px; }
+  .strip { margin-top: 32px; }
+  .close { --gh: 11.5; top: 28px; right: 24px; }
 }
+
+/* Tor poziomy (desktop, klasa .track z <head>): przypięta sekcja, scroll przesuwa panele w lewo.
+   Wysokość .project = długość toru + ekran, ustawia js/work-track.js. Panele: wysokość 81vh, góra 9,5vh. */
+html.track .project { height: 100vh; padding: 0; overflow-x: clip; }
+html.track .panel { position: fixed; z-index: 1; top: calc(232 * var(--u)); left: calc(63 * var(--u)); width: calc(260 * var(--u)); }
+/* Węższa kolumna (ok. 26% okna): tytuł i meta mniejsze, opis zawija się w więcej linii */
+html.track .panel__title { --gh: 23; gap: calc(4 * var(--u)); }
+html.track .panel__desc { margin-top: calc(26 * var(--u)); }
+html.track .panel__meta { margin-top: calc(20 * var(--u)); font-size: calc(10 * var(--u)); }
+html.track .panel__meta dt { width: calc(58 * var(--u)); }
+html.track .panel::before { content: ""; position: fixed; z-index: -1; inset: 0 auto 0 0; width: calc(374 * var(--u)); background: linear-gradient(90deg, var(--bg) calc(100% - 30 * var(--u)), transparent); } /* panele chowają się pod kolumną */
+html.track .strip { --ph: 81vh; --gap: calc(30 * var(--u)); position: sticky; top: 0; width: max-content; height: 100vh; margin: 0; display: flex; align-items: flex-start; gap: var(--gap); padding: 9.5vh calc(63 * var(--u)) 0 calc(374 * var(--u)); will-change: transform; }
+html.track .card { flex: none; height: var(--ph); aspect-ratio: 16 / 9; transition: opacity .6s, transform .6s cubic-bezier(.2, .7, .2, 1); }
+html.track .card--p { aspect-ratio: 1350 / 2080; }
+html.track .card--n { aspect-ratio: 1 / 2; }
+html.track .card--sq { aspect-ratio: 1; }
+html.track .card--s { aspect-ratio: auto; width: calc((var(--ph) - var(--gap)) / 2 * 1280 / 1010); display: flex; flex-direction: column; gap: var(--gap); }
+html.track .card--s > div { flex: 1; }
+html.track .card:not(.card--s), html.track .card--s > div { border-radius: calc(30 * var(--u)); }
+html.track .card.pre { opacity: 0; transform: translate3d(calc(120 * var(--u)), 0, 0); } /* przed pierwszym wejściem */
+/* Parallax: obraz 12% szerszy od panelu, przesuwany o maks. ±6% szerokości panelu */
+html.track .card img, html.track .card video { width: 112%; max-width: none; height: 100%; margin-left: -6%; object-fit: cover; }
+/* Plansze z tekstem i pary (card--static): bez parallaxu, w całości, bez powiększenia i przycinania */
+html.track .card--static img { width: 100%; margin-left: 0; object-fit: contain; }
+
+/* ===== Przejście między stronami (js/loader.js): zaciemnienie 0,3 s przed wyjściem. Loader: CSS inline w <head> ===== */
+html.leaving body::after { content: ""; position: fixed; inset: 0; z-index: 1001; background: var(--bg); animation: leave .3s ease-in both; }
+@keyframes leave { from { opacity: 0; } }
+
+/* ===== Napisy z glifów: tekst zastępczy niewidoczny pod loaderem (bez przeskoku układu, CLS) =====
+   Tylko z JS i tylko dopóki jest loader; bez glifów loader znika sam i wraca zwykły tekst. */
+html.js:not(.glyphs) .loader ~ * .g { visibility: hidden; }

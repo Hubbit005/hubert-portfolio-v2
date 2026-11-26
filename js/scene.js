@@ -77,11 +77,17 @@ const TEXT_FRAG = /* glsl */`
     vec2 px = vUv * uRes;
     // siła rozmycia z mapy na CPU: narasta powoli i wraca ok. 4 s po zejściu kursora
     float a = texture2D(uBlurMap, vUv).r * uHover;
+    float t0 = tx(px);
+    if (a == 0.) { // spoczynek: sama tekstura 1:1, ostra jak zwykły tekst
+      if (t0 * uAlpha < .02) discard;
+      gl_FragColor = vec4(uInk, t0 * uAlpha);
+      #include <colorspace_fragment>
+      return;
+    }
     a = a * a * (3. - 2. * a);
     vec2 dir = normalize(vec2(1., .16));
     vec2 o = dir * 18. * a;
     float r = 9. * a;
-    float t0 = tx(px);
     float tr = blur(px + o, dir, r), ta = blur(px, dir, r), tb = blur(px - o, dir, r);
     // beż w środku, czerwona podszewka z przodu, chłodny błękit z tyłu (premultiplied)
     vec3 pm = uInk * ta + uRed * max(tr - ta, 0.) * 1.1 + uBlue * max(tb - ta, 0.) * .7;
@@ -105,7 +111,9 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     throw new Error('programowy WebGL');
   }
   document.body.prepend(canvas);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, touch ? 1 : 1.5));
+  // Desktop: limit 2 (napisy w scenie ostre). Dotyk: limit 1,25, tytuły są w DOM, w scenie tylko tło i kryształ.
+  let PR = Math.min(devicePixelRatio, touch ? 1.25 : 2);
+  renderer.setPixelRatio(PR);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 10, 6000);
@@ -145,17 +153,18 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     blending: THREE.CustomBlending, // zostaje w kolejce nieprzezroczystej, więc widać go też przez szkło
     uniforms: {
       ...shared, uText: { value: textTex }, uMouse: { value: new THREE.Vector2(-999, -999) },
-      uAlpha: { value: 1 }, uShift: { value: 0 }, uHover: { value: touch ? 0 : 1 },
+      uAlpha: { value: 1 }, uShift: { value: 0 }, uHover: { value: 1 },
       uInk: { value: col('--ink') }, uBlurMap: { value: blurTex },
     },
   }));
   text.renderOrder = 1;
-  text.visible = textEls.length > 0;
   scene.add(text);
 
-  let W = 0, H = 0, textTop0 = 0;
-  async function drawText() {
-    const r = Math.min(devicePixelRatio, 1.5); // jak renderer; większa tekstura przekracza limit części kart
+  // drawn: napisy, które są teraz w teksturze. Napis widać tylko, gdy to napisy bieżącej sekcji
+  // (nigdy stary napis na innej sekcji).
+  let W = 0, H = 0, textTop0 = 0, drawn = null;
+  function drawText() {
+    const max = renderer.capabilities.maxTextureSize, r = Math.min(PR, max / W, max / H); // jak bufor sceny, w limicie karty
     textCanvas.width = W * r; textCanvas.height = H * r;
     const ctx = textCanvas.getContext('2d');
     ctx.fillStyle = '#fff';
@@ -171,11 +180,25 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     }
     textTex.flipY = false;
     textTex.needsUpdate = true;
+    drawn = textEls;
   }
 
+  // Dotyk: canvas na wysokość dużego viewportu (100lvh, bufor też), więc chowanie paska adresu nic nie odsłania.
+  // Canvas zaczyna się u góry ekranu, więc y w px od góry jest ten sam przy każdej wysokości okna.
+  const probe = touch ? document.createElement('div') : null;
+  if (probe) { probe.style.cssText = 'position:fixed;top:0;width:0;height:100lvh;visibility:hidden;pointer-events:none'; probe.setAttribute('aria-hidden', 'true'); document.body.append(probe); }
   function resize() {
-    W = innerWidth; H = innerHeight;
-    renderer.setSize(W, H, false);
+    const lvh = probe?.offsetHeight ?? 0, w = innerWidth, h = Math.max(innerHeight, lvh);
+    // sama wysokość (pasek adresu, < 150 px) albo mniejsze okno tej samej szerokości: bez resize i przerysowania.
+    // Bez obsługi lvh bufor rośnie raz do największej wysokości okna.
+    if (touch && W && w === W && (h <= H || (lvh && h - H < 150))) return;
+    W = w; H = h;
+    if (touch) {
+      renderer.setSize(W, H, false);
+      canvas.style.width = '100%';
+      canvas.style.height = H + 'px';
+      canvas.style.height = '100lvh'; // bez obsługi lvh zostają px
+    } else renderer.setSize(W, H); // także styl canvasu: 100vh na telefonie jest wyższe niż innerHeight i rozciągało napis w dół
     camera.aspect = W / H;
     camera.position.z = H / 2 / Math.tan(THREE.MathUtils.degToRad(15));
     camera.far = camera.position.z - BG_Z + 100;
@@ -184,30 +207,71 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     const k = (camera.position.z - BG_Z) / camera.position.z * 1.15; // zapas, żeby wgniecenie przy krawędzi nie odsłaniało brzegu
     bg.scale.set(W * k, H * k, 1);
     shared.uRes.value.set(W, H);
-    if (text.visible) drawText();
+    if (textEls.length) drawText();
   }
   resize();
   addEventListener('resize', resize);
 
   // Wskaźnik: px od lewego dolnego rogu (jak gl_FragCoord).
   const fp = { x: -999, y: -999, vx: 0, vy: 0 };
+  let fpsT0 = -1, fpsSum = 0, fpsN = 0;
   const ptr = { x: -999, y: -999, active: false }, light = new THREE.Vector2(-999, -999);
   const at = (e, on) => { ptr.x = e.clientX; ptr.y = H - e.clientY; ptr.active = on; };
-  if (touch) { // palec wgniata tylko w ruchu (także podczas przewijania)
-    addEventListener('touchmove', (e) => at(e.touches[0], true), { passive: true });
-    addEventListener('touchend', () => { ptr.active = false; }, { passive: true });
+  if (touch) { // palec działa jak kursor: wgniata budyń (także podczas przewijania); passive, bez preventDefault
+    const tp = (e) => { if (e.pointerType === 'touch') at(e, true); };
+    addEventListener('pointerdown', tp, { passive: true });
+    addEventListener('pointermove', tp, { passive: true });
+    addEventListener('touchmove', (e) => at(e.touches[0], true), { passive: true }); // zapas: po starcie przewijania przeglądarka przerywa zdarzenia pointer
+    for (const ev of ['touchend', 'touchcancel']) addEventListener(ev, (e) => { if (!e.touches.length) ptr.active = false; }, { passive: true });
   } else {
     addEventListener('pointermove', (e) => at(e, true), { passive: true });
     document.documentElement.addEventListener('pointerleave', () => { ptr.active = false; });
   }
+
+  // Kolor tła sceny na środku dolnej krawędzi: BG_FRAG policzony na CPU (płaski budyń: shade = .85).
+  let bgT = -1, bgS = '';
+  const out = new THREE.Color(), mixC = new THREE.Color();
+  const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const crystalLight = (dx, dy, sig, k0) => {
+    const t = shared.uTime.value * Math.PI * 2 / 12, cx = Math.cos(t), cy = Math.sin(t), u = shared;
+    const k = sstep(-sig, sig, dx * cx + dy * cy) * (1 - .45 * u.uWarm.value);
+    mixC.copy(u.uViolet.value).lerp(u.uBlue.value, k);
+    mixC.lerp(u.uRed.value, sstep(.15 * sig, 1.3 * sig, -(dx * cx + dy * cy)) * .45);
+    mixC.lerp(u.uRed.value, sstep(.1 * sig, -1.3 * sig, dy) * (.35 + .65 * u.uWarm.value) * .4);
+    return mixC.multiplyScalar(k0);
+  };
+  const bottomColor = () => {
+    const u = bg.material.uniforms, span = Math.hypot(W, H), px = W / 2;
+    const sig = .42 * span, dx = px - u.uLight.value.x, dy = -u.uLight.value.y;
+    out.copy(u.uBg.value).add(crystalLight(dx, dy, .25 * span, Math.exp(-(dx * dx + dy * dy) / (2 * sig * sig)) * .05 * .85));
+    const s2 = .5 * span, ex = px - u.uGlow.value.x, ey = -u.uGlow.value.y;
+    return out.add(crystalLight(ex, ey, .3 * span, Math.exp(-(ex * ex + ey * ey) / (2 * s2 * s2)) * .028 * u.uGlowA.value));
+  };
 
   const api = {
     THREE, scene, camera, renderer, shared,
     textUniforms: text.material.uniforms, bgUniforms: bg.material.uniforms,
     lightAt: null,          // touch: punkt światła (px, y w górę), ustawia main.js
     size: () => ({ W, H }),
-    update(dt, time) {
+    // Napis w powierzchni sceny: main.js podmienia go na napis widocznej sekcji (sekcje nigdy nie są widoczne naraz).
+    setText(els) { textEls = els; drawn = null; if (els.length) drawText(); },
+    // measure = false: celowo rzadsze klatki (spoczynek na dotyku, 30 kl./s), bez pomiaru płynności
+    update(dt, time, measure = true) {
       shared.uTime.value = time;
+      // zabezpieczenie: średnia klatka > 25 ms przez 1 s = gęstość pikseli niżej o 0,25 (minimum 1)
+      if (!measure) { if (fpsT0 >= 0) fpsT0 = time; fpsSum = fpsN = 0; }
+      else if (fpsT0 < 0) fpsT0 = time + 2; // pierwsze 2 s (start, kompilacja shaderów) bez pomiaru
+      else if (time >= fpsT0) {
+        fpsSum += dt; fpsN++;
+        if (time - fpsT0 >= 1) {
+          if (fpsSum / fpsN > .025 && PR > 1) {
+            PR = Math.max(1, PR - .25);
+            renderer.setPixelRatio(PR);
+            if (textEls.length) drawText();
+          }
+          fpsT0 = time; fpsSum = fpsN = 0;
+        }
+      }
       // „palec” z bezwładnością: goni kursor sprężyną, po zatrzymaniu jeszcze przejeżdża i wraca
       if (ptr.active) {
         if (fp.x === -999) { fp.x = ptr.x; fp.y = ptr.y; }
@@ -231,23 +295,25 @@ export function createScene({ textEls = [], crystal = true } = {}) {
         }
         for (let i = 0; i < hgt.length; i++) hgt[i] += vel[i] * h;
       }
-      for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, 128 + hgt[i] * 100));
+      for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, Math.round(128 + hgt[i] * 100))); // round: w spoczynku dokładnie 128
       disp.needsUpdate = true;
-      // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s
-      const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
-      for (let j = 0, i = 0; j < GY; j++) {
-        const cy = (j + .5) / GY * H;
-        for (let k = 0; k < GX; k++, i++) {
-          let target = 0;
-          if (ptr.active && !touch) {
-            const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
-            if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
+      // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s (dotyk: bez napisu w scenie)
+      if (!touch) {
+        const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
+        for (let j = 0, i = 0; j < GY; j++) {
+          const cy = (j + .5) / GY * H;
+          for (let k = 0; k < GX; k++, i++) {
+            let target = 0;
+            if (ptr.active) {
+              const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
+              if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
+            }
+            blurF[i] += (target - blurF[i]) * (target > blurF[i] ? up : down);
+            blurData[i] = blurF[i] * 255;
           }
-          blurF[i] += (target - blurF[i]) * (target > blurF[i] ? up : down);
-          blurData[i] = blurF[i] * 255;
         }
+        blurTex.needsUpdate = true;
       }
-      blurTex.needsUpdate = true;
       // światło za kursorem z opóźnieniem ok. 0,15 s; na dotyku stoi w miejscu kryształu
       const target = touch ? api.lightAt : ptr.x > -999 ? ptr : null;
       if (target) {
@@ -257,12 +323,19 @@ export function createScene({ textEls = [], crystal = true } = {}) {
       bg.material.uniforms.uLight.value.copy(light);
       shared.uWarm.value += ((W ? light.x / W : .5) - shared.uWarm.value) * Math.min(1, dt * 2);
       text.material.uniforms.uMouse.value.set(ptr.x, ptr.y);
+      api.beforeRender?.(dt, time); // tu main.js może podmienić napis (setText)
+      text.visible = textEls.length > 0 && drawn === textEls;
       if (text.visible) {
-        const top = textEls[0].getBoundingClientRect().top;
-        text.material.uniforms.uShift.value = textTop0 - top;
+        // przesunięcie zaokrąglone do pikseli ekranu: tekstura trafia w piksele 1:1, napis ostry
+        const shift = textTop0 - textEls[0].getBoundingClientRect().top;
+        text.material.uniforms.uShift.value = Math.round(shift * PR) / PR;
       }
-      api.beforeRender?.(dt, time);
       renderer.render(scene, camera);
+      if (touch && time - bgT > .25) { // tło strony w kolorze dołu sceny: żadna szczelina nie jest czarna
+        bgT = time;
+        const c = bottomColor().getStyle();
+        if (c !== bgS) document.documentElement.style.backgroundColor = bgS = c;
+      }
     },
   };
   return api;

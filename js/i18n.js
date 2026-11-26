@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphNodes } from './glyphs.js?v=20261126';
+import { loadGlyphs, glyphNodes } from './glyphs.js?v=20261211';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const IG = '<a href="https://www.instagram.com/jzf_designe/" target="_blank" rel="noopener">';
@@ -57,6 +57,50 @@ const PL = {
   '// Livingroom restaurant, Gorzów Wielkopolski': '// Restauracja Livingroom, Gorzów Wielkopolski',
   '// Design and build': '// Projekt i wdrożenie', '// Design, code, video, social media': '// Projekt, kod, wideo, social media',
   '// Idea, design, build': '// Pomysł, projekt, wdrożenie', '// Strategy, marketing, video, 3D, AI agent': '// Strategia, marketing, wideo, 3D, agent AI',
+  // opisy obrazów i wideo na stronie Casanovy (alt / aria-label)
+  'Casanova Nº1 Barber perfume bottle on the product page': 'Flakon perfum Casanova Nº1 Barber na stronie produktu',
+  'Casanova homepage hero scrolling into the salon picker': 'Hero strony głównej Casanovy przewijane do wyboru salonu',
+  'Typography: Bodoni Moda and Inter': 'Typografia: Bodoni Moda i Inter',
+  'Casanova perfume collection, three bottles on marble plinths': 'Kolekcja perfum Casanova, trzy flakony na marmurowych postumentach',
+  'Fragrance notes for Nº1 Barber': 'Nuty zapachowe Nº1 Barber',
+  'Gift voucher: haircut plus Nº1': 'Bon podarunkowy: strzyżenie i Nº1',
+  'About page: Barbershop headline, salons and the barbers section': 'Strona O nas: nagłówek Barbershop, salony i sekcja barberów',
+  'Casanova Nº2 Noir bottle above its plinth': 'Flakon Casanova Nº2 Noir nad postumentem',
+  'Reviews page: layout draft with content placeholders next to the final version': 'Podstrona opinii: szkic układu z miejscami na treść obok wersji finalnej',
+  'Barber illustrations used on the services page': 'Ilustracje barberów ze strony usług',
+  'Salon picker with ratings and opening hours': 'Wybór salonu z ocenami i godzinami otwarcia',
+  'Services page with illustrations appearing on hover': 'Strona usług z ilustracjami, które pojawiają się po najechaniu',
+  'Casanova colour palette and wordmark': 'Paleta kolorów i logotyp Casanovy',
+  'Hairstyle finder in three steps': 'Dobór fryzury w trzech krokach',
+  // opisy obrazów i wideo na stronie Basko Clean
+  'Basko Clean homepage hero with the free quote form': 'Hero strony głównej Basko Clean z formularzem darmowej wyceny',
+  'Basko Clean promo reel': 'Rolka promocyjna Basko Clean',
+  'Services carousel': 'Karuzela usług',
+  'Basko Clean mascot logo': 'Logo Basko Clean z maskotką',
+  'Instagram highlight icons': 'Ikony wyróżnionych relacji na Instagramie',
+  'Before and after slider on the website': 'Suwak przed i po na stronie',
+  'Instagram post: roof drain before and after': 'Post na Instagramie: odpływ dachowy przed i po',
+  'Instagram highlight stories: services, before/after, quote steps': 'Wyróżnione relacje na Instagramie: usługi, przed/po, kroki wyceny',
+  'Animated story: what the client gets': 'Animowana relacja: co dostaje klient',
+  'Clients section with the foam mountain': 'Sekcja klientów z górą piany',
+  'How we work, step by step': 'Jak pracujemy, krok po kroku',
+  'Benefits and key numbers': 'Korzyści i najważniejsze liczby',
+  'Mobile version, three screens': 'Wersja mobilna, trzy ekrany',
+  'Story: quote in 24 hours': 'Relacja: kosztorys w 24 godziny',  // opisy obrazów i wideo na stronie KSK Pretor
+  'KSK Pretor promo film for the German market': 'Film promocyjny KSK Pretor na rynek niemiecki',
+  'Reel: how to get a firearms licence in five steps': 'Rolka: jak zdobyć pozwolenie na broń w pięciu krokach',
+  'Shooting packages, German and Polish versions': 'Pakiety strzeleckie, wersja niemiecka i polska',
+  'KSK Pretor logo': 'Logo KSK Pretor',
+  'MG42 history carousel': 'Karuzela o historii MG42',
+  'Instructor with a participant on the range': 'Instruktor z uczestnikiem na strzelnicy',
+  'Instagram post: first time at a shooting range': 'Post na Instagramie: pierwszy raz na strzelnicy',
+  'Four Instagram stories': 'Cztery relacje na Instagramie',
+  'Vertical logo outro for reels': 'Pionowe zakończenie z logo do rolek',
+  'German market entry plan, selected pages': 'Plan wejścia na rynek niemiecki, wybrane strony',
+  'Event hall': 'Sala eventowa',
+  'Pistol wall': 'Ściana z pistoletami',
+  'Group briefing before shooting': 'Odprawa grupy przed strzelaniem',
+  'Story: new week, pick your weapon': 'Relacja: nowy tydzień, wybierz broń',
 };
 
 const SEL = '.hero__sub, .works__list span, .services__list b, .services__list span, .story__text p, .panel__desc, .panel__meta dt, .panel__meta dd, [data-glyph]';
@@ -75,6 +119,12 @@ function apply(base) {
       else el.textContent = t;
     } else el.innerHTML = t;
   }
+  // opisy obrazów i wideo w panelach: ten sam słownik, tekst angielski zapamiętany w data-en
+  for (const el of document.querySelectorAll('.card img, .card video[aria-label]')) {
+    const a = el.tagName === 'IMG' ? 'alt' : 'aria-label';
+    el.dataset.en ??= el.getAttribute(a);
+    el.setAttribute(a, lang === 'pl' ? PL[el.dataset.en] ?? el.dataset.en : el.dataset.en);
+  }
   for (const el of document.querySelectorAll('[data-i18n-label]')) {
     el.dataset.enLabel ??= el.getAttribute('aria-label');
     el.setAttribute('aria-label', lang === 'pl' ? PL[el.dataset.enLabel] ?? el.dataset.enLabel : el.dataset.enLabel);
@@ -84,9 +134,8 @@ function apply(base) {
 
 // Wywołać przed renderGlyphs: ustawia teksty i dokłada przełącznik.
 export function initLang(base = '') {
-  const nav = document.createElement('div');
+  const nav = document.createElement('nav'); // punkt orientacyjny: przełącznik nie wisi poza regionami (axe: region)
   nav.className = 'lang';
-  nav.setAttribute('role', 'group');
   nav.setAttribute('aria-label', 'Language');
   nav.innerHTML = '<button type="button" data-l="en">EN</button><span aria-hidden="true">/</span><button type="button" data-l="pl">PL</button>';
   nav.addEventListener('click', (e) => {

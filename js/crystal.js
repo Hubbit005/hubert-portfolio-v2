@@ -50,16 +50,22 @@ export async function addCrystal(gl, base = '') {
   mesh.add(edges);
   const group = new THREE.Group();
   group.add(mesh);
+  // Sygnał dla loadera: scena wyrenderowała kryształ pierwszy raz.
+  const ready = new Promise((r) => { mesh.onAfterRender = () => { mesh.onAfterRender = () => {}; r(); }; });
   scene.add(group);
 
   // Zdjęcie projektu za kryształem: rysowane tylko w przebiegu transmisji, więc widać je wyłącznie przez szkło.
-  const img = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({
-    blending: THREE.CustomBlending, depthWrite: false, opacity: 0,
-  }));
-  img.renderOrder = .5;
-  img.visible = false;
-  img.onBeforeRender = (r) => { img.material.colorWrite = r.getRenderTarget() !== null; };
-  scene.add(img);
+  // Dwie płaszczyzny: przy zmianie pracy stare zdjęcie gaśnie, a nowe narasta (bez przeskoku).
+  const plane = new THREE.PlaneGeometry(1, 1);
+  const imgs = [0, 1].map(() => {
+    const m = new THREE.Mesh(plane, new THREE.MeshBasicMaterial({ blending: THREE.CustomBlending, depthWrite: false, opacity: 0 }));
+    m.renderOrder = .5;
+    m.visible = false;
+    m.onBeforeRender = (r) => { m.material.colorWrite = r.getRenderTarget() !== null; };
+    scene.add(m);
+    return m;
+  });
+  let cur = 0;
   const tex = new Map(), loader = new THREE.TextureLoader();
   const texture = (url) => {
     if (!tex.has(url)) tex.set(url, loader.loadAsync(url).then((t) => { t.colorSpace = THREE.SRGBColorSpace; return t; }));
@@ -72,54 +78,68 @@ export async function addCrystal(gl, base = '') {
     return new THREE.Quaternion().setFromUnitVectors(n, new THREE.Vector3(0, 0, 1));
   });
 
-  const state = { angle: 0, mix: 0, face: 0, fade: 0, tiltX: 0, tiltY: 0, leaving: false, from: null };
+  const state = { angle: 0, mix: 0, face: 0, url: null, tiltX: 0, tiltY: 0, leaving: false, from: null };
   const spinQ = new THREE.Quaternion(), q = new THREE.Quaternion(), tiltQ = new THREE.Quaternion();
   const base0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(.18, 0, .08));
   const e = new THREE.Euler();
-  let tween, imgTween, size = 140;
+  let tween, size = 140, pose = { x: 0, y: 0, s: 0 };
+  const FADE = .6; // s: wejście i wyjście trybu projektu, także zmiana pracy
 
   return {
     group,
+    ready,
+    // Dla loadera: środek i wysokość kryształu na ekranie (px, z perspektywą kamery) oraz kąt obrotu.
+    screen: () => ({ ...pose, angle: state.angle }),
     // Pozycja w px ekranu (y w dół), rozmiar w px, z w px (dodatnie = bliżej widza).
     set(x, y, s, z = 0) {
       const { W, H } = gl.size();
       size = s;
       group.position.set(x - W / 2, H / 2 - y, z);
       group.scale.setScalar(s / (2 * EXT[1]));
-      img.position.set(group.position.x, group.position.y, z - s * 1.2);
-      img.scale.set(s * 1.5 * (img.userData.aspect ?? 1), s * 1.5, 1);
+      const k = 1 / (1 - z * 2 * Math.tan(Math.PI / 12) / H); // kamera z fov 30° w odległości H/2/tan(15°) (js/scene.js)
+      pose = { x: W / 2 + (x - W / 2) * k, y: H / 2 + (y - H / 2) * k, s: s * k };
+      for (const m of imgs) {
+        m.position.set(group.position.x, group.position.y, z - s * 1.2);
+        m.scale.set(s * 1.5 * (m.userData.aspect ?? 1), s * 1.5, 1);
+      }
     },
     // Hover na projekcie: i = 0..3, albo -1 (powrót obrotu).
     async face(i, url) {
-      tween?.kill(); imgTween?.kill();
-      const fade = (v, d) => { imgTween = gsap.to(state, { fade: v, duration: d, onUpdate: () => { img.material.opacity = state.fade; } }); };
+      tween?.kill();
+      const fade = (m, v) => gsap.to(m.material, { opacity: v, duration: FADE, ease: 'power2.out', overwrite: true });
       if (i < 0) {
         state.leaving = true;
-        tween = gsap.to(state, { mix: 0, duration: .6, ease: 'power2.out' });
-        fade(0, .4);
+        tween = gsap.to(state, { mix: 0, duration: FADE, ease: 'power2.out' });
+        imgs.forEach((m) => fade(m, 0));
         return;
       }
       state.leaving = false;
       state.from = mesh.quaternion.clone();
       state.face = i;
-      tween = gsap.fromTo(state, { mix: 0 }, { mix: 1, duration: .6, ease: 'power2.out' });
+      state.url = url;
+      tween = gsap.fromTo(state, { mix: 0 }, { mix: 1, duration: FADE, ease: 'power2.out' });
       const t = await texture(url);
-      if (state.face !== i || state.leaving) return;
-      img.material.map = t; img.material.needsUpdate = true;
-      img.userData.aspect = t.image.width / t.image.height;
-      img.visible = true;
-      fade(1, .4);
+      if (state.url !== url || state.leaving) return;
+      if (imgs[cur].material.map !== t) {
+        cur ^= 1; // nowe zdjęcie na drugą płaszczyznę, rysowaną na wierzchu
+        const m = imgs[cur];
+        m.material.map = t; m.material.needsUpdate = true;
+        m.userData.aspect = t.image.width / t.image.height;
+        m.renderOrder = .6; imgs[cur ^ 1].renderOrder = .5;
+      }
+      fade(imgs[cur], 1);
+      fade(imgs[cur ^ 1], 0);
     },
     tilt(nx, ny) { state.tiltX = ny * TILT; state.tiltY = nx * TILT; },
-    update(dt) {
-      if (state.mix === 0) state.angle += dt * Math.PI * 2 / TURN;
+    update(dt, speed = 1) { // speed: mnożnik obrotu (telefon w hero: wolniej)
+      if (state.mix === 0) state.angle += dt * Math.PI * 2 / TURN * speed;
       spinQ.setFromAxisAngle(new THREE.Vector3(0, 1, 0), state.angle).premultiply(base0);
       if (state.mix === 0) q.copy(spinQ);
       else q.copy(state.leaving ? spinQ : state.from).slerp(faceQ[state.face], state.mix);
       mesh.quaternion.copy(q);
       e.set(state.tiltX, state.tiltY, 0);
       group.quaternion.slerp(tiltQ.setFromEuler(e), Math.min(1, dt * 6));
-      if (state.fade === 0) img.visible = false;
+      for (const m of imgs) m.visible = m.material.opacity > 0;
     },
   };
 }
