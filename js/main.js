@@ -1,8 +1,8 @@
 // Wejście strony głównej (wersja 3): glify, przewijanie sekcja po sekcji, scena z kryształem.
-import { renderGlyphs } from './glyphs.js?v=20261204';
-import { hideLoader } from './loader.js?v=20261204';
-import { initLang } from './i18n.js?v=20261204';
-import { addInertia } from './inertia.js?v=20261204';
+import { renderGlyphs } from './glyphs.js?v=20261205';
+import { hideLoader } from './loader.js?v=20261205';
+import { initLang } from './i18n.js?v=20261205';
+import { addInertia } from './inertia.js?v=20261205';
 
 const html = document.documentElement;
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -100,11 +100,12 @@ function startMotion() {
   gsap.ticker.add(() => { if (!gl) sections(progress(), frame()); });
 
   const start = async () => {
-    const { createScene } = await import('./scene.js?v=20261204');
-    try { gl = createScene({ textEls: [...document.querySelectorAll('.hero__title svg')] }); }
+    const { createScene } = await import('./scene.js?v=20261205');
+    // dotyk: tytuły zostają jako SVG w DOM (ostre natywnie), w scenie tylko tło i kryształ
+    try { gl = createScene({ textEls: touch ? [] : [...document.querySelectorAll('.hero__title svg')] }); }
     catch (e) { console.warn('WebGL niedostępny, zostaje tło CSS', e); window.loader?.done('scene'); return; }
     html.classList.add('gl');
-    html.classList.add('gl-titles'); // napisy sekcji w scenie także na dotyku (rozmycie pod palcem)
+    if (!touch) html.classList.add('gl-titles'); // desktop: napisy w scenie (fala i rozmycie pod kursorem)
     const titleSvgs = [...document.querySelectorAll('.hero__title svg')];
     let shown = 0, shownEls = titleSvgs;
     // Ramka napisu w hero w px projektu (mierzona na postoju hero, potem z pamięci).
@@ -126,8 +127,8 @@ function startMotion() {
       crystal?.update(dt);
       const { H } = gl.size();
       gl.lightAt = { x, y: H - y };
-      // napis widocznej sekcji z falą i rozmyciem jak w hero (kursor albo palec)
-      const vis = secs.findIndex((s) => +s.style.opacity > 0);
+      // desktop: napis widocznej sekcji z falą i rozmyciem jak w hero
+      const vis = touch ? -1 : secs.findIndex((s) => +s.style.opacity > 0);
       if (vis >= 0 && (vis !== shown || (shownEls.length && !shownEls[0].isConnected))) { // isConnected: inny język = nowe SVG
         shown = vis; shownEls = [...secs[vis].querySelectorAll('h1 svg, h2 svg')];
         gl.setText(shownEls);
@@ -142,7 +143,7 @@ function startMotion() {
     // karta w tle: bez renderu (rAF i tak zwykle stoi, to gwarancja także dla przeglądarek, które go nie wstrzymują)
     gsap.ticker.add((t, dt) => document.hidden || gl.update(Math.min(dt, 50) / 1000, t));
 
-    const { addCrystal } = await import('./crystal.js?v=20261204');
+    const { addCrystal } = await import('./crystal.js?v=20261205');
     crystal = crystal3d = await addCrystal(gl);
     crystal.ready.then(() => window.loader?.done('scene'));
     html.classList.add('crystal');

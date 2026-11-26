@@ -16,14 +16,13 @@ const css = getComputedStyle(document.documentElement);
 const col = (n) => new THREE.Color(css.getPropertyValue(n).trim());
 const touch = matchMedia('(hover: none), (pointer: coarse)').matches;
 
-// local: napis na dotyku ugina się tylko pod palcem (waga z mapy rozmycia), poza nim stoi w miejscu
-const VERT = (local = false) => /* glsl */`
-  uniform sampler2D uDisp; uniform float uDepth;${local ? ' uniform sampler2D uBlurMap;' : ''}
+const VERT = /* glsl */`
+  uniform sampler2D uDisp; uniform float uDepth;
   varying vec2 vUv;
   void main() {
     vUv = uv;
     vec3 p = position;
-    p.z += (texture2D(uDisp, uv).r * 255. - 128.) / 100. * uDepth${local ? ' * texture2D(uBlurMap, uv).r' : ''};
+    p.z += (texture2D(uDisp, uv).r * 255. - 128.) / 100. * uDepth;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.);
   }`;
 
@@ -112,8 +111,8 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     throw new Error('programowy WebGL');
   }
   document.body.prepend(canvas);
-  // pełna gęstość ekranu (limit 3): przy 1–1,5 napisy w scenie były rozciągane i wyglądały na rozmyte
-  const PR = Math.min(devicePixelRatio, 3);
+  // Desktop: limit 2 (napisy w scenie ostre). Dotyk: limit 1,5, tytuły są w DOM, w scenie tylko tło i kryształ.
+  let PR = Math.min(devicePixelRatio, touch ? 1.5 : 2);
   renderer.setPixelRatio(PR);
 
   const scene = new THREE.Scene();
@@ -140,7 +139,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const grid = new THREE.PlaneGeometry(1, 1, 120, 70);
 
   const bg = new THREE.Mesh(grid, new THREE.ShaderMaterial({
-    vertexShader: VERT(), fragmentShader: BG_FRAG,
+    vertexShader: VERT, fragmentShader: BG_FRAG,
     uniforms: { ...shared, uBg: { value: col('--bg') }, uLight: { value: new THREE.Vector2(-999, -999) }, uGlow: { value: new THREE.Vector2() }, uGlowA: { value: 0 } },
   }));
   bg.position.z = BG_Z;
@@ -150,7 +149,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
   const textCanvas = document.createElement('canvas');
   const textTex = new THREE.CanvasTexture(textCanvas);
   const text = new THREE.Mesh(grid, new THREE.ShaderMaterial({
-    vertexShader: VERT(touch), fragmentShader: TEXT_FRAG,
+    vertexShader: VERT, fragmentShader: TEXT_FRAG,
     blending: THREE.CustomBlending, // zostaje w kolejce nieprzezroczystej, więc widać go też przez szkło
     uniforms: {
       ...shared, uText: { value: textTex }, uMouse: { value: new THREE.Vector2(-999, -999) },
@@ -159,11 +158,12 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     },
   }));
   text.renderOrder = 1;
-  text.visible = textEls.length > 0;
   scene.add(text);
 
-  let W = 0, H = 0, textTop0 = 0, lastShift = 0;
-  async function drawText() {
+  // drawn: napisy, które są teraz w teksturze. Napis widać tylko, gdy to napisy bieżącej sekcji
+  // (nigdy stary napis na innej sekcji).
+  let W = 0, H = 0, textTop0 = 0, drawn = null;
+  function drawText() {
     const max = renderer.capabilities.maxTextureSize, r = Math.min(PR, max / W, max / H); // jak bufor sceny, w limicie karty
     textCanvas.width = W * r; textCanvas.height = H * r;
     const ctx = textCanvas.getContext('2d');
@@ -180,6 +180,7 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     }
     textTex.flipY = false;
     textTex.needsUpdate = true;
+    drawn = textEls;
   }
 
   function resize() {
@@ -193,16 +194,17 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     const k = (camera.position.z - BG_Z) / camera.position.z * 1.15; // zapas, żeby wgniecenie przy krawędzi nie odsłaniało brzegu
     bg.scale.set(W * k, H * k, 1);
     shared.uRes.value.set(W, H);
-    if (text.visible) drawText();
+    if (textEls.length) drawText();
   }
   resize();
   addEventListener('resize', resize);
 
   // Wskaźnik: px od lewego dolnego rogu (jak gl_FragCoord).
   const fp = { x: -999, y: -999, vx: 0, vy: 0 };
+  let fpsT0 = -1, fpsSum = 0, fpsN = 0;
   const ptr = { x: -999, y: -999, active: false }, light = new THREE.Vector2(-999, -999);
   const at = (e, on) => { ptr.x = e.clientX; ptr.y = H - e.clientY; ptr.active = on; };
-  if (touch) { // palec działa jak kursor: wgniata i rozmywa napis (także podczas przewijania); passive, bez preventDefault
+  if (touch) { // palec działa jak kursor: wgniata budyń (także podczas przewijania); passive, bez preventDefault
     const tp = (e) => { if (e.pointerType === 'touch') at(e, true); };
     addEventListener('pointerdown', tp, { passive: true });
     addEventListener('pointermove', tp, { passive: true });
@@ -219,9 +221,22 @@ export function createScene({ textEls = [], crystal = true } = {}) {
     lightAt: null,          // touch: punkt światła (px, y w górę), ustawia main.js
     size: () => ({ W, H }),
     // Napis w powierzchni sceny: main.js podmienia go na napis widocznej sekcji (sekcje nigdy nie są widoczne naraz).
-    setText(els) { textEls = els; text.visible = els.length > 0; if (text.visible) drawText(); },
+    setText(els) { textEls = els; drawn = null; if (els.length) drawText(); },
     update(dt, time) {
       shared.uTime.value = time;
+      // zabezpieczenie: średnia klatka > 25 ms przez 1 s = gęstość pikseli niżej o 0,25 (minimum 1)
+      if (fpsT0 < 0) fpsT0 = time + 2; // pierwsze 2 s (start, kompilacja shaderów) bez pomiaru
+      else if (time >= fpsT0) {
+        fpsSum += dt; fpsN++;
+        if (time - fpsT0 >= 1) {
+          if (fpsSum / fpsN > .025 && PR > 1) {
+            PR = Math.max(1, PR - .25);
+            renderer.setPixelRatio(PR);
+            if (textEls.length) drawText();
+          }
+          fpsT0 = time; fpsSum = fpsN = 0;
+        }
+      }
       // „palec” z bezwładnością: goni kursor sprężyną, po zatrzymaniu jeszcze przejeżdża i wraca
       if (ptr.active) {
         if (fp.x === -999) { fp.x = ptr.x; fp.y = ptr.y; }
@@ -247,21 +262,23 @@ export function createScene({ textEls = [], crystal = true } = {}) {
       }
       for (let i = 0; i < hgt.length; i++) dispData[i] = Math.max(0, Math.min(255, Math.round(128 + hgt[i] * 100))); // round: w spoczynku dokładnie 128
       disp.needsUpdate = true;
-      // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s
-      const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
-      for (let j = 0, i = 0; j < GY; j++) {
-        const cy = (j + .5) / GY * H;
-        for (let k = 0; k < GX; k++, i++) {
-          let target = 0;
-          if (ptr.active) {
-            const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
-            if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
+      // rozmycie napisu: wolne narastanie pod kursorem, powrót liter ok. 4 s (dotyk: bez napisu w scenie)
+      if (!touch) {
+        const B2 = BLUR_R * BLUR_R, up = 1 - Math.exp(-dt / BLUR_IN * 3), down = 1 - Math.exp(-dt / BLUR_OUT * 3.9);
+        for (let j = 0, i = 0; j < GY; j++) {
+          const cy = (j + .5) / GY * H;
+          for (let k = 0; k < GX; k++, i++) {
+            let target = 0;
+            if (ptr.active) {
+              const dx = (k + .5) / GX * W - ptr.x, dy = cy - ptr.y, d2 = dx * dx + dy * dy;
+              if (d2 < B2) { const f = 1 - d2 / B2; target = f * f; }
+            }
+            blurF[i] += (target - blurF[i]) * (target > blurF[i] ? up : down);
+            blurData[i] = blurF[i] * 255;
           }
-          blurF[i] += (target - blurF[i]) * (target > blurF[i] ? up : down);
-          blurData[i] = blurF[i] * 255;
         }
+        blurTex.needsUpdate = true;
       }
-      blurTex.needsUpdate = true;
       // światło za kursorem z opóźnieniem ok. 0,15 s; na dotyku stoi w miejscu kryształu
       const target = touch ? api.lightAt : ptr.x > -999 ? ptr : null;
       if (target) {
@@ -271,13 +288,13 @@ export function createScene({ textEls = [], crystal = true } = {}) {
       bg.material.uniforms.uLight.value.copy(light);
       shared.uWarm.value += ((W ? light.x / W : .5) - shared.uWarm.value) * Math.min(1, dt * 2);
       text.material.uniforms.uMouse.value.set(ptr.x, ptr.y);
+      api.beforeRender?.(dt, time); // tu main.js może podmienić napis (setText)
+      text.visible = textEls.length > 0 && drawn === textEls;
       if (text.visible) {
-        let shift = textTop0 - textEls[0].getBoundingClientRect().top;
-        // napis stoi z przesunięciem ułamkowym: przerysuj go w miejscu, żeby tekstura trafiała w piksele 1:1
-        if (shift && shift === lastShift) { drawText(); shift = 0; }
-        text.material.uniforms.uShift.value = lastShift = shift;
+        // przesunięcie zaokrąglone do pikseli ekranu: tekstura trafia w piksele 1:1, napis ostry
+        const shift = textTop0 - textEls[0].getBoundingClientRect().top;
+        text.material.uniforms.uShift.value = Math.round(shift * PR) / PR;
       }
-      api.beforeRender?.(dt, time);
       renderer.render(scene, camera);
     },
   };
