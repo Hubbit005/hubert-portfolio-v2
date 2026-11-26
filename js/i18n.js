@@ -1,6 +1,6 @@
 // Dwie wersje językowe (EN domyślnie, PL). Teksty polskie w słowniku: klucz = tekst angielski z HTML.
 // Przełącznik EN / PL w lewym górnym rogu. Wybór zapamiętany w localStorage.
-import { loadGlyphs, glyphNode } from './glyphs.js?v=20261206';
+import { loadGlyphs, glyphSVG } from './glyphs.js?v=20261207';
 
 const MAIL = '<a href="mailto:hubert.austria2025@gmail.com">';
 const PL = {
@@ -105,7 +105,7 @@ function apply(base) {
     if (el.dataset.cur === t) continue; // bez zmiany (np. imię w hero, które żyje też w scenie WebGL)
     el.dataset.cur = t;
     if (el.hasAttribute('data-glyph')) {
-      if (el.querySelector('svg')) loadGlyphs(base).then((f) => el.replaceChildren(glyphNode(f, t.toUpperCase(), el)));
+      if (el.querySelector('svg')) loadGlyphs(base).then((f) => el.replaceChildren(glyphSVG(f, t.toUpperCase())));
       else el.textContent = t;
     } else el.innerHTML = t;
   }
